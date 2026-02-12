@@ -117,6 +117,9 @@ const AdminDashboard = () => {
   const [detailOpen, setDetailOpen] = useState(false);
   const [claimForm, setClaimForm] = useState({ applicationId: "", schoolId: "", claimType: "general", description: "", actionTaken: "" });
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
+  const [schoolAccountForm, setSchoolAccountForm] = useState({ email: "", password: "", fullName: "", schoolId: "" });
+  const [schoolAccountDialogOpen, setSchoolAccountDialogOpen] = useState(false);
+  const [creatingSchoolAccount, setCreatingSchoolAccount] = useState(false);
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) navigate("/auth");
@@ -206,6 +209,31 @@ const AdminDashboard = () => {
   };
 
   const getSchool = (schoolId: string | null) => schools.find((s) => s.id === schoolId);
+
+  const createSchoolAccount = async () => {
+    const { email, password, fullName, schoolId } = schoolAccountForm;
+    if (!email || !password || !fullName || !schoolId) {
+      toast.error("Fill in all fields"); return;
+    }
+    setCreatingSchoolAccount(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await supabase.functions.invoke("create-school-account", {
+        body: { email, password, full_name: fullName, school_id: schoolId },
+      });
+      if (res.error || res.data?.error) {
+        toast.error(res.data?.error || res.error?.message || "Failed to create account");
+      } else {
+        toast.success("School account created successfully");
+        setSchoolAccountForm({ email: "", password: "", fullName: "", schoolId: "" });
+        setSchoolAccountDialogOpen(false);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Error creating school account");
+    } finally {
+      setCreatingSchoolAccount(false);
+    }
+  };
 
   const openDetail = (app: Application) => {
     setSelectedApp(app);
@@ -365,6 +393,42 @@ const AdminDashboard = () => {
                   <Input value={claimForm.actionTaken} onChange={(e) => setClaimForm((p) => ({ ...p, actionTaken: e.target.value }))} placeholder="e.g. Sponsorship suspended" />
                 </div>
                 <Button onClick={addClaim} className="w-full" variant="destructive">Submit Claim</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Create School Account */}
+          <Dialog open={schoolAccountDialogOpen} onOpenChange={setSchoolAccountDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <School size={18} /> Create School Account
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle className="font-display">Create School Account</DialogTitle></DialogHeader>
+              <div className="space-y-4 mt-2">
+                <div className="space-y-2">
+                  <Label>Partner School *</Label>
+                  <Select value={schoolAccountForm.schoolId} onValueChange={(v) => setSchoolAccountForm((p) => ({ ...p, schoolId: v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select school..." /></SelectTrigger>
+                    <SelectContent>{schools.map((s) => <SelectItem key={s.id} value={s.id}>{s.name} — {s.district}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Contact Person Name *</Label>
+                  <Input value={schoolAccountForm.fullName} onChange={(e) => setSchoolAccountForm((p) => ({ ...p, fullName: e.target.value }))} placeholder="e.g. John Mukasa" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Email *</Label>
+                  <Input type="email" value={schoolAccountForm.email} onChange={(e) => setSchoolAccountForm((p) => ({ ...p, email: e.target.value }))} placeholder="school@example.com" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Password *</Label>
+                  <Input type="password" value={schoolAccountForm.password} onChange={(e) => setSchoolAccountForm((p) => ({ ...p, password: e.target.value }))} placeholder="Minimum 6 characters" />
+                </div>
+                <Button onClick={createSchoolAccount} disabled={creatingSchoolAccount} className="w-full bg-primary text-primary-foreground">
+                  {creatingSchoolAccount ? "Creating..." : "Create Account"}
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
