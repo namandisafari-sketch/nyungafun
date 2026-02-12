@@ -10,21 +10,45 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Users, CheckCircle, XCircle, Clock, DollarSign, PlusCircle, Search } from "lucide-react";
+import {
+  Users, CheckCircle, XCircle, Clock, DollarSign, PlusCircle, Search,
+  Eye, AlertTriangle, School, User, Phone, Mail, Calendar, MapPin, BookOpen, FileText, ShieldAlert,
+} from "lucide-react";
 
 interface Application {
   id: string;
   user_id: string;
   parent_name: string;
   parent_phone: string;
+  parent_email: string | null;
+  relationship: string | null;
   student_name: string;
   education_level: string;
+  date_of_birth: string | null;
+  gender: string | null;
+  current_school: string | null;
+  district: string | null;
+  reason: string | null;
+  school_id: string | null;
   status: string;
   admin_notes: string | null;
-  reason: string | null;
-  district: string | null;
+  reviewed_at: string | null;
   created_at: string;
+}
+
+interface SchoolRow {
+  id: string;
+  name: string;
+  level: string;
+  district: string;
+  requirements: string | null;
+  full_fees: number;
+  nyunga_covered_fees: number;
+  parent_pays: number | null;
+  boarding_available: boolean | null;
 }
 
 interface Expense {
@@ -37,6 +61,17 @@ interface Expense {
   created_at: string;
 }
 
+interface Claim {
+  id: string;
+  application_id: string;
+  school_id: string | null;
+  claim_type: string;
+  description: string;
+  action_taken: string | null;
+  status: string;
+  created_at: string;
+}
+
 const formatUGX = (amount: number) =>
   new Intl.NumberFormat("en-UG", { style: "currency", currency: "UGX", maximumFractionDigits: 0 }).format(amount);
 
@@ -44,30 +79,48 @@ const levelLabels: Record<string, string> = {
   nursery: "Nursery", primary: "Primary", secondary_o: "O-Level", secondary_a: "A-Level", vocational: "Vocational", university: "University",
 };
 
+const claimTypes = [
+  { value: "disciplinary", label: "Disciplinary Issue" },
+  { value: "attendance", label: "Poor Attendance" },
+  { value: "performance", label: "Poor Performance" },
+  { value: "misconduct", label: "Misconduct" },
+  { value: "dropout", label: "Dropout Risk" },
+  { value: "general", label: "General Report" },
+];
+
 const AdminDashboard = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [applications, setApplications] = useState<Application[]>([]);
+  const [schools, setSchools] = useState<SchoolRow[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [expenseForm, setExpenseForm] = useState({ applicationId: "", description: "", amount: "", category: "tuition", term: "" });
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
+  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [claimForm, setClaimForm] = useState({ applicationId: "", schoolId: "", claimType: "general", description: "", actionTaken: "" });
+  const [claimDialogOpen, setClaimDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && (!user || !isAdmin)) {
-      navigate("/auth");
-    }
+    if (!authLoading && (!user || !isAdmin)) navigate("/auth");
   }, [user, isAdmin, authLoading, navigate]);
 
   const fetchData = async () => {
-    const { data: apps } = await supabase.from("applications").select("*").order("created_at", { ascending: false });
-    setApplications((apps as unknown as Application[]) || []);
-
-    const { data: exps } = await supabase.from("expenses").select("*").order("created_at", { ascending: false });
-    setExpenses((exps as unknown as Expense[]) || []);
+    const [appsRes, expsRes, schoolsRes, claimsRes] = await Promise.all([
+      supabase.from("applications").select("*").order("created_at", { ascending: false }),
+      supabase.from("expenses").select("*").order("created_at", { ascending: false }),
+      supabase.from("schools").select("*"),
+      supabase.from("student_claims").select("*").order("created_at", { ascending: false }),
+    ]);
+    setApplications((appsRes.data as unknown as Application[]) || []);
+    setExpenses((expsRes.data as unknown as Expense[]) || []);
+    setSchools((schoolsRes.data as unknown as SchoolRow[]) || []);
+    setClaims((claimsRes.data as unknown as Claim[]) || []);
     setLoading(false);
   };
 
@@ -81,18 +134,13 @@ const AdminDashboard = () => {
       .from("applications")
       .update({ status, admin_notes: notes, reviewed_at: new Date().toISOString(), reviewed_by: user!.id } as any)
       .eq("id", appId);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success(`Application ${status}`);
-      fetchData();
-    }
+    if (error) toast.error(error.message);
+    else { toast.success(`Application ${status}`); fetchData(); }
   };
 
   const addExpense = async () => {
     if (!expenseForm.description || !expenseForm.amount || !expenseForm.applicationId) {
-      toast.error("Fill in all fields");
-      return;
+      toast.error("Fill in all fields"); return;
     }
     const { error } = await supabase.from("expenses").insert({
       application_id: expenseForm.applicationId,
@@ -102,14 +150,52 @@ const AdminDashboard = () => {
       term: expenseForm.term,
       recorded_by: user!.id,
     } as any);
-    if (error) {
-      toast.error(error.message);
-    } else {
+    if (error) toast.error(error.message);
+    else {
       toast.success("Expense recorded");
       setExpenseForm({ applicationId: "", description: "", amount: "", category: "tuition", term: "" });
       setExpenseDialogOpen(false);
       fetchData();
     }
+  };
+
+  const addClaim = async () => {
+    if (!claimForm.applicationId || !claimForm.description) {
+      toast.error("Select a student and describe the issue"); return;
+    }
+    const { error } = await supabase.from("student_claims").insert({
+      application_id: claimForm.applicationId,
+      school_id: claimForm.schoolId || null,
+      claim_type: claimForm.claimType,
+      description: claimForm.description,
+      action_taken: claimForm.actionTaken,
+      created_by: user!.id,
+    } as any);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Claim recorded");
+      setClaimForm({ applicationId: "", schoolId: "", claimType: "general", description: "", actionTaken: "" });
+      setClaimDialogOpen(false);
+      fetchData();
+    }
+  };
+
+  const resolveClaim = async (claimId: string, actionTaken: string) => {
+    const { error } = await supabase.from("student_claims").update({
+      status: "resolved",
+      action_taken: actionTaken,
+      resolved_by: user!.id,
+      resolved_at: new Date().toISOString(),
+    } as any).eq("id", claimId);
+    if (error) toast.error(error.message);
+    else { toast.success("Claim resolved"); fetchData(); }
+  };
+
+  const getSchool = (schoolId: string | null) => schools.find((s) => s.id === schoolId);
+
+  const openDetail = (app: Application) => {
+    setSelectedApp(app);
+    setDetailOpen(true);
   };
 
   if (authLoading || loading) {
@@ -127,6 +213,7 @@ const AdminDashboard = () => {
     pending: applications.filter((a) => a.status === "pending").length,
     approved: applications.filter((a) => a.status === "approved").length,
     totalSpent: expenses.reduce((s, e) => s + e.amount, 0),
+    openClaims: claims.filter((c) => c.status === "open").length,
   };
 
   const approvedApps = applications.filter((a) => a.status === "approved");
@@ -137,26 +224,27 @@ const AdminDashboard = () => {
         <h1 className="font-display text-3xl font-bold text-primary mb-8">Admin Dashboard</h1>
 
         {/* Stats */}
-        <div className="grid sm:grid-cols-4 gap-4 mb-8">
+        <div className="grid sm:grid-cols-5 gap-4 mb-8">
           {[
             { label: "Total Applications", value: counts.total, icon: Users, color: "text-primary" },
             { label: "Pending Review", value: counts.pending, icon: Clock, color: "text-yellow-600" },
             { label: "Approved", value: counts.approved, icon: CheckCircle, color: "text-accent" },
             { label: "Total Spent", value: formatUGX(counts.totalSpent), icon: DollarSign, color: "text-secondary" },
+            { label: "Open Claims", value: counts.openClaims, icon: AlertTriangle, color: "text-destructive" },
           ].map((s) => (
             <Card key={s.label}>
               <CardContent className="py-5 flex items-center gap-4">
-                <s.icon size={32} className={s.color} />
+                <s.icon size={28} className={s.color} />
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{s.value}</p>
-                  <p className="text-sm text-muted-foreground">{s.label}</p>
+                  <p className="text-xl font-bold text-foreground">{s.value}</p>
+                  <p className="text-xs text-muted-foreground">{s.label}</p>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Filters */}
+        {/* Filters & Actions */}
         <div className="flex flex-wrap gap-3 mb-6">
           <div className="relative flex-1 min-w-[200px] max-w-sm">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -172,6 +260,8 @@ const AdminDashboard = () => {
               <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Record Expense */}
           <Dialog open={expenseDialogOpen} onOpenChange={setExpenseDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 gap-2">
@@ -179,19 +269,13 @@ const AdminDashboard = () => {
               </Button>
             </DialogTrigger>
             <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="font-display">Record Expense</DialogTitle>
-              </DialogHeader>
+              <DialogHeader><DialogTitle className="font-display">Record Expense</DialogTitle></DialogHeader>
               <div className="space-y-4 mt-2">
                 <div className="space-y-2">
                   <Label>Student (Approved)</Label>
                   <Select value={expenseForm.applicationId} onValueChange={(v) => setExpenseForm((p) => ({ ...p, applicationId: v }))}>
                     <SelectTrigger><SelectValue placeholder="Select student..." /></SelectTrigger>
-                    <SelectContent>
-                      {approvedApps.map((a) => (
-                        <SelectItem key={a.id} value={a.id}>{a.student_name}</SelectItem>
-                      ))}
-                    </SelectContent>
+                    <SelectContent>{approvedApps.map((a) => <SelectItem key={a.id} value={a.id}>{a.student_name}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
@@ -226,32 +310,92 @@ const AdminDashboard = () => {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* File Claim */}
+          <Dialog open={claimDialogOpen} onOpenChange={setClaimDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="destructive" className="gap-2">
+                <ShieldAlert size={18} /> File Claim
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle className="font-display">File a Claim on Student</DialogTitle></DialogHeader>
+              <div className="space-y-4 mt-2">
+                <div className="space-y-2">
+                  <Label>Student</Label>
+                  <Select value={claimForm.applicationId} onValueChange={(v) => setClaimForm((p) => ({ ...p, applicationId: v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select student..." /></SelectTrigger>
+                    <SelectContent>{approvedApps.map((a) => <SelectItem key={a.id} value={a.id}>{a.student_name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Reporting School (optional)</Label>
+                  <Select value={claimForm.schoolId} onValueChange={(v) => setClaimForm((p) => ({ ...p, schoolId: v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select school..." /></SelectTrigger>
+                    <SelectContent>{schools.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Claim Type</Label>
+                  <Select value={claimForm.claimType} onValueChange={(v) => setClaimForm((p) => ({ ...p, claimType: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{claimTypes.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Description *</Label>
+                  <Textarea rows={3} value={claimForm.description} onChange={(e) => setClaimForm((p) => ({ ...p, description: e.target.value }))} placeholder="Describe the issue..." />
+                </div>
+                <div className="space-y-2">
+                  <Label>Action Taken (optional)</Label>
+                  <Input value={claimForm.actionTaken} onChange={(e) => setClaimForm((p) => ({ ...p, actionTaken: e.target.value }))} placeholder="e.g. Sponsorship suspended" />
+                </div>
+                <Button onClick={addClaim} className="w-full" variant="destructive">Submit Claim</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Applications list */}
         <div className="space-y-4">
           {filtered.map((app) => {
             const appExpenses = expenses.filter((e) => e.application_id === app.id);
+            const appClaims = claims.filter((c) => c.application_id === app.id);
             const totalSpent = appExpenses.reduce((s, e) => s + e.amount, 0);
+            const school = getSchool(app.school_id);
+            const openClaimsCount = appClaims.filter((c) => c.status === "open").length;
 
             return (
               <Card key={app.id}>
                 <CardContent className="py-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-                    <div>
-                      <h3 className="font-semibold text-lg text-foreground">{app.student_name}</h3>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold text-lg text-foreground">{app.student_name}</h3>
+                        {openClaimsCount > 0 && (
+                          <Badge variant="destructive" className="gap-1 text-xs">
+                            <AlertTriangle size={12} /> {openClaimsCount} claim{openClaimsCount > 1 ? "s" : ""}
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">
-                        Parent: {app.parent_name} • {app.parent_phone} • {levelLabels[app.education_level] || app.education_level}
-                        {app.district && ` • ${app.district}`}
+                        <span className="inline-flex items-center gap-1"><User size={12} /> {app.parent_name}</span>
+                        <span className="mx-1">•</span>
+                        <span className="inline-flex items-center gap-1"><Phone size={12} /> {app.parent_phone}</span>
+                        <span className="mx-1">•</span>
+                        <span className="inline-flex items-center gap-1"><BookOpen size={12} /> {levelLabels[app.education_level] || app.education_level}</span>
+                        {school && <><span className="mx-1">•</span><span className="inline-flex items-center gap-1"><School size={12} /> {school.name}</span></>}
+                        {app.district && <><span className="mx-1">•</span><span className="inline-flex items-center gap-1"><MapPin size={12} /> {app.district}</span></>}
                       </p>
-                      <p className="text-xs text-muted-foreground">Applied: {new Date(app.created_at).toLocaleDateString()}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Applied: {new Date(app.created_at).toLocaleDateString()}</p>
                     </div>
-                    <Badge variant="outline">{app.status}</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">{app.status}</Badge>
+                      <Button size="sm" variant="ghost" className="gap-1" onClick={() => openDetail(app)}>
+                        <Eye size={14} /> View
+                      </Button>
+                    </div>
                   </div>
-
-                  {app.reason && (
-                    <p className="text-sm text-muted-foreground mb-3 bg-muted/50 p-3 rounded-md">{app.reason}</p>
-                  )}
 
                   {/* Admin actions */}
                   {(app.status === "pending" || app.status === "under_review") && (
@@ -267,9 +411,7 @@ const AdminDashboard = () => {
                       </div>
                       <div className="flex gap-2">
                         {app.status === "pending" && (
-                          <Button size="sm" variant="outline" onClick={() => updateStatus(app.id, "under_review")}>
-                            Mark Under Review
-                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => updateStatus(app.id, "under_review")}>Mark Under Review</Button>
                         )}
                         <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 gap-1" onClick={() => updateStatus(app.id, "approved")}>
                           <CheckCircle size={14} /> Approve
@@ -281,19 +423,13 @@ const AdminDashboard = () => {
                     </div>
                   )}
 
-                  {/* Expenses for approved */}
+                  {/* Expenses summary for approved */}
                   {app.status === "approved" && appExpenses.length > 0 && (
                     <div className="border-t border-border pt-3 mt-3">
-                      <div className="flex justify-between mb-2">
+                      <div className="flex justify-between mb-1">
                         <p className="text-sm font-medium">Expenses</p>
                         <p className="text-sm font-semibold text-secondary">Total: {formatUGX(totalSpent)}</p>
                       </div>
-                      {appExpenses.map((exp) => (
-                        <div key={exp.id} className="flex justify-between text-sm py-1">
-                          <span className="text-muted-foreground">{exp.description} {exp.term && `(${exp.term})`}</span>
-                          <span>{formatUGX(exp.amount)}</span>
-                        </div>
-                      ))}
                     </div>
                   )}
                 </CardContent>
@@ -305,6 +441,196 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Student Detail Dialog */}
+      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {selectedApp && (() => {
+            const school = getSchool(selectedApp.school_id);
+            const appExpenses = expenses.filter((e) => e.application_id === selectedApp.id);
+            const appClaims = claims.filter((c) => c.application_id === selectedApp.id);
+            const totalSpent = appExpenses.reduce((s, e) => s + e.amount, 0);
+
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="font-display text-xl flex items-center gap-2">
+                    {selectedApp.student_name}
+                    <Badge variant="outline" className="ml-2">{selectedApp.status}</Badge>
+                  </DialogTitle>
+                </DialogHeader>
+
+                <Tabs defaultValue="info" className="mt-4">
+                  <TabsList className="w-full">
+                    <TabsTrigger value="info" className="flex-1">Full Info</TabsTrigger>
+                    <TabsTrigger value="requirements" className="flex-1">Requirements</TabsTrigger>
+                    <TabsTrigger value="expenses" className="flex-1">Expenses ({appExpenses.length})</TabsTrigger>
+                    <TabsTrigger value="claims" className="flex-1">Claims ({appClaims.length})</TabsTrigger>
+                  </TabsList>
+
+                  {/* Full Info Tab */}
+                  <TabsContent value="info" className="space-y-5 mt-4">
+                    <div>
+                      <h4 className="font-semibold text-sm text-primary mb-3 flex items-center gap-2"><User size={16} /> Student Information</h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div><span className="text-muted-foreground">Full Name:</span> <span className="font-medium">{selectedApp.student_name}</span></div>
+                        <div><span className="text-muted-foreground">Gender:</span> <span className="font-medium capitalize">{selectedApp.gender || "N/A"}</span></div>
+                        <div><span className="text-muted-foreground">Date of Birth:</span> <span className="font-medium">{selectedApp.date_of_birth ? new Date(selectedApp.date_of_birth).toLocaleDateString() : "N/A"}</span></div>
+                        <div><span className="text-muted-foreground">Education Level:</span> <span className="font-medium">{levelLabels[selectedApp.education_level] || selectedApp.education_level}</span></div>
+                        <div><span className="text-muted-foreground">District:</span> <span className="font-medium">{selectedApp.district || "N/A"}</span></div>
+                        <div><span className="text-muted-foreground">Current School:</span> <span className="font-medium">{selectedApp.current_school || "N/A"}</span></div>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h4 className="font-semibold text-sm text-primary mb-3 flex items-center gap-2"><Users size={16} /> Parent / Guardian Information</h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="flex items-center gap-2"><User size={14} className="text-muted-foreground" /> <span className="font-medium">{selectedApp.parent_name}</span></div>
+                        <div className="flex items-center gap-2"><Phone size={14} className="text-muted-foreground" /> <span className="font-medium">{selectedApp.parent_phone}</span></div>
+                        <div className="flex items-center gap-2"><Mail size={14} className="text-muted-foreground" /> <span className="font-medium">{selectedApp.parent_email || "N/A"}</span></div>
+                        <div><span className="text-muted-foreground">Relationship:</span> <span className="font-medium capitalize">{selectedApp.relationship || "Parent"}</span></div>
+                      </div>
+                    </div>
+                    <Separator />
+                    {school && (
+                      <div>
+                        <h4 className="font-semibold text-sm text-primary mb-3 flex items-center gap-2"><School size={16} /> School Details</h4>
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div><span className="text-muted-foreground">School:</span> <span className="font-medium">{school.name}</span></div>
+                          <div><span className="text-muted-foreground">District:</span> <span className="font-medium">{school.district}</span></div>
+                          <div><span className="text-muted-foreground">Full Fees:</span> <span className="font-medium">{formatUGX(school.full_fees)}</span></div>
+                          <div><span className="text-muted-foreground">Nyunga Covers:</span> <span className="font-medium text-accent">{formatUGX(school.nyunga_covered_fees)}</span></div>
+                          <div><span className="text-muted-foreground">Parent Pays:</span> <span className="font-medium text-secondary">{formatUGX(school.parent_pays || 0)}</span></div>
+                          <div><span className="text-muted-foreground">Boarding:</span> <span className="font-medium">{school.boarding_available ? "Yes" : "No"}</span></div>
+                        </div>
+                      </div>
+                    )}
+                    {selectedApp.reason && (
+                      <>
+                        <Separator />
+                        <div>
+                          <h4 className="font-semibold text-sm text-primary mb-2 flex items-center gap-2"><FileText size={16} /> Reason for Support</h4>
+                          <p className="text-sm bg-muted/50 p-3 rounded-md">{selectedApp.reason}</p>
+                        </div>
+                      </>
+                    )}
+                    {selectedApp.admin_notes && (
+                      <div>
+                        <h4 className="font-semibold text-sm text-primary mb-2">Admin Notes</h4>
+                        <p className="text-sm bg-muted/50 p-3 rounded-md">{selectedApp.admin_notes}</p>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  {/* Requirements Tab */}
+                  <TabsContent value="requirements" className="mt-4">
+                    {school?.requirements ? (
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-sm">School Requirements for {school.name}</h4>
+                        <div className="bg-muted/50 p-4 rounded-md text-sm whitespace-pre-wrap">{school.requirements}</div>
+                        <Separator />
+                        <div>
+                          <h4 className="font-semibold text-sm mb-2">Student Checklist</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              {selectedApp.date_of_birth ? <CheckCircle size={16} className="text-accent" /> : <XCircle size={16} className="text-destructive" />}
+                              <span>Date of birth provided</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {selectedApp.gender ? <CheckCircle size={16} className="text-accent" /> : <XCircle size={16} className="text-destructive" />}
+                              <span>Gender specified</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {selectedApp.district ? <CheckCircle size={16} className="text-accent" /> : <XCircle size={16} className="text-destructive" />}
+                              <span>District provided</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {selectedApp.parent_phone ? <CheckCircle size={16} className="text-accent" /> : <XCircle size={16} className="text-destructive" />}
+                              <span>Parent contact available</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {selectedApp.reason ? <CheckCircle size={16} className="text-accent" /> : <XCircle size={16} className="text-destructive" />}
+                              <span>Reason for support provided</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground py-4 text-center">No specific requirements set for this school.</p>
+                    )}
+                  </TabsContent>
+
+                  {/* Expenses Tab */}
+                  <TabsContent value="expenses" className="mt-4">
+                    {appExpenses.length > 0 ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <p className="font-semibold text-sm">All Expenses</p>
+                          <p className="font-semibold text-sm text-secondary">Total: {formatUGX(totalSpent)}</p>
+                        </div>
+                        {appExpenses.map((exp) => (
+                          <div key={exp.id} className="flex justify-between items-center text-sm p-2 bg-muted/30 rounded">
+                            <div>
+                              <span className="font-medium">{exp.description}</span>
+                              {exp.term && <span className="text-muted-foreground ml-2">({exp.term})</span>}
+                              <span className="text-xs text-muted-foreground ml-2 capitalize">{exp.category}</span>
+                            </div>
+                            <span className="font-semibold">{formatUGX(exp.amount)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground py-4 text-center">No expenses recorded yet.</p>
+                    )}
+                  </TabsContent>
+
+                  {/* Claims Tab */}
+                  <TabsContent value="claims" className="mt-4">
+                    {appClaims.length > 0 ? (
+                      <div className="space-y-3">
+                        {appClaims.map((claim) => {
+                          const claimSchool = getSchool(claim.school_id);
+                          return (
+                            <Card key={claim.id}>
+                              <CardContent className="py-3 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <Badge variant={claim.status === "open" ? "destructive" : "outline"} className="text-xs">{claim.status}</Badge>
+                                    <span className="text-xs font-medium capitalize">{claimTypes.find((t) => t.value === claim.claim_type)?.label || claim.claim_type}</span>
+                                  </div>
+                                  <span className="text-xs text-muted-foreground">{new Date(claim.created_at).toLocaleDateString()}</span>
+                                </div>
+                                {claimSchool && <p className="text-xs text-muted-foreground">Reported by: {claimSchool.name}</p>}
+                                <p className="text-sm">{claim.description}</p>
+                                {claim.action_taken && <p className="text-xs text-muted-foreground">Action: {claim.action_taken}</p>}
+                                {claim.status === "open" && (
+                                  <div className="pt-2 flex gap-2">
+                                    <Button size="sm" variant="outline" onClick={() => resolveClaim(claim.id, "Sponsorship continues with warning")}>
+                                      Resolve with Warning
+                                    </Button>
+                                    <Button size="sm" variant="destructive" onClick={() => {
+                                      resolveClaim(claim.id, "Sponsorship suspended");
+                                      updateStatus(selectedApp.id, "rejected");
+                                    }}>
+                                      Stop Sponsorship
+                                    </Button>
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground py-4 text-center">No claims filed for this student.</p>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
