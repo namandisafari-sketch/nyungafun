@@ -204,6 +204,66 @@ export type Database = {
         }
         Relationships: []
       }
+      student_claims: {
+        Row: {
+          action_taken: string | null
+          application_id: string
+          claim_type: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          school_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          action_taken?: string | null
+          application_id: string
+          claim_type?: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          school_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          action_taken?: string | null
+          application_id?: string
+          claim_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          school_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_claims_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_claims_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
