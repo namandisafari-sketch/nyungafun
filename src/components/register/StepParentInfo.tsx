@@ -65,7 +65,7 @@ const StepParentInfo = ({ form, update }: Props) => (
         </div>
         <div className="space-y-2">
           <Label htmlFor="parentNin">Parent NIN (optional)</Label>
-          <Input id="parentNin" value={form.parentNin} onChange={(e) => update("parentNin", e.target.value.toUpperCase())} placeholder="e.g. CF1234567ABC1Z" maxLength={14} />
+          <Input id="parentNin" value={form.parentNin} onChange={(e) => update("parentNin", e.target.value.toUpperCase())} placeholder="Enter NIN" maxLength={14} />
           {form.parentNin && !isValidNIN(form.parentNin) && (
             <p className="text-xs text-destructive">{NIN_HINT}</p>
           )}

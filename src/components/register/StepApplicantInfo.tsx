@@ -50,7 +50,7 @@ const StepApplicantInfo = ({ form, update, userId }: Props) => (
         </div>
         <div className="space-y-2">
           <Label htmlFor="nin">NIN (if available)</Label>
-          <Input id="nin" value={form.nin} onChange={(e) => update("nin", e.target.value.toUpperCase())} placeholder="e.g. CM1234567ABC1Z" maxLength={14} />
+          <Input id="nin" value={form.nin} onChange={(e) => update("nin", e.target.value.toUpperCase())} placeholder="Enter NIN" maxLength={14} />
           {form.nin && !isValidNIN(form.nin) && (
             <p className="text-xs text-destructive">{NIN_HINT}</p>
           )}
