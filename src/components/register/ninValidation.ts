@@ -7,4 +7,4 @@ export const isValidNIN = (nin: string): boolean => {
   return NIN_REGEX.test(nin.toUpperCase());
 };
 
-export const NIN_HINT = "Format: CM or CF followed by 7 digits, 3 letters, 1 digit, 1 letter (e.g. CM1234567ABC1Z)";
+export const NIN_HINT = "Please enter a valid Ugandan NIN";
