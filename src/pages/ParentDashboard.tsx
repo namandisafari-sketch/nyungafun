@@ -5,7 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { PlusCircle, Clock, CheckCircle, XCircle, AlertCircle, FileCheck, Send, Search, ThumbsUp, Ban } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import ParentLawyerForms from "@/components/parent/ParentLawyerForms";
 
 interface Application {
@@ -122,9 +123,9 @@ const ParentDashboard = () => {
               const totalSpent = appExpenses.reduce((s, e) => s + e.amount, 0);
 
               return (
-                <Card key={app.id}>
+                <Card key={app.id} className="overflow-hidden">
                   <CardContent className="py-5">
-                    <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                    <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
                       <div>
                         <h3 className="font-semibold text-lg text-foreground">{app.student_name}</h3>
                         <p className="text-sm text-muted-foreground">
@@ -136,22 +137,76 @@ const ParentDashboard = () => {
                       </Badge>
                     </div>
 
-                    {/* Status timeline */}
-                    <div className="flex items-center gap-1 mb-3">
-                      {["pending", "under_review", "approved"].map((s, i) => {
-                        const reached = ["pending", "under_review", "approved"].indexOf(app.status) >= i;
-                        const isRejected = app.status === "rejected";
-                        return (
-                          <div key={s} className="flex items-center gap-1 flex-1">
-                            <div className={`h-2 flex-1 rounded-full ${reached && !isRejected ? "bg-accent" : isRejected && i === 0 ? "bg-destructive" : "bg-muted"}`} />
+                    {/* Enhanced Status Tracker */}
+                    {(() => {
+                      const steps = [
+                        { key: "submitted", label: "Submitted", icon: Send, desc: "Application received" },
+                        { key: "pending", label: "Pending Review", icon: Clock, desc: "Awaiting admin review" },
+                        { key: "under_review", label: "Under Review", icon: Search, desc: "Being evaluated" },
+                        { key: "approved", label: "Approved", icon: ThumbsUp, desc: "Scholarship granted" },
+                      ];
+                      const statusOrder = ["submitted", "pending", "under_review", "approved"];
+                      const isRejected = app.status === "rejected";
+                      // "submitted" is always reached; map app.status to step index
+                      const currentIdx = isRejected ? 2 : Math.max(statusOrder.indexOf(app.status), 0) + 1;
+
+                      return (
+                        <div className="bg-muted/30 rounded-lg p-4 mb-4">
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Application Progress</p>
+                          <div className="relative">
+                            {steps.map((step, i) => {
+                              const reached = i < currentIdx && !isRejected;
+                              const isCurrent = i === currentIdx - 1 && !isRejected;
+                              const StepIcon = step.icon;
+
+                              return (
+                                <div key={step.key} className="flex items-start gap-3 relative">
+                                  {/* Vertical line */}
+                                  {i < steps.length - 1 && (
+                                    <div className={`absolute left-[15px] top-[30px] w-0.5 h-[calc(100%-6px)] ${reached ? "bg-accent" : isRejected && i < 2 ? "bg-destructive/40" : "bg-border"}`} />
+                                  )}
+                                  {/* Icon circle */}
+                                  <div className={`relative z-10 flex items-center justify-center w-[30px] h-[30px] rounded-full shrink-0 border-2 transition-all ${
+                                    reached || isCurrent
+                                      ? isRejected ? "border-destructive bg-destructive/10 text-destructive" : "border-accent bg-accent/10 text-accent"
+                                      : "border-border bg-background text-muted-foreground"
+                                  }`}>
+                                    {reached ? <CheckCircle size={16} /> : <StepIcon size={14} />}
+                                  </div>
+                                  {/* Label */}
+                                  <div className={`pb-5 ${isCurrent ? "" : ""}`}>
+                                    <p className={`text-sm font-medium ${reached || isCurrent ? "text-foreground" : "text-muted-foreground"}`}>
+                                      {step.label}
+                                      {isCurrent && <span className="ml-2 text-xs text-accent font-normal">← Current</span>}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">{step.desc}</p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+
+                            {/* Rejected step (shown only if rejected) */}
+                            {isRejected && (
+                              <div className="flex items-start gap-3 relative">
+                                <div className="relative z-10 flex items-center justify-center w-[30px] h-[30px] rounded-full shrink-0 border-2 border-destructive bg-destructive/10 text-destructive">
+                                  <Ban size={16} />
+                                </div>
+                                <div className="pb-2">
+                                  <p className="text-sm font-medium text-destructive">
+                                    Rejected <span className="ml-2 text-xs font-normal">← Final</span>
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">Application was not approved</p>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      );
+                    })()}
 
                     {app.admin_notes && (
-                      <div className="bg-muted/50 rounded-md p-3 mb-3">
-                        <p className="text-xs font-medium text-muted-foreground mb-1">Admin Notes:</p>
+                      <div className="bg-muted/50 rounded-md p-3 mb-3 border border-border">
+                        <p className="text-xs font-medium text-muted-foreground mb-1">📝 Admin Notes:</p>
                         <p className="text-sm text-foreground">{app.admin_notes}</p>
                       </div>
                     )}
@@ -159,7 +214,7 @@ const ParentDashboard = () => {
                     {app.status === "approved" && appExpenses.length > 0 && (
                       <div className="border-t border-border pt-3 mt-3">
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-sm font-medium text-foreground">Expenses Recorded</p>
+                          <p className="text-sm font-medium text-foreground">💰 Expenses Recorded</p>
                           <p className="text-sm font-semibold text-secondary">Total: {formatUGX(totalSpent)}</p>
                         </div>
                         <div className="space-y-1">
