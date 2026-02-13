@@ -1,17 +1,14 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import logo from "@/assets/nyunga-logo.png";
 
 const routeTitles: Record<string, string> = {
-  "/": "Nyunga Foundation",
-  "/about": "About Us",
-  "/register": "Apply",
+  "/": "God's Will",
+  "/register": "New Application",
   "/auth": "Sign In",
   "/dashboard": "My Dashboard",
   "/admin": "Admin",
   "/school": "School Portal",
-  "/install": "Install App",
 };
 
 const PWANavbar = () => {
@@ -19,13 +16,15 @@ const PWANavbar = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
-  const title = routeTitles[location.pathname] || "Nyunga Foundation";
+  const title = routeTitles[location.pathname] || "God's Will";
 
   return (
     <header className="sticky top-0 z-50 bg-primary text-primary-foreground safe-area-top">
       <div className="flex items-center justify-between h-12 px-4">
-        <div className="flex items-center gap-2" onClick={() => navigate("/")}>
-          <img src={logo} alt="Nyunga" className="h-7 w-auto rounded-sm" />
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+          <div className="w-7 h-7 rounded bg-primary-foreground/20 flex items-center justify-center">
+            <span className="font-display text-xs font-bold">GW</span>
+          </div>
           <span className="font-display text-sm font-bold truncate">{title}</span>
         </div>
         {user && (

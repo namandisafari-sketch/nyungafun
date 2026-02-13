@@ -25,9 +25,9 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
       },
       manifest: {
-        name: "Nyunga Foundation",
-        short_name: "Nyunga",
-        description: "Nyunga Foundation Scholarship Management - Still there's Hope",
+        name: "God's Will",
+        short_name: "God's Will",
+        description: "God's Will Scholarship Management System",
         theme_color: "#1e3a5f",
         background_color: "#f5f7fa",
         display: "standalone",
