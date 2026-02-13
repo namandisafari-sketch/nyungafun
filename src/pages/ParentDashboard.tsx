@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import ParentLawyerForms from "@/components/parent/ParentLawyerForms";
 
 interface Application {
   id: string;
@@ -177,6 +178,11 @@ const ParentDashboard = () => {
             })}
           </div>
         )}
+
+        {/* Legal Forms Section */}
+        <div className="mt-8">
+          <ParentLawyerForms />
+        </div>
       </div>
     </div>
   );

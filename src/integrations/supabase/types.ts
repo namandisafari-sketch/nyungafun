@@ -231,6 +231,99 @@ export type Database = {
           },
         ]
       }
+      lawyer_form_submissions: {
+        Row: {
+          admin_notes: string | null
+          application_id: string
+          created_at: string
+          id: string
+          responses: Json
+          reviewed_at: string | null
+          reviewed_by: string | null
+          signed_document_url: string | null
+          status: string
+          submitted_at: string | null
+          template_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          application_id: string
+          created_at?: string
+          id?: string
+          responses?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          signed_document_url?: string | null
+          status?: string
+          submitted_at?: string | null
+          template_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          application_id?: string
+          created_at?: string
+          id?: string
+          responses?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          signed_document_url?: string | null
+          status?: string
+          submitted_at?: string | null
+          template_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lawyer_form_submissions_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lawyer_form_submissions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "lawyer_form_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lawyer_form_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          fields: Json
+          id: string
+          is_active: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          fields?: Json
+          id?: string
+          is_active?: boolean | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          fields?: Json
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
