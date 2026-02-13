@@ -92,9 +92,28 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+    -webkit-tap-highlight-color: transparent;
   }
 
   h1, h2, h3, h4 {
     font-family: 'Playfair Display', serif;
+  }
+}
+
+/* PWA safe areas */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* PWA standalone mode overrides */
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: text;
   }
 }
