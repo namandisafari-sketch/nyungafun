@@ -38,7 +38,7 @@ const LocationStats = ({ applications }: LocationStatsProps) => {
   const [filterDistrict, setFilterDistrict] = useState<string>("all");
   const [filterSubCounty, setFilterSubCounty] = useState<string>("all");
   const [filterParish, setFilterParish] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  
 
   const [subCounties, setSubCounties] = useState<LocOption[]>([]);
   const [parishes, setParishes] = useState<LocOption[]>([]);
@@ -110,13 +110,13 @@ const LocationStats = ({ applications }: LocationStatsProps) => {
 
   const filteredApps = useMemo(() => {
     return applications.filter((a) => {
-      if (statusFilter !== "all" && a.status !== statusFilter) return false;
+      if (a.status !== "approved") return false;
       if (filterDistrict !== "all" && a.district !== filterDistrict) return false;
       if (filterSubCounty !== "all" && a.sub_county !== filterSubCounty) return false;
       if (filterParish !== "all" && a.parish !== filterParish) return false;
       return true;
     });
-  }, [applications, statusFilter, filterDistrict, filterSubCounty, filterParish]);
+  }, [applications, filterDistrict, filterSubCounty, filterParish]);
 
   const locationCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -157,16 +157,6 @@ const LocationStats = ({ applications }: LocationStatsProps) => {
               {Object.entries(levelLabels).map(([k, l]) => (
                 <SelectItem key={k} value={k}>{l}</SelectItem>
               ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
-            <SelectContent className="bg-background">
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
 
