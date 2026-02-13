@@ -15,13 +15,14 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import {
   Users, CheckCircle, XCircle, Clock, DollarSign, PlusCircle, Search,
-  Eye, AlertTriangle, School, User, Phone, Mail, MapPin, BookOpen, FileText, ShieldAlert, GraduationCap,
+  Eye, AlertTriangle, School, User, Phone, Mail, MapPin, BookOpen, FileText, ShieldAlert, GraduationCap, CreditCard,
 } from "lucide-react";
 import AdminStats from "@/components/admin/AdminStats";
 import SchoolAccountsSection from "@/components/admin/SchoolAccountsSection";
 import StudentManagement from "@/components/admin/StudentManagement";
 import LocationStats from "@/components/admin/LocationStats";
 import LawyerFormsSection from "@/components/admin/LawyerFormsSection";
+import IDCardsSection from "@/components/admin/IDCardsSection";
 
 interface Application {
   id: string;
@@ -46,6 +47,8 @@ interface Application {
   admin_notes: string | null;
   reviewed_at: string | null;
   created_at: string;
+  passport_photo_url: string | null;
+  registration_number: string | null;
 }
 
 interface SchoolRow {
@@ -256,6 +259,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="students" className="flex-1 gap-1"><GraduationCap size={16} /> Students</TabsTrigger>
             <TabsTrigger value="schools" className="flex-1 gap-1"><School size={16} /> Schools</TabsTrigger>
             <TabsTrigger value="legal" className="flex-1 gap-1"><FileText size={16} /> Legal Forms</TabsTrigger>
+            <TabsTrigger value="idcards" className="flex-1 gap-1"><CreditCard size={16} /> ID Cards</TabsTrigger>
           </TabsList>
 
           {/* ===== APPLICATIONS TAB ===== */}
@@ -479,6 +483,11 @@ const AdminDashboard = () => {
           {/* ===== LEGAL FORMS TAB ===== */}
           <TabsContent value="legal">
             <LawyerFormsSection />
+          </TabsContent>
+
+          {/* ===== ID CARDS TAB ===== */}
+          <TabsContent value="idcards">
+            <IDCardsSection applications={applications} schools={schools} />
           </TabsContent>
         </Tabs>
       </div>

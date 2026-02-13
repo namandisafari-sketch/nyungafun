@@ -17,6 +17,7 @@ import ParentDashboard from "./pages/ParentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import SchoolDashboard from "./pages/SchoolDashboard";
 import Install from "./pages/Install";
+import LostID from "./pages/LostID";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -39,6 +40,7 @@ const AppContent = () => {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/school" element={<SchoolDashboard />} />
           <Route path="/install" element={<Install />} />
+          <Route path="/lost-id" element={<LostID />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

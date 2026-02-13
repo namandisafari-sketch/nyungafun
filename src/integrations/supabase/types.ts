@@ -324,6 +324,47 @@ export type Database = {
         }
         Relationships: []
       }
+      lost_id_reports: {
+        Row: {
+          application_id: string
+          created_at: string
+          finder_name: string | null
+          finder_phone: string
+          id: string
+          notes: string | null
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          finder_name?: string | null
+          finder_phone: string
+          id?: string
+          notes?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          finder_name?: string | null
+          finder_phone?: string
+          id?: string
+          notes?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lost_id_reports_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
