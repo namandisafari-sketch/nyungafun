@@ -1,12 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
+import { createRoot } from "react-dom/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Printer, CreditCard, Download } from "lucide-react";
+import { Search, Printer, CreditCard, Download, Archive, Loader2 } from "lucide-react";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
 import { differenceInYears } from "date-fns";
+import JSZip from "jszip";
 import StudentIDCard from "./StudentIDCard";
 
 interface Application {
@@ -35,6 +37,8 @@ interface IDCardsSectionProps {
 const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [batchDownloading, setBatchDownloading] = useState(false);
+  const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0 });
   const printRef = useRef<HTMLDivElement>(null);
 
   const approved = applications.filter((a) => a.status === "approved");
@@ -57,6 +61,72 @@ const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
       ? differenceInYears(new Date(), new Date(app.date_of_birth))
       : "unknown";
     return `${name}_age${age}`;
+  };
+
+  const renderCardToImage = useCallback(async (app: Application): Promise<string> => {
+    const container = document.createElement("div");
+    container.style.position = "absolute";
+    container.style.left = "-9999px";
+    container.style.top = "0";
+    document.body.appendChild(container);
+
+    const root = createRoot(container);
+    root.render(
+      <StudentIDCard
+        application={app}
+        schoolName={getSchoolName(app.school_id)}
+        sponsorshipNumber={generateSponsorshipNumber(app)}
+      />
+    );
+
+    // Wait for render + images to load
+    await new Promise((r) => setTimeout(r, 500));
+
+    try {
+      // Double render for quality
+      await toPng(container, { quality: 1, pixelRatio: 3 });
+      const dataUrl = await toPng(container, { quality: 1, pixelRatio: 3 });
+      return dataUrl;
+    } finally {
+      root.unmount();
+      document.body.removeChild(container);
+    }
+  }, [schools]);
+
+  const handleBatchDownload = async () => {
+    if (approved.length === 0) {
+      toast.error("No approved students to download.");
+      return;
+    }
+
+    setBatchDownloading(true);
+    setBatchProgress({ current: 0, total: approved.length });
+    const zip = new JSZip();
+
+    try {
+      for (let i = 0; i < approved.length; i++) {
+        const app = approved[i];
+        setBatchProgress({ current: i + 1, total: approved.length });
+
+        const dataUrl = await renderCardToImage(app);
+        const base64 = dataUrl.split(",")[1];
+        zip.file(`${getFileName(app)}.png`, base64, { base64: true });
+      }
+
+      const blob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Student_ID_Cards_${new Date().toISOString().slice(0, 10)}.zip`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success(`${approved.length} ID cards downloaded!`);
+    } catch {
+      toast.error("Failed to generate batch download.");
+    } finally {
+      setBatchDownloading(false);
+      setBatchProgress({ current: 0, total: 0 });
+    }
   };
 
   const handleSaveAsJpg = async () => {
@@ -98,9 +168,28 @@ const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-        <CreditCard size={22} className="text-primary" /> Student ID Cards
-      </h2>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+          <CreditCard size={22} className="text-primary" /> Student ID Cards
+        </h2>
+        <Button
+          variant="outline"
+          onClick={handleBatchDownload}
+          disabled={batchDownloading || approved.length === 0}
+          className="gap-2"
+        >
+          {batchDownloading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              Downloading {batchProgress.current}/{batchProgress.total}...
+            </>
+          ) : (
+            <>
+              <Archive size={16} /> Download All as ZIP ({approved.length})
+            </>
+          )}
+        </Button>
+      </div>
 
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
@@ -169,5 +258,4 @@ const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
     </div>
   );
 };
-
 export default IDCardsSection;
