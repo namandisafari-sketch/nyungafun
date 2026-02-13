@@ -21,6 +21,7 @@ import AdminStats from "@/components/admin/AdminStats";
 import SchoolAccountsSection from "@/components/admin/SchoolAccountsSection";
 import StudentManagement from "@/components/admin/StudentManagement";
 import LocationStats from "@/components/admin/LocationStats";
+import LawyerFormsSection from "@/components/admin/LawyerFormsSection";
 
 interface Application {
   id: string;
@@ -250,10 +251,11 @@ const AdminDashboard = () => {
 
         {/* Main tabs */}
         <Tabs defaultValue="applications" className="space-y-6">
-          <TabsList className="w-full max-w-xl">
+          <TabsList className="w-full max-w-2xl">
             <TabsTrigger value="applications" className="flex-1 gap-1"><FileText size={16} /> Applications</TabsTrigger>
             <TabsTrigger value="students" className="flex-1 gap-1"><GraduationCap size={16} /> Students</TabsTrigger>
             <TabsTrigger value="schools" className="flex-1 gap-1"><School size={16} /> Schools</TabsTrigger>
+            <TabsTrigger value="legal" className="flex-1 gap-1"><FileText size={16} /> Legal Forms</TabsTrigger>
           </TabsList>
 
           {/* ===== APPLICATIONS TAB ===== */}
@@ -472,6 +474,11 @@ const AdminDashboard = () => {
           {/* ===== SCHOOLS TAB ===== */}
           <TabsContent value="schools">
             <SchoolAccountsSection schools={schools} />
+          </TabsContent>
+
+          {/* ===== LEGAL FORMS TAB ===== */}
+          <TabsContent value="legal">
+            <LawyerFormsSection />
           </TabsContent>
         </Tabs>
       </div>
