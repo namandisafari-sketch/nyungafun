@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, FileText, LayoutDashboard, Shield, School, User } from "lucide-react";
+import { LayoutDashboard, Shield, School, FileText, LogIn } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const MobileBottomNav = () => {
@@ -8,23 +8,17 @@ const MobileBottomNav = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const navItems = [
-    { to: "/", icon: Home, label: "Home" },
-    ...(user
-      ? [
-          { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-          ...(isAdmin ? [{ to: "/admin", icon: Shield, label: "Admin" }] : []),
-          ...(isSchool ? [{ to: "/school", icon: School, label: "School" }] : []),
-          { to: "/register", icon: FileText, label: "Apply" },
-        ]
-      : [
-          { to: "/about", icon: User, label: "About" },
-          { to: "/auth", icon: LayoutDashboard, label: "Sign In" },
-          { to: "/register", icon: FileText, label: "Apply" },
-        ]),
-  ];
+  const navItems = user
+    ? [
+        { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        ...(isAdmin ? [{ to: "/admin", icon: Shield, label: "Admin" }] : []),
+        ...(isSchool ? [{ to: "/school", icon: School, label: "School" }] : []),
+        { to: "/register", icon: FileText, label: "Apply" },
+      ]
+    : [
+        { to: "/auth", icon: LogIn, label: "Sign In" },
+      ];
 
-  // Limit to 5 items max
   const displayItems = navItems.slice(0, 5);
 
   return (
@@ -38,9 +32,7 @@ const MobileBottomNav = () => {
               key={item.to}
               to={item.to}
               className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors min-w-[56px] ${
-                active
-                  ? "text-secondary"
-                  : "text-muted-foreground"
+                active ? "text-secondary" : "text-muted-foreground"
               }`}
             >
               <Icon size={20} strokeWidth={active ? 2.5 : 1.5} />
