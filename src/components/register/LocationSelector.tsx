@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UGANDA_DISTRICTS } from "@/data/ugandaDistricts";
 
 interface LocationSelectorProps {
   district: string;
@@ -29,24 +30,9 @@ const LocationSelector = ({
   onParishChange,
   onVillageChange,
 }: LocationSelectorProps) => {
-  const [districts, setDistricts] = useState<LocationOption[]>([]);
   const [subCounties, setSubCounties] = useState<LocationOption[]>([]);
   const [parishes, setParishes] = useState<LocationOption[]>([]);
   const [villages, setVillages] = useState<LocationOption[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Load districts on mount
-  useEffect(() => {
-    supabase
-      .from("uganda_locations")
-      .select("id, name")
-      .eq("level", "district")
-      .order("name")
-      .then(({ data }) => {
-        setDistricts((data as LocationOption[]) || []);
-        setLoading(false);
-      });
-  }, []);
 
   // Load sub-counties when district changes
   useEffect(() => {
@@ -120,18 +106,6 @@ const LocationSelector = ({
     [onParishChange, onVillageChange]
   );
 
-  if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading locations...</p>;
-  }
-
-  if (districts.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">
-        Location data not yet imported. Please contact an administrator.
-      </p>
-    );
-  }
-
   return (
     <div className="grid sm:grid-cols-2 gap-4">
       <div className="space-y-2">
@@ -141,7 +115,7 @@ const LocationSelector = ({
             <SelectValue placeholder="Select district..." />
           </SelectTrigger>
           <SelectContent className="max-h-60 bg-background">
-            {districts.map((d) => (
+            {UGANDA_DISTRICTS.map((d) => (
               <SelectItem key={d.id} value={d.id}>
                 {d.name}
               </SelectItem>
