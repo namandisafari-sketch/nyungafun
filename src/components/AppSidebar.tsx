@@ -13,6 +13,7 @@ import {
   Users,
   CreditCard,
   Ticket,
+  Banknote,
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,7 +36,8 @@ const adminItems = [
   { title: "Schools", url: "/admin/schools", icon: School },
   { title: "Receipts", url: "/admin/receipts", icon: Receipt },
   { title: "ID Cards", url: "/admin/id-cards", icon: CreditCard },
-  { title: "Payments", url: "/admin/payments", icon: Ticket },
+  { title: "Payment Codes", url: "/admin/payments", icon: Ticket },
+  { title: "Payment History", url: "/admin/payment-history", icon: Banknote },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
 
