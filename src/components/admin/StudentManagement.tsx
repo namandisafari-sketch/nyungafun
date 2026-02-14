@@ -391,7 +391,7 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
                           <div><span className="text-muted-foreground">School:</span> <span className="font-medium">{school.name}</span></div>
                           <div><span className="text-muted-foreground">Full Fees:</span> <span className="font-medium">{formatUGX(school.full_fees)}</span></div>
                           <div><span className="text-muted-foreground">Nyunga Covers:</span> <span className="font-medium text-accent">{formatUGX(school.nyunga_covered_fees)}</span></div>
-                          <div><span className="text-muted-foreground">Parent Pays:</span> <span className="font-medium text-secondary">{formatUGX(school.parent_pays || 0)}</span></div>
+                          <div><span className="text-muted-foreground">Functional Fees:</span> <span className="font-medium text-secondary">{formatUGX(school.parent_pays || 0)}</span></div>
                         </div>
                       </>
                     )}
