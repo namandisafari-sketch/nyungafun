@@ -50,10 +50,13 @@ const StudentQRScanner = ({ onStudentFound, selectedStudent }: StudentQRScannerP
 
   const searchByIdPrefix = async (prefix: string) => {
     setSearching(true);
+    // Sponsorship number uses app.id.substring(0,6).toUpperCase()
+    // UUIDs are lowercase, so we search with lowercase prefix
+    const lowerPrefix = prefix.toLowerCase();
     const { data, error } = await supabase
       .from("applications")
       .select("id, student_name, parent_name, parent_phone, education_level")
-      .ilike("id", `${prefix}%`)
+      .ilike("id", `${lowerPrefix}%`)
       .limit(1)
       .maybeSingle();
 
