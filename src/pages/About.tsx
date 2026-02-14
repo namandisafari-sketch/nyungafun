@@ -46,11 +46,58 @@ const About = () => (
       </div>
     </section>
 
+    {/* Application Process */}
+    <section className="py-20">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <h2 className="font-display text-3xl font-bold text-primary text-center mb-10">Application Process</h2>
+        <div className="space-y-4">
+          {[
+            { step: "1", title: "Submit a Bursary Request Online", desc: "Fill out the online request form from the comfort of your home." },
+            { step: "2", title: "Await Review & Approval", desc: "Our team carefully reviews every request and contacts approved applicants." },
+            { step: "3", title: "Visit Our Office", desc: "Approved applicants visit our office to complete application forms, pay the required fees, and sign lawyer forms and school-specific admission documents." },
+            { step: "4", title: "Student Receives Support", desc: "Once everything is processed, the student begins receiving bursary support." },
+          ].map((item) => (
+            <div key={item.step} className="flex gap-4 items-start bg-card border border-border rounded-lg p-5">
+              <div className="w-10 h-10 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-display text-lg font-bold shrink-0">
+                {item.step}
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold text-primary">{item.title}</h3>
+                <p className="text-muted-foreground text-sm">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* Scam Warning */}
+    <section className="py-16 bg-destructive/5 border-y border-destructive/20">
+      <div className="container mx-auto px-4 max-w-3xl text-center">
+        <div className="inline-flex items-center gap-2 bg-destructive/10 text-destructive font-bold px-4 py-2 rounded-full text-sm mb-4">
+          ⚠️ IMPORTANT NOTICE
+        </div>
+        <h2 className="font-display text-2xl font-bold text-primary mb-4">Beware of Fake Programs</h2>
+        <p className="text-muted-foreground leading-relaxed mb-6">
+          Nyunga Foundation does <strong className="text-foreground">NOT</strong> conduct camps, roadshows, or collect payments outside our office.
+          All fees and form-filling are done <strong className="text-foreground">only at our official office</strong>.
+          Do not send money to anyone claiming to represent us.
+        </p>
+        <div className="bg-card border border-border rounded-lg p-6 inline-block">
+          <p className="text-sm text-muted-foreground mb-1">Official Contact</p>
+          <a href="tel:0746960654" className="font-display text-2xl font-bold text-primary hover:text-secondary transition-colors">
+            📞 0746 960654
+          </a>
+          <p className="text-xs text-muted-foreground mt-2">Verify any communication through this number only</p>
+        </div>
+      </div>
+    </section>
+
     {/* CTA */}
     <section className="py-20">
       <div className="container mx-auto px-4 text-center">
         <h2 className="font-display text-3xl font-bold text-primary mb-4">Ready to Apply?</h2>
-        <p className="text-muted-foreground mb-8 max-w-md mx-auto">Register online today — no need to visit our office. Our team will review every application.</p>
+        <p className="text-muted-foreground mb-8 max-w-md mx-auto">Submit your bursary request online. If approved, you'll visit our office to complete the full application.</p>
         <Link to="/register">
           <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold gap-2">
             Apply Now <ArrowRight size={18} />
