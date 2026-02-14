@@ -69,9 +69,11 @@ const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
 
   const renderCardSideToImage = useCallback(async (app: Application, side: "front" | "back"): Promise<string> => {
     const container = document.createElement("div");
-    container.style.position = "absolute";
+    container.style.position = "fixed";
     container.style.left = "-9999px";
     container.style.top = "0";
+    container.style.zIndex = "-1";
+    container.style.backgroundColor = "white";
     // Copy computed CSS custom properties from root so html-to-image resolves them
     const root = document.documentElement;
     const computedStyle = getComputedStyle(root);
@@ -79,16 +81,33 @@ const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
       "--background", "--foreground", "--card", "--card-foreground",
       "--primary", "--primary-foreground", "--secondary", "--secondary-foreground",
       "--muted", "--muted-foreground", "--accent", "--accent-foreground",
-      "--border", "--destructive", "--destructive-foreground",
+      "--border", "--destructive", "--destructive-foreground", "--radius",
     ];
     cssVars.forEach((v) => {
       const val = computedStyle.getPropertyValue(v);
       if (val) container.style.setProperty(v, val);
     });
     container.style.fontFamily = computedStyle.fontFamily;
+    // Copy all stylesheets
+    const styleSheets = Array.from(document.styleSheets);
+    const styleEl = document.createElement("style");
+    styleSheets.forEach((sheet) => {
+      try {
+        const rules = Array.from(sheet.cssRules);
+        rules.forEach((rule) => {
+          styleEl.appendChild(document.createTextNode(rule.cssText));
+        });
+      } catch {
+        // Skip cross-origin stylesheets
+      }
+    });
+    container.appendChild(styleEl);
     document.body.appendChild(container);
 
-    const reactRoot = createRoot(container);
+    const wrapper = document.createElement("div");
+    container.appendChild(wrapper);
+
+    const reactRoot = createRoot(wrapper);
     reactRoot.render(
       <StudentIDCard
         application={app}
@@ -98,12 +117,15 @@ const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
       />
     );
 
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 1200));
 
     try {
+      // Find the actual card element
+      const cardEl = wrapper.querySelector("[data-card-side]") as HTMLElement || wrapper;
       // warm-up render then final capture
-      await toPng(container, { quality: 1, pixelRatio: 3 });
-      const dataUrl = await toPng(container, { quality: 1, pixelRatio: 3 });
+      await toPng(cardEl, { quality: 1, pixelRatio: 3, backgroundColor: "#ffffff" });
+      await new Promise((r) => setTimeout(r, 300));
+      const dataUrl = await toPng(cardEl, { quality: 1, pixelRatio: 3, backgroundColor: "#ffffff" });
       return dataUrl;
     } finally {
       reactRoot.unmount();

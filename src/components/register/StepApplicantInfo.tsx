@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ApplicationForm } from "./types";
-import FileUpload from "./FileUpload";
+import PassportPhotoCapture from "./PassportPhotoCapture";
 import { isValidNIN, NIN_HINT } from "./ninValidation";
 import LocationSelector from "./LocationSelector";
 
@@ -73,7 +73,7 @@ const StepApplicantInfo = ({ form, update, userId }: Props) => (
         />
       </div>
 
-      <FileUpload userId={userId} folder="passport-photo" label="Passport Photo" accept="image/*" value={form.passportPhotoUrl} onChange={(url) => update("passportPhotoUrl", url)} />
+      <PassportPhotoCapture userId={userId} value={form.passportPhotoUrl} onChange={(url) => update("passportPhotoUrl", url)} />
     </CardContent>
   </Card>
 );
