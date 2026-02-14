@@ -85,11 +85,12 @@ const Index = () => {
           <h2 className="font-display text-3xl md:text-4xl font-bold text-primary text-center mb-12">
             How It Works
           </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto">
             {[
-              { step: "1", title: "Register Online", desc: "Parents or guardians fill out the simple online application form." },
-              { step: "2", title: "Review & Approval", desc: "Our team reviews applications and selects deserving candidates." },
-              { step: "3", title: "Receive Support", desc: "Approved students get bursaries covering tuition and scholastic materials." },
+              { step: "1", title: "Apply Online", desc: "Parents or guardians submit a bursary request through our online portal." },
+              { step: "2", title: "Review & Approval", desc: "Our team reviews your request and notifies you of the outcome." },
+              { step: "3", title: "Visit Our Office", desc: "Once approved, visit our office to fill out the application form, pay required fees, and complete lawyer & school admission forms." },
+              { step: "4", title: "Receive Support", desc: "Approved students receive bursaries covering tuition, scholastic materials, and more." },
             ].map((item) => (
               <div key={item.step} className="text-center">
                 <div className="w-14 h-14 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-display text-2xl font-bold mx-auto mb-4">
@@ -99,6 +100,30 @@ const Index = () => {
                 <p className="text-muted-foreground">{item.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Scam Warning */}
+      <section className="py-16 bg-destructive/5 border-y border-destructive/20">
+        <div className="container mx-auto px-4 max-w-3xl text-center">
+          <div className="inline-flex items-center gap-2 bg-destructive/10 text-destructive font-bold px-4 py-2 rounded-full text-sm mb-4">
+            ⚠️ IMPORTANT NOTICE
+          </div>
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-primary mb-4">
+            Beware of Fake Programs
+          </h2>
+          <p className="text-muted-foreground leading-relaxed mb-6">
+            Nyunga Foundation does <strong className="text-foreground">NOT</strong> conduct camps, roadshows, or collect payments outside our office. 
+            All fees and form-filling are done <strong className="text-foreground">only at our official office</strong>. 
+            Do not send money to anyone claiming to represent us outside the office.
+          </p>
+          <div className="bg-card border border-border rounded-lg p-6 inline-block">
+            <p className="text-sm text-muted-foreground mb-1">Official Contact</p>
+            <a href="tel:0746960654" className="font-display text-2xl font-bold text-primary hover:text-secondary transition-colors">
+              📞 0746 960654
+            </a>
+            <p className="text-xs text-muted-foreground mt-2">Verify any communication through this number only</p>
           </div>
         </div>
       </section>
