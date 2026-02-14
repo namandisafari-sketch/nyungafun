@@ -389,6 +389,66 @@ export type Database = {
           },
         ]
       }
+      parent_payments: {
+        Row: {
+          amount: number
+          application_id: string
+          created_at: string
+          description: string | null
+          id: string
+          payment_code_id: string | null
+          payment_date: string
+          payment_method: string
+          recorded_by: string | null
+          term: string | null
+          updated_at: string
+          year: string | null
+        }
+        Insert: {
+          amount?: number
+          application_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          payment_code_id?: string | null
+          payment_date?: string
+          payment_method?: string
+          recorded_by?: string | null
+          term?: string | null
+          updated_at?: string
+          year?: string | null
+        }
+        Update: {
+          amount?: number
+          application_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          payment_code_id?: string | null
+          payment_date?: string
+          payment_method?: string
+          recorded_by?: string | null
+          term?: string | null
+          updated_at?: string
+          year?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_payments_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_payments_payment_code_id_fkey"
+            columns: ["payment_code_id"]
+            isOneToOne: false
+            referencedRelation: "payment_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_codes: {
         Row: {
           application_id: string | null

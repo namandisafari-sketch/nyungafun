@@ -13,6 +13,7 @@ import AdminSchools from "./pages/AdminSchools";
 import AdminReceipts from "./pages/AdminReceipts";
 import AdminIDCards from "./pages/AdminIDCards";
 import AdminPayments from "./pages/AdminPayments";
+import AdminPaymentHistory from "./pages/AdminPaymentHistory";
 import AdminSettings from "./pages/AdminSettings";
 import SchoolDashboard from "./pages/SchoolDashboard";
 import Register from "./pages/Register";
@@ -42,6 +43,7 @@ const AppContent = () => {
       <Route path="/admin/receipts" element={<ProtectedRoute><AdminReceipts /></ProtectedRoute>} />
       <Route path="/admin/id-cards" element={<ProtectedRoute><AdminIDCards /></ProtectedRoute>} />
       <Route path="/admin/payments" element={<ProtectedRoute><AdminPayments /></ProtectedRoute>} />
+      <Route path="/admin/payment-history" element={<ProtectedRoute><AdminPaymentHistory /></ProtectedRoute>} />
       <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
