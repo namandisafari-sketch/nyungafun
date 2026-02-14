@@ -408,7 +408,7 @@ const SchoolManagementSection = ({ schools, approvedCounts, onRefresh }: SchoolM
                         <Input type="number" value={form.nyunga_covered_fees} onChange={(e) => setForm((p) => ({ ...p, nyunga_covered_fees: Number(e.target.value) }))} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Parent Pays (UGX)</Label>
+                        <Label className="text-xs">Functional Fees (UGX)</Label>
                         <Input type="number" value={form.parent_pays} onChange={(e) => setForm((p) => ({ ...p, parent_pays: Number(e.target.value) }))} />
                       </div>
                     </div>
