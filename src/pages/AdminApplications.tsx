@@ -17,6 +17,9 @@ import {
   Eye, AlertTriangle, School, User, Phone, Mail, MapPin, BookOpen, FileText, ShieldAlert,
 } from "lucide-react";
 import ApplicationFullDetail, { FullApplication } from "@/components/admin/ApplicationFullDetail";
+import ApplicationEditForm from "@/components/admin/ApplicationEditForm";
+import ApplicantInsights from "@/components/admin/ApplicantInsights";
+import { Pencil } from "lucide-react";
 
 type Application = FullApplication;
 
@@ -94,6 +97,7 @@ const AdminApplications = () => {
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [claimForm, setClaimForm] = useState({ applicationId: "", schoolId: "", claimType: "general", description: "", actionTaken: "" });
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
 
@@ -298,6 +302,9 @@ const AdminApplications = () => {
         </Dialog>
       </div>
 
+      {/* Applicant Insights */}
+      <ApplicantInsights applications={applications} />
+
       {/* Applications list */}
       <div className="space-y-4">
         {filtered.map((app) => {
@@ -372,7 +379,7 @@ const AdminApplications = () => {
       </div>
 
       {/* Student Detail Dialog */}
-      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+      <Dialog open={detailOpen} onOpenChange={(open) => { setDetailOpen(open); if (!open) setEditMode(false); }}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           {selectedApp && (() => {
             const school = getSchool(selectedApp.school_id);
@@ -381,12 +388,30 @@ const AdminApplications = () => {
             const appReports = reportCards.filter((r) => r.application_id === selectedApp.id);
             const totalSpent = appExpenses.reduce((s, e) => s + e.amount, 0);
 
+            if (editMode) {
+              return (
+                <>
+                  <DialogHeader>
+                    <DialogTitle className="font-display text-xl">Edit: {selectedApp.student_name}</DialogTitle>
+                  </DialogHeader>
+                  <ApplicationEditForm
+                    app={selectedApp}
+                    onSaved={() => { setEditMode(false); setDetailOpen(false); fetchData(); }}
+                    onCancel={() => setEditMode(false)}
+                  />
+                </>
+              );
+            }
+
             return (
               <>
                 <DialogHeader>
                   <DialogTitle className="font-display text-xl flex items-center gap-2">
                     {selectedApp.student_name}
                     <Badge variant="outline" className="ml-2">{selectedApp.status}</Badge>
+                    <Button size="sm" variant="outline" className="ml-auto gap-1" onClick={() => setEditMode(true)}>
+                      <Pencil size={14} /> Edit
+                    </Button>
                   </DialogTitle>
                 </DialogHeader>
 
