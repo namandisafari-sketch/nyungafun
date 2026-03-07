@@ -536,6 +536,18 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
           })()}
         </DialogContent>
       </Dialog>
+
+      {/* Hidden printable form */}
+      {selectedApp && (
+        <div style={{ position: "fixed", left: "-9999px", top: 0 }}>
+          <PrintableApplicationForm
+            ref={printRef}
+            form={mapAppToForm(selectedApp)}
+            applicationId={selectedApp.registration_number || selectedApp.id.slice(0, 8).toUpperCase()}
+            passportPhotoUrl={selectedApp.passport_photo_url || undefined}
+          />
+        </div>
+      )}
     </div>
   );
 };
