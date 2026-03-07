@@ -337,6 +337,11 @@ const LawyerFormsSection = () => {
                         <p className="text-xs text-muted-foreground">
                           {sub.submitted_at ? `Submitted ${new Date(sub.submitted_at).toLocaleDateString()}` : `Draft — ${new Date(sub.created_at).toLocaleDateString()}`}
                         </p>
+                        {sub.filled_from_location && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <MapPin size={12} className="text-primary" /> Filled from: {sub.filled_from_location}
+                          </p>
+                        )}
                       </div>
                       <Badge variant={sub.status === "approved" ? "default" : sub.status === "submitted" ? "secondary" : "outline"}>
                         {sub.status}
