@@ -302,6 +302,9 @@ const AdminApplications = () => {
         </Dialog>
       </div>
 
+      {/* Applicant Insights */}
+      <ApplicantInsights applications={applications} />
+
       {/* Applications list */}
       <div className="space-y-4">
         {filtered.map((app) => {
