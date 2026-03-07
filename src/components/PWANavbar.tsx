@@ -3,7 +3,7 @@ import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const routeTitles: Record<string, string> = {
-  "/": "God's Will",
+  "/": "Kabejja V1.00",
   "/register": "New Application",
   "/auth": "Sign In",
   "/dashboard": "My Dashboard",
@@ -23,7 +23,7 @@ const PWANavbar = () => {
       <div className="flex items-center justify-between h-12 px-4">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
           <div className="w-7 h-7 rounded bg-primary-foreground/20 flex items-center justify-center">
-            <span className="font-display text-xs font-bold">GW</span>
+            <span className="font-display text-xs font-bold">KB</span>
           </div>
           <span className="font-display text-sm font-bold truncate">{title}</span>
         </div>
