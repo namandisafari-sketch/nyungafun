@@ -40,14 +40,21 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 bg-muted/30">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-muted/30 relative">
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.06]"
+        style={{
+          backgroundImage: `url(${dataCentreBg})`,
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "clamp(280px, 50%, 500px)",
+        }}
+      />
+      <Card className="w-full max-w-md relative z-10">
         <CardHeader className="text-center">
-          <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center mx-auto mb-3">
-            <span className="text-primary-foreground font-display text-2xl font-bold">GW</span>
-          </div>
-          <CardTitle className="font-display text-2xl">God's Will</CardTitle>
-          <CardDescription>Scholarship Management System</CardDescription>
+          <img src={dataCentreBg} alt="Kabejja Logo" className="w-20 h-20 object-contain mx-auto mb-2" />
+          <CardTitle className="font-display text-2xl">Kabejja V1.00</CardTitle>
+          <CardDescription>Data Management System</CardDescription>
         </CardHeader>
         <CardContent>
           {authMethod === "passkey" ? (

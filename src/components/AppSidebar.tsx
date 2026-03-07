@@ -70,12 +70,10 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-bold text-sm">
-            GW
-          </div>
+          <img src="/data-centre-bg.png" alt="Kabejja" className="h-9 w-9 object-contain rounded-lg" />
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-sidebar-foreground">God's Will</span>
-            <span className="text-xs text-sidebar-foreground/60">Management System</span>
+            <span className="text-sm font-semibold text-sidebar-foreground">Kabejja V1.00</span>
+            <span className="text-xs text-sidebar-foreground/60">Data Management System</span>
           </div>
         </div>
       </SidebarHeader>
