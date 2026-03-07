@@ -97,6 +97,7 @@ const AdminApplications = () => {
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [claimForm, setClaimForm] = useState({ applicationId: "", schoolId: "", claimType: "general", description: "", actionTaken: "" });
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
 
