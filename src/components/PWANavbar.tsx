@@ -3,7 +3,7 @@ import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const routeTitles: Record<string, string> = {
-  "/": "God's Will",
+  "/": "Kabejja V1.00",
   "/register": "New Application",
   "/auth": "Sign In",
   "/dashboard": "My Dashboard",
