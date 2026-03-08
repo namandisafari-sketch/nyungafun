@@ -18,11 +18,12 @@ const logAccess = async (params: {
   success: boolean;
   failure_reason?: string;
   device_fingerprint: string;
-}) => {
+}): Promise<{ device_trusted: boolean } | null> => {
   try {
-    await supabase.functions.invoke("log-access", { body: params });
+    const { data } = await supabase.functions.invoke("log-access", { body: params });
+    return data as { device_trusted: boolean };
   } catch {
-    // Silent fail — don't block login
+    return null;
   }
 };
 
