@@ -15,6 +15,7 @@ interface StudentIDCardProps {
     parish?: string | null;
     sub_county?: string | null;
     district?: string | null;
+    right_thumb_url?: string | null;
   };
   schoolName: string;
   sponsorshipNumber: string;
@@ -115,7 +116,11 @@ const StudentIDCard = ({ application, schoolName, sponsorshipNumber, side = "bot
         <div className="flex flex-col items-start pt-3 pl-4 pr-2" style={{ width: "42%" }}>
           <p className="text-[9px] font-bold text-foreground tracking-wider mb-1.5">RIGHT THUMB</p>
           <div className="w-[75px] h-[88px] bg-muted rounded border border-border flex items-center justify-center overflow-hidden">
-            <span className="text-muted-foreground text-2xl">👆</span>
+            {application.right_thumb_url ? (
+              <img src={application.right_thumb_url} alt="Right Thumb" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-muted-foreground text-2xl">👆</span>
+            )}
           </div>
           <div className="mt-2 w-full space-y-0.5 text-[8px]">
             <BackRow label="VILLAGE" value={application.village || "—"} />

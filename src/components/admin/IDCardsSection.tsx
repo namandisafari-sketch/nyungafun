@@ -10,7 +10,9 @@ import { toPng } from "html-to-image";
 import { toast } from "sonner";
 import { differenceInYears } from "date-fns";
 import JSZip from "jszip";
+import { supabase } from "@/integrations/supabase/client";
 import StudentIDCard from "./StudentIDCard";
+import ThumbprintCapture from "./ThumbprintCapture";
 
 interface Application {
   id: string;
@@ -23,6 +25,7 @@ interface Application {
   school_id: string | null;
   status: string;
   created_at: string;
+  right_thumb_url?: string | null;
 }
 
 interface SchoolRow {
@@ -35,7 +38,8 @@ interface IDCardsSectionProps {
   schools: SchoolRow[];
 }
 
-const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
+const IDCardsSection = ({ applications: initialApplications, schools }: IDCardsSectionProps) => {
+  const [applications, setApplications] = useState(initialApplications);
   const [search, setSearch] = useState("");
   const [schoolFilter, setSchoolFilter] = useState("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -132,6 +136,38 @@ const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
       document.body.removeChild(container);
     }
   }, [schools]);
+
+  const handleThumbprintCapture = async (dataUrl: string) => {
+    if (!selectedId) return;
+    try {
+      // Upload to storage
+      const fileName = `thumbprints/${selectedId}_right_thumb_${Date.now()}.png`;
+      const base64 = dataUrl.split(",")[1];
+      const byteArray = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+      const { error: uploadError } = await supabase.storage
+        .from("application-documents")
+        .upload(fileName, byteArray, { contentType: "image/png", upsert: true });
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from("application-documents").getPublicUrl(fileName);
+      const publicUrl = urlData.publicUrl;
+
+      // Update application record
+      const { error: updateError } = await supabase
+        .from("applications")
+        .update({ right_thumb_url: publicUrl } as any)
+        .eq("id", selectedId);
+      if (updateError) throw updateError;
+
+      // Update local state
+      setApplications((prev) =>
+        prev.map((a) => (a.id === selectedId ? { ...a, right_thumb_url: publicUrl } : a))
+      );
+      toast.success("Thumbprint saved to student record!");
+    } catch (err: any) {
+      toast.error("Failed to save thumbprint: " + (err.message || "Unknown error"));
+    }
+  };
 
   const handleBatchDownload = async () => {
     if (approved.length === 0) {
@@ -302,7 +338,7 @@ const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
       {/* ID Card Preview */}
       {selectedApp && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <h3 className="font-semibold text-foreground">ID Card Preview</h3>
             <div className="flex gap-2">
               <Button variant="outline" onClick={handleSaveFront} className="gap-2">
@@ -316,6 +352,17 @@ const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
               </Button>
             </div>
           </div>
+
+          {/* Thumbprint Capture */}
+          <div className="p-4 rounded-lg border border-border bg-muted/30">
+            <p className="text-sm font-medium text-foreground mb-2">Capture Right Thumbprint</p>
+            <ThumbprintCapture
+              label="Right Thumb"
+              existingUrl={selectedApp.right_thumb_url || undefined}
+              onCapture={handleThumbprintCapture}
+            />
+          </div>
+
           <div ref={printRef} className="card-container">
             <StudentIDCard
               application={selectedApp}
