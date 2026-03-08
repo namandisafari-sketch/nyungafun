@@ -185,6 +185,9 @@ const Register = () => {
       admission_letter_url: form.admissionLetterUrl,
       declaration_consent: form.declarationConsent,
       declaration_date: form.declarationDate || null,
+      parent_passport_photo_url: form.parentPassportPhotoUrl,
+      student_signature_url: form.studentSignatureUrl,
+      parent_signature_url: form.parentSignatureUrl,
       vulnerability_indicators: form.orphanStatus === "yes" ? ["orphan_" + (form.deceasedParent || "single")] : [],
     } as any).select("id").single();
 
