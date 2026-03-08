@@ -114,10 +114,10 @@ const StudentIDCard = ({ application, schoolName, sponsorshipNumber, side = "bot
           </div>
           {/* Location details */}
           <div className="mt-2.5 w-full space-y-0.5 text-[8.5px]">
-            <BackRow label="VILLAGE" value={application.class_grade || "—"} />
-            <BackRow label="PARISH" value="—" />
-            <BackRow label="S.COUNTY" value="—" />
-            <BackRow label="DISTRICT" value="—" />
+            <BackRow label="VILLAGE" value={application.village || "—"} />
+            <BackRow label="PARISH" value={application.parish || "—"} />
+            <BackRow label="S.COUNTY" value={application.sub_county || "—"} />
+            <BackRow label="DISTRICT" value={application.district || "—"} />
           </div>
         </div>
         {/* Right: QR Code */}
