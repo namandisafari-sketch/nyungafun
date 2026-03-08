@@ -17,6 +17,7 @@ import LocationSelector from "@/components/register/LocationSelector";
 import StaffIDCard from "@/components/admin/StaffIDCard";
 import ThumbprintCapture from "@/components/admin/ThumbprintCapture";
 import {
+  isPlatformAuthenticatorAvailable,
   registerFingerprint,
 } from "@/lib/webauthn";
 import {
