@@ -1,17 +1,10 @@
 /**
- * Hybrid fingerprint system:
- * - Registration: SHA-256 device hash (no Chrome passkey dialog)
- * - Verification (clock-in/out): WebAuthn get() which triggers Windows Hello
- *   fingerprint directly WITHOUT the passkey creation dialog
+ * WebAuthn helpers for fingerprint registration and verification.
+ * Uses the browser's built-in WebAuthn API to interact with fingerprint scanners.
+ * 
+ * Registration: Uses navigator.credentials.create() — one-time setup per device.
+ * Verification: Uses navigator.credentials.get() — daily clock-in/out & passkey login.
  */
-
-// Generate a SHA-256 hash from a string
-async function sha256(input: string): Promise<string> {
-  const data = new TextEncoder().encode(input);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
 
 // Convert ArrayBuffer to base64url string
 function bufferToBase64url(buffer: ArrayBuffer): string {
@@ -23,46 +16,34 @@ function bufferToBase64url(buffer: ArrayBuffer): string {
   return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-// Collect device characteristics for unique device binding
-function getDeviceCharacteristics(): string {
-  const components = [
-    navigator.userAgent,
-    navigator.language,
-    screen.width + "x" + screen.height,
-    screen.colorDepth,
-    new Date().getTimezoneOffset(),
-    navigator.hardwareConcurrency || "unknown",
-    (navigator as any).deviceMemory || "unknown",
-    navigator.maxTouchPoints || 0,
-    navigator.platform,
-    (() => {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = 200;
-        canvas.height = 50;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return "no-canvas";
-        ctx.textBaseline = "top";
-        ctx.font = "14px Arial";
-        ctx.fillStyle = "#f60";
-        ctx.fillRect(125, 1, 62, 20);
-        ctx.fillStyle = "#069";
-        ctx.fillText("biometric-hash", 2, 15);
-        return canvas.toDataURL().slice(-80);
-      } catch {
-        return "no-canvas";
-      }
-    })(),
-  ];
-  return components.join("|");
+// Convert base64url string to ArrayBuffer
+function base64urlToBuffer(base64url: string): ArrayBuffer {
+  const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+// Generate a random challenge
+function generateChallenge(): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(32));
 }
 
 export function isWebAuthnSupported(): boolean {
-  return !!crypto?.subtle;
+  return !!(window.PublicKeyCredential && navigator.credentials);
 }
 
 export async function isPlatformAuthenticatorAvailable(): Promise<boolean> {
-  return !!crypto?.subtle;
+  if (!isWebAuthnSupported()) return false;
+  try {
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  } catch {
+    return false;
+  }
 }
 
 export interface WebAuthnCredential {
@@ -72,99 +53,139 @@ export interface WebAuthnCredential {
 }
 
 /**
- * Register a device credential using SHA-256 hash.
- * No passkey dialog — instant registration.
+ * Register a new fingerprint credential for a user.
+ * This triggers the platform authenticator (Windows Hello / Touch ID).
+ * Creates a discoverable credential (passkey) so it can be used for login too.
  */
 export async function registerFingerprint(
   userId: string,
   userName: string,
   userDisplayName: string
 ): Promise<WebAuthnCredential> {
-  const deviceChars = getDeviceCharacteristics();
-  const timestamp = Date.now().toString();
+  const challenge = generateChallenge();
 
-  const credentialId = await sha256(`cred:${userId}:${deviceChars}:${timestamp}`);
-  const publicKey = await sha256(`key:${userId}:${deviceChars}`);
+  const publicKeyOptions: PublicKeyCredentialCreationOptions = {
+    challenge: challenge as unknown as BufferSource,
+    rp: {
+      name: "Kabejja Data Centre",
+      id: window.location.hostname,
+    },
+    user: {
+      id: new TextEncoder().encode(userId),
+      name: userName,
+      displayName: userDisplayName,
+    },
+    pubKeyCredParams: [
+      { alg: -7, type: "public-key" },   // ES256
+      { alg: -257, type: "public-key" },  // RS256
+    ],
+    authenticatorSelection: {
+      authenticatorAttachment: "platform",
+      userVerification: "required",
+      // "required" makes it a discoverable credential (passkey) for passwordless login
+      residentKey: "required",
+      requireResidentKey: true,
+    },
+    timeout: 60000,
+    attestation: "none",
+  };
+
+  const credential = (await navigator.credentials.create({
+    publicKey: publicKeyOptions,
+  })) as PublicKeyCredential;
+
+  if (!credential) {
+    throw new Error("Fingerprint registration was cancelled or failed");
+  }
+
+  const response = credential.response as AuthenticatorAttestationResponse;
 
   return {
-    credentialId,
-    publicKey,
+    credentialId: bufferToBase64url(credential.rawId),
+    publicKey: bufferToBase64url(response.attestationObject),
     counter: 0,
   };
 }
 
 /**
- * Verify identity using Windows Hello / Touch ID fingerprint scanner.
- * Uses WebAuthn get() which triggers the fingerprint prompt directly
- * WITHOUT the Chrome passkey creation dialog.
+ * Verify a fingerprint against stored credentials (for clock-in/out).
+ * Uses get() which shows ONLY the fingerprint prompt — no passkey creation dialog.
  */
 export async function verifyFingerprint(
   allowedCredentials: { credentialId: string }[]
 ): Promise<{ credentialId: string; verified: boolean }> {
   if (allowedCredentials.length === 0) {
-    throw new Error("No registered devices found. Please register first.");
+    throw new Error("No registered fingerprints found. Please register first.");
   }
 
-  // Check if WebAuthn is available for biometric verification
-  const webauthnAvailable =
-    !!window.PublicKeyCredential &&
-    !!navigator.credentials &&
-    typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === "function";
+  const challenge = generateChallenge();
 
-  let biometricAvailable = false;
-  if (webauthnAvailable) {
-    try {
-      biometricAvailable =
-        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-    } catch {
-      biometricAvailable = false;
-    }
+  const publicKeyOptions: PublicKeyCredentialRequestOptions = {
+    challenge: challenge as unknown as BufferSource,
+    rpId: window.location.hostname,
+    allowCredentials: allowedCredentials.map((cred) => ({
+      id: base64urlToBuffer(cred.credentialId) as unknown as BufferSource,
+      type: "public-key" as const,
+      transports: ["internal" as AuthenticatorTransport],
+    })),
+    userVerification: "required",
+    timeout: 60000,
+  };
+
+  const assertion = (await navigator.credentials.get({
+    publicKey: publicKeyOptions,
+  })) as PublicKeyCredential;
+
+  if (!assertion) {
+    throw new Error("Fingerprint verification was cancelled or failed");
   }
 
-  if (biometricAvailable) {
-    // Use WebAuthn get() to trigger fingerprint prompt
-    // This does NOT show the passkey creation dialog — only the fingerprint scanner
-    const challenge = crypto.getRandomValues(new Uint8Array(32));
-
-    try {
-      const publicKeyOptions: PublicKeyCredentialRequestOptions = {
-        challenge: challenge as unknown as BufferSource,
-        rpId: window.location.hostname,
-        userVerification: "required",
-        timeout: 60000,
-        // Empty allowCredentials + userVerification required = triggers platform authenticator
-        allowCredentials: [],
-      };
-
-      const assertion = await navigator.credentials.get({
-        publicKey: publicKeyOptions,
-      }) as PublicKeyCredential | null;
-
-      if (assertion) {
-        return {
-          credentialId: allowedCredentials[0].credentialId,
-          verified: true,
-        };
-      }
-    } catch (err: any) {
-      // If no discoverable credentials exist, Windows Hello may error out.
-      // In that case, fall through to device-hash verification.
-      // NotAllowedError = user cancelled the fingerprint prompt
-      if (err.name === "NotAllowedError") {
-        throw new Error("Fingerprint verification was cancelled. Please try again.");
-      }
-      // Other errors (no credentials found, etc.) = fall through to hash verification
-      console.log("WebAuthn get() unavailable, using device hash verification:", err.message);
-    }
-  }
-
-  // Fallback: Device-hash verification (verifies same device, not biometric)
-  const deviceChars = getDeviceCharacteristics();
-  const currentDeviceHash = await sha256(`device:${deviceChars}`);
-
-  // Device hash verification passed
   return {
-    credentialId: allowedCredentials[0].credentialId,
+    credentialId: bufferToBase64url(assertion.rawId),
     verified: true,
+  };
+}
+
+/**
+ * Passkey login — uses discoverable credentials (no allowCredentials needed).
+ * The browser shows the fingerprint prompt and picks the stored passkey automatically.
+ * Returns the credential ID which can be looked up to identify the user.
+ */
+export async function loginWithPasskey(): Promise<{
+  credentialId: string;
+  authenticatorData: string;
+  clientDataJSON: string;
+  signature: string;
+}> {
+  if (!isWebAuthnSupported()) {
+    throw new Error("Passkeys are not supported on this device");
+  }
+
+  const challenge = generateChallenge();
+
+  const publicKeyOptions: PublicKeyCredentialRequestOptions = {
+    challenge: challenge as unknown as BufferSource,
+    rpId: window.location.hostname,
+    // Empty allowCredentials = discoverable credential flow (passkey login)
+    allowCredentials: [],
+    userVerification: "required",
+    timeout: 60000,
+  };
+
+  const assertion = (await navigator.credentials.get({
+    publicKey: publicKeyOptions,
+  })) as PublicKeyCredential;
+
+  if (!assertion) {
+    throw new Error("Passkey login was cancelled or failed");
+  }
+
+  const response = assertion.response as AuthenticatorAssertionResponse;
+
+  return {
+    credentialId: bufferToBase64url(assertion.rawId),
+    authenticatorData: bufferToBase64url(response.authenticatorData),
+    clientDataJSON: bufferToBase64url(response.clientDataJSON),
+    signature: bufferToBase64url(response.signature),
   };
 }
