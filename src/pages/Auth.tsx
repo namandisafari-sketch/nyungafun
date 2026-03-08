@@ -6,11 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Fingerprint, Mail, ShieldAlert } from "lucide-react";
+import { Fingerprint, Mail, ShieldAlert, Loader2 } from "lucide-react";
 import dataCentreBg from "@/assets/data-centre-bg.png";
 import FakeErrorPage from "@/components/FakeErrorPage";
 import { generateDeviceFingerprint } from "@/hooks/useDeviceFingerprint";
 import { supabase } from "@/integrations/supabase/client";
+import { loginWithPasskey, isWebAuthnSupported } from "@/lib/webauthn";
 
 const logAccess = async (params: {
   email: string;
@@ -37,13 +38,72 @@ const Auth = () => {
   const [deviceBlocked, setDeviceBlocked] = useState(false);
 
   const handlePasskeyLogin = async () => {
-    if (!window.PublicKeyCredential) {
+    if (!isWebAuthnSupported()) {
       toast.error("Passkeys are not supported on this device. Please use email sign-in.");
       setAuthMethod("email");
       return;
     }
-    toast.info("Passkey authentication requires additional backend setup. Using email sign-in for now.");
-    setAuthMethod("email");
+
+    setLoading(true);
+    try {
+      // Trigger fingerprint prompt — browser shows stored passkeys for this domain
+      const result = await loginWithPasskey();
+
+      // Send credential to backend to identify user and get login link
+      const { data, error } = await supabase.functions.invoke("passkey-login", {
+        body: { credential_id: result.credentialId },
+      });
+
+      if (error || data?.error) {
+        throw new Error(data?.error || "Passkey login failed");
+      }
+
+      if (!data?.action_link) {
+        throw new Error("No login session returned");
+      }
+
+      // Extract the token from the magic link and verify it
+      const url = new URL(data.action_link);
+      const token_hash = url.searchParams.get("token") || url.hash?.split("token=")[1]?.split("&")[0];
+      const type = url.searchParams.get("type") || "magiclink";
+
+      // Verify the OTP/magic link token to get a real session
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        token_hash: token_hash || "",
+        type: type as any,
+      });
+
+      if (verifyError) {
+        throw new Error("Failed to establish session: " + verifyError.message);
+      }
+
+      // Check device trust
+      const fingerprint = await generateDeviceFingerprint();
+      const trustResult = await logAccess({
+        email: data.email || "",
+        user_id: data.user_id,
+        success: true,
+        device_fingerprint: fingerprint,
+      });
+
+      if (trustResult && !trustResult.device_trusted) {
+        await supabase.auth.signOut();
+        setDeviceBlocked(true);
+        setLoading(false);
+        return;
+      }
+
+      toast.success("Welcome back!");
+      navigate("/dashboard");
+    } catch (err: any) {
+      if (err.name === "NotAllowedError") {
+        toast.error("Fingerprint verification cancelled");
+      } else {
+        toast.error(err.message || "Passkey login failed");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -125,11 +185,16 @@ const Auth = () => {
             <div className="space-y-4">
               <Button
                 onClick={handlePasskeyLogin}
+                disabled={loading}
                 className="w-full h-14 bg-primary text-primary-foreground text-base gap-3"
                 size="lg"
               >
-                <Fingerprint size={24} />
-                Sign in with Passkey
+                {loading ? (
+                  <Loader2 size={24} className="animate-spin" />
+                ) : (
+                  <Fingerprint size={24} />
+                )}
+                {loading ? "Verifying..." : "Sign in with Passkey"}
               </Button>
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
