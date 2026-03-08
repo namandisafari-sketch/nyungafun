@@ -29,6 +29,7 @@ import AdminAttendance from "./pages/AdminAttendance";
 import AdminStaff from "./pages/AdminStaff";
 import AdminMaterials from "./pages/AdminMaterials";
 import AdminAccounting from "./pages/AdminAccounting";
+import AdminAuditLogs from "./pages/AdminAuditLogs";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
