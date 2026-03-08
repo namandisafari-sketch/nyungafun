@@ -1094,6 +1094,126 @@ export type Database = {
         }
         Relationships: []
       }
+      photocopy_pricing: {
+        Row: {
+          copy_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          paper_size: string
+          price_per_copy: number
+          updated_at: string
+        }
+        Insert: {
+          copy_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          paper_size?: string
+          price_per_copy?: number
+          updated_at?: string
+        }
+        Update: {
+          copy_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          paper_size?: string
+          price_per_copy?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      photocopy_shifts: {
+        Row: {
+          closed_at: string | null
+          closing_cash: number
+          created_at: string
+          discrepancy: number
+          expected_cash: number
+          id: string
+          notes: string | null
+          opened_at: string
+          opening_cash: number
+          shift_date: string
+          staff_id: string
+          status: string
+        }
+        Insert: {
+          closed_at?: string | null
+          closing_cash?: number
+          created_at?: string
+          discrepancy?: number
+          expected_cash?: number
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opening_cash?: number
+          shift_date?: string
+          staff_id: string
+          status?: string
+        }
+        Update: {
+          closed_at?: string | null
+          closing_cash?: number
+          created_at?: string
+          discrepancy?: number
+          expected_cash?: number
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opening_cash?: number
+          shift_date?: string
+          staff_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      photocopy_transactions: {
+        Row: {
+          amount_paid: number
+          change_given: number
+          copy_type: string
+          created_at: string
+          customer_name: string | null
+          id: string
+          notes: string | null
+          num_copies: number
+          paper_size: string
+          price_per_copy: number
+          served_by: string
+          total_amount: number
+        }
+        Insert: {
+          amount_paid?: number
+          change_given?: number
+          copy_type?: string
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          notes?: string | null
+          num_copies?: number
+          paper_size?: string
+          price_per_copy?: number
+          served_by: string
+          total_amount?: number
+        }
+        Update: {
+          amount_paid?: number
+          change_given?: number
+          copy_type?: string
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          notes?: string | null
+          num_copies?: number
+          paper_size?: string
+          price_per_copy?: number
+          served_by?: string
+          total_amount?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -1261,6 +1381,33 @@ export type Database = {
           sub_county?: string | null
           total_bursaries?: number
           village?: string | null
+        }
+        Relationships: []
+      }
+      staff_permissions: {
+        Row: {
+          can_access: boolean
+          created_at: string
+          id: string
+          module_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_access?: boolean
+          created_at?: string
+          id?: string
+          module_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_access?: boolean
+          created_at?: string
+          id?: string
+          module_key?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
