@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { toPng } from "html-to-image";
 import LocationSelector from "@/components/register/LocationSelector";
 import StaffIDCard from "@/components/admin/StaffIDCard";
+import ThumbprintCapture from "@/components/admin/ThumbprintCapture";
 import {
   Users, Plus, Search, Edit, CreditCard, Loader2, Trash2, Download, Eye,
   UserCircle, Briefcase, MapPin, Phone,
