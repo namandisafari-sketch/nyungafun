@@ -57,7 +57,7 @@ export async function registerFingerprint(
   userName: string,
   userDisplayName: string
 ): Promise<WebAuthnCredential> {
-  const challenge = generateChallenge();
+  const challenge = generateChallenge() as unknown as BufferSource;
 
   const publicKeyOptions: PublicKeyCredentialCreationOptions = {
     challenge,
