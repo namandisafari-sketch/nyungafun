@@ -358,6 +358,8 @@ const AdminAttendance = () => {
           </CardContent>
         </Card>
       )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
