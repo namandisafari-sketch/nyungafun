@@ -29,6 +29,7 @@ import AdminAttendance from "./pages/AdminAttendance";
 import AdminStaff from "./pages/AdminStaff";
 import AdminMaterials from "./pages/AdminMaterials";
 import AdminAccounting from "./pages/AdminAccounting";
+import AdminAuditLogs from "./pages/AdminAuditLogs";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
@@ -74,6 +75,7 @@ const AppContent = () => {
       <Route path="/admin/staff" element={<ProtectedRoute><AdminStaff /></ProtectedRoute>} />
       <Route path="/admin/materials" element={<ProtectedRoute><AdminMaterials /></ProtectedRoute>} />
       <Route path="/admin/accounting" element={<ProtectedRoute><AdminAccounting /></ProtectedRoute>} />
+      <Route path="/admin/audit-logs" element={<ProtectedRoute><AdminAuditLogs /></ProtectedRoute>} />
       <Route path="/bursary-request" element={<BursaryRequest />} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
