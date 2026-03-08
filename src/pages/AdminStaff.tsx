@@ -410,11 +410,11 @@ const AdminStaff = () => {
                   <Input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] || null)} />
                 </div>
               </div>
-              {/* Thumbprint Registration */}
+              {/* Thumbprint Registration (visual for ID cards) */}
               <div className="space-y-2">
                 <Label className="flex items-center gap-1.5">
                   <Fingerprint className="w-4 h-4 text-primary" />
-                  Thumbprint Registration (for attendance)
+                  Thumbprint Images (for ID card printing)
                 </Label>
                 <div className="flex gap-6 justify-center py-2 px-4 rounded-lg border border-dashed border-border bg-muted/30">
                   <ThumbprintCapture
@@ -429,6 +429,9 @@ const AdminStaff = () => {
                   />
                 </div>
               </div>
+
+              {/* Hardware Fingerprint Registration (WebAuthn for attendance) */}
+              <WebAuthnRegistrationSection userId={form.user_id} userName={form.full_name} />
             </TabsContent>
 
             {/* Employment */}
