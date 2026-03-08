@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ApplicationForm, SchoolRow, formatUGX } from "./types";
 import { Badge } from "@/components/ui/badge";
 import FileUpload from "./FileUpload";
+import SignaturePad from "./SignaturePad";
 
 interface Props {
   form: ApplicationForm;
