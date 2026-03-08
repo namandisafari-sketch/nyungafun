@@ -100,6 +100,25 @@ const AdminSettings = () => {
   const formatUGX = (amount: number) =>
     new Intl.NumberFormat("en-UG", { style: "currency", currency: "UGX", maximumFractionDigits: 0 }).format(amount);
 
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2MB"); return; }
+    if (!file.type.startsWith("image/")) { toast.error("Please upload an image file"); return; }
+    setUploadingLogo(true);
+    const ext = file.name.split(".").pop();
+    const path = `logo/org-logo-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("org-assets").upload(path, file, { upsert: true });
+    if (error) {
+      toast.error("Upload failed: " + error.message);
+    } else {
+      const { data: urlData } = supabase.storage.from("org-assets").getPublicUrl(path);
+      setReceiptConfig((prev) => ({ ...prev, logoUrl: urlData.publicUrl }));
+      toast.success("Logo uploaded");
+    }
+    setUploadingLogo(false);
+  };
+
   const addRequirement = () => {
     if (!newReq.trim()) return;
     setAppointmentReqs((prev) => [...prev, newReq.trim()]);
