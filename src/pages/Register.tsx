@@ -16,14 +16,16 @@ import StepStudentParticulars from "@/components/register/StepStudentParticulars
 import StepResultsLocationHealth from "@/components/register/StepResultsLocationHealth";
 import StepParentGuardian from "@/components/register/StepParentGuardian";
 import StepQualificationDeclaration from "@/components/register/StepQualificationDeclaration";
+import StepLawyerForm from "@/components/register/StepLawyerForm";
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 const stepLabels = [
   "Student Particulars",
   "Results, Location & Health",
   "Parent / Guardian",
   "Qualification & Declaration",
+  "Legal Forms",
 ];
 
 const Register = () => {
@@ -45,6 +47,10 @@ const Register = () => {
 
   // Backdate
   const [backdateValue, setBackdateValue] = useState("");
+
+  // Lawyer form state
+  const [lawyerResponses, setLawyerResponses] = useState<Record<string, Record<string, any>>>({});
+  const [lawyerSignatureUrl, setLawyerSignatureUrl] = useState("");
 
   // Admission lock
   const [admissionLocked, setAdmissionLocked] = useState(false);
@@ -126,6 +132,7 @@ const Register = () => {
       case 2: return !!(form.district);
       case 3: return true;
       case 4: return form.declarationConsent;
+      case 5: return !!lawyerSignatureUrl;
       default: return true;
     }
   };
@@ -231,6 +238,29 @@ const Register = () => {
           } as any);
         }
       }
+      // Save lawyer form submissions
+      if (appData?.id) {
+        const { data: templates } = await supabase
+          .from("lawyer_form_templates")
+          .select("id")
+          .eq("is_active", true);
+
+        if (templates && templates.length > 0) {
+          for (const tmpl of templates) {
+            const templateResponses = lawyerResponses[tmpl.id] || {};
+            await supabase.from("lawyer_form_submissions").insert({
+              template_id: tmpl.id,
+              application_id: appData.id,
+              user_id: user.id,
+              responses: templateResponses as any,
+              signed_document_url: lawyerSignatureUrl,
+              status: "submitted",
+              submitted_at: new Date().toISOString(),
+            } as any);
+          }
+        }
+      }
+
       setSubmittedAppId(appData?.id || "");
       setSubmitted(true);
       toast.success("Application submitted successfully!");
@@ -436,6 +466,15 @@ const Register = () => {
               selectedSchool={selectedSchool}
               setSelectedSchool={setSelectedSchool}
               userId={user?.id || ""}
+            />
+          )}
+          {step === 5 && (
+            <StepLawyerForm
+              userId={user?.id || ""}
+              responses={lawyerResponses}
+              setResponses={setLawyerResponses}
+              lawyerSignatureUrl={lawyerSignatureUrl}
+              setLawyerSignatureUrl={setLawyerSignatureUrl}
             />
           )}
 
