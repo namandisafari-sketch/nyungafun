@@ -136,7 +136,7 @@ const Register = () => {
     const parentName = form.fatherDetails.name || form.motherDetails.name || form.guardianDetails.name || "";
     const parentPhone = form.fatherDetails.telephone || form.motherDetails.telephone || form.guardianDetails.contact || "";
 
-    const { data: appData, error } = await supabase.from("applications").insert({
+    const insertData: any = {
       user_id: user.id,
       student_name: form.studentName,
       date_of_birth: form.dateOfBirth || null,
@@ -189,7 +189,14 @@ const Register = () => {
       student_signature_url: form.studentSignatureUrl,
       parent_signature_url: form.parentSignatureUrl,
       vulnerability_indicators: form.orphanStatus === "yes" ? ["orphan_" + (form.deceasedParent || "single")] : [],
-    } as any).select("id").single();
+    };
+
+    // If a backdate is set, override created_at
+    if (backdateValue) {
+      insertData.created_at = new Date(backdateValue).toISOString();
+    }
+
+    const { data: appData, error } = await supabase.from("applications").insert(insertData).select("id").single();
 
     setLoading(false);
     if (error) {
