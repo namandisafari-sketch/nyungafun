@@ -38,7 +38,8 @@ interface IDCardsSectionProps {
   schools: SchoolRow[];
 }
 
-const IDCardsSection = ({ applications, schools }: IDCardsSectionProps) => {
+const IDCardsSection = ({ applications: initialApplications, schools }: IDCardsSectionProps) => {
+  const [applications, setApplications] = useState(initialApplications);
   const [search, setSearch] = useState("");
   const [schoolFilter, setSchoolFilter] = useState("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
