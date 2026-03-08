@@ -102,6 +102,24 @@ const ApplicationEditForm = ({ app, onSaved, onCancel }: Props) => {
         </Button>
       </div>
 
+      {/* Application Date (Backdate) */}
+      <section className="space-y-3">
+        <h4 className="font-semibold text-sm text-primary">Application Date</h4>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <Label className="text-xs">Application Date (created_at)</Label>
+            <Input
+              type="datetime-local"
+              value={form.created_at ? form.created_at.slice(0, 16) : ""}
+              onChange={(e) => u("created_at", e.target.value ? new Date(e.target.value).toISOString() : form.created_at)}
+            />
+            <p className="text-[10px] text-muted-foreground">Change this to backdate the application record</p>
+          </div>
+        </div>
+      </section>
+
+      <Separator />
+
       {/* Student Particulars */}
       <section className="space-y-3">
         <h4 className="font-semibold text-sm text-primary">1. Student Particulars</h4>

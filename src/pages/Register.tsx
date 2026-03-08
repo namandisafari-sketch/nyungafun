@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { CheckCircle, ArrowRight, ArrowLeft, Lock, Ticket, Printer } from "lucide-react";
+import { CheckCircle, ArrowRight, ArrowLeft, Lock, Ticket, Printer, CalendarClock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import PrintableApplicationForm from "@/components/register/PrintableApplicationForm";
 
 import { ApplicationForm, SchoolRow, initialForm, EducationLevel } from "@/components/register/types";
