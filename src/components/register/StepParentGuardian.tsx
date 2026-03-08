@@ -55,7 +55,7 @@ const ParentDetailFields = ({
   </div>
 );
 
-const StepParentGuardian = ({ form, update }: Props) => {
+const StepParentGuardian = ({ form, update, userId }: Props) => {
   const updateFather = (field: keyof ParentDetail, value: string) => {
     update("fatherDetails", { ...form.fatherDetails, [field]: value });
   };
