@@ -65,6 +65,7 @@ const AppContent = () => {
       <Route path="/admin/bursary-requests" element={<ProtectedRoute><AdminBursaryRequests /></ProtectedRoute>} />
       <Route path="/admin/appointments" element={<ProtectedRoute><AdminAppointments /></ProtectedRoute>} />
       <Route path="/admin/passport-photo" element={<ProtectedRoute><AdminPassportPhoto /></ProtectedRoute>} />
+      <Route path="/admin/security" element={<ProtectedRoute><AdminSecurity /></ProtectedRoute>} />
       <Route path="/bursary-request" element={<BursaryRequest />} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
