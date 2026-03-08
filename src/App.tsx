@@ -27,6 +27,8 @@ import AdminPassportPhoto from "./pages/AdminPassportPhoto";
 import AdminSecurity from "./pages/AdminSecurity";
 import AdminAttendance from "./pages/AdminAttendance";
 import AdminStaff from "./pages/AdminStaff";
+import AdminMaterials from "./pages/AdminMaterials";
+import AdminAccounting from "./pages/AdminAccounting";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
