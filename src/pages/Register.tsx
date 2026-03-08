@@ -48,6 +48,10 @@ const Register = () => {
   // Backdate
   const [backdateValue, setBackdateValue] = useState("");
 
+  // Lawyer form state
+  const [lawyerResponses, setLawyerResponses] = useState<Record<string, Record<string, any>>>({});
+  const [lawyerSignatureUrl, setLawyerSignatureUrl] = useState("");
+
   // Admission lock
   const [admissionLocked, setAdmissionLocked] = useState(false);
   const [checkingLock, setCheckingLock] = useState(true);
