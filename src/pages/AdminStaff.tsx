@@ -66,10 +66,6 @@ const WebAuthnRegistrationSection = ({ userId, userName }: { userId: string; use
   const queryClient = useQueryClient();
   const [registering, setRegistering] = useState(false);
 
-  const isInIframe = (() => {
-    try { return window.self !== window.top; } catch { return true; }
-  })();
-
   const { data: credentials = [] } = useQuery({
     queryKey: ["staff-webauthn", userId],
     queryFn: async () => {
