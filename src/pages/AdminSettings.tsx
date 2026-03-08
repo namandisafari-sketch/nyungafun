@@ -193,8 +193,32 @@ const AdminSettings = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Logo Initials</Label>
-                  <Input value={receiptConfig.logoText} onChange={(e) => updateField("logoText", e.target.value)} maxLength={4} />
+                  <Label>Organization Logo</Label>
+                  <div className="flex items-center gap-3">
+                    {receiptConfig.logoUrl ? (
+                      <img src={receiptConfig.logoUrl} alt="Logo" className="h-12 w-12 rounded-lg object-contain border border-border bg-muted" />
+                    ) : (
+                      <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center border border-border">
+                        <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="flex-1 space-y-1">
+                      <Button type="button" variant="outline" size="sm" className="gap-2 relative overflow-hidden" disabled={uploadingLogo}>
+                        {uploadingLogo ? <><Loader2 size={14} className="animate-spin" /> Uploading...</> : <><Upload size={14} /> Upload Logo</>}
+                        <input type="file" accept="image/*" onChange={handleLogoUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+                      </Button>
+                      {receiptConfig.logoUrl && (
+                        <Button type="button" variant="ghost" size="sm" className="text-xs text-destructive" onClick={() => setReceiptConfig((prev) => ({ ...prev, logoUrl: "" }))}>
+                          Remove
+                        </Button>
+                      )}
+                      <p className="text-xs text-muted-foreground">PNG or JPG, max 2MB</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Logo Initials (fallback)</Label>
+                  <Input value={receiptConfig.logoText} onChange={(e) => updateField("logoText", e.target.value)} maxLength={4} placeholder="Used when no logo image" />
                 </div>
                 <Separator />
                 <div className="grid grid-cols-2 gap-3">
