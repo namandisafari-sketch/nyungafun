@@ -563,7 +563,7 @@ const AdminStaff = () => {
               </div>
             </div>
 
-            {accountForm.role === "staff" && (
+            {accountForm.role !== "admin" && (
               <div className="space-y-3">
                 <Label className="flex items-center gap-2">
                   <Settings2 className="h-4 w-4 text-primary" />
