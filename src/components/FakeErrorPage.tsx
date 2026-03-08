@@ -45,7 +45,7 @@ const FakeErrorPage = ({ onUnlock }: FakeErrorPageProps) => {
             height: 72,
           }}
         >
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" shapeRendering="crispEdges">
+          <svg width="72" height="72" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" shapeRendering="crispEdges">
             {/* Document body */}
             <rect x="6" y="2" width="24" height="44" fill="#3C4043" />
             <rect x="30" y="14" width="12" height="32" fill="#3C4043" />
