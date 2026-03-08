@@ -98,6 +98,7 @@ Deno.serve(async (req) => {
     }
 
     const totalInserted = Object.values(results).reduce((a, b) => a + b.inserted, 0);
+    const totalSkipped = Object.values(results).reduce((a, b) => a + b.skipped, 0);
     const totalErrors = Object.values(results).reduce((a, b) => a + b.errors.length, 0);
 
     return new Response(JSON.stringify({
@@ -105,8 +106,8 @@ Deno.serve(async (req) => {
       imported_at: new Date().toISOString(),
       imported_by: user.email,
       source_export: metadata.exported_at,
-      mode,
       total_inserted: totalInserted,
+      total_skipped: totalSkipped,
       total_errors: totalErrors,
       details: results,
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
