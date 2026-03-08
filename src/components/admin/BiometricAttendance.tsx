@@ -264,7 +264,7 @@ const BiometricAttendance = () => {
 
             <Button
               onClick={() => registerMutation.mutate()}
-              disabled={registerMutation.isPending}
+              disabled={registerMutation.isPending || biometricAvailable === false || isInIframe}
               className="w-full gap-2"
               variant={hasCredentials ? "outline" : "default"}
             >
