@@ -468,6 +468,15 @@ const Register = () => {
               userId={user?.id || ""}
             />
           )}
+          {step === 5 && (
+            <StepLawyerForm
+              userId={user?.id || ""}
+              responses={lawyerResponses}
+              setResponses={setLawyerResponses}
+              lawyerSignatureUrl={lawyerSignatureUrl}
+              setLawyerSignatureUrl={setLawyerSignatureUrl}
+            />
+          )}
 
           {/* Navigation */}
           <div className="flex gap-3">
