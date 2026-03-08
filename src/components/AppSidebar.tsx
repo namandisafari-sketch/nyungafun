@@ -21,6 +21,7 @@ import {
   Camera,
   Package,
   Calculator,
+  ClipboardList,
 } from "lucide-react";
 import {
   Sidebar,
