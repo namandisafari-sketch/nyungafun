@@ -17,8 +17,13 @@ import LocationSelector from "@/components/register/LocationSelector";
 import StaffIDCard from "@/components/admin/StaffIDCard";
 import ThumbprintCapture from "@/components/admin/ThumbprintCapture";
 import {
+  isWebAuthnSupported,
+  isPlatformAuthenticatorAvailable,
+  registerFingerprint,
+} from "@/lib/webauthn";
+import {
   Users, Plus, Search, Edit, CreditCard, Loader2, Trash2, Download, Eye,
-  UserCircle, Briefcase, MapPin, Phone, Fingerprint,
+  UserCircle, Briefcase, MapPin, Phone, Fingerprint, ShieldCheck, AlertTriangle,
 } from "lucide-react";
 
 interface StaffForm {
