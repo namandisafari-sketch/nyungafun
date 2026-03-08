@@ -24,6 +24,7 @@ import BursaryRequest from "./pages/BursaryRequest";
 import AdminBursaryRequests from "./pages/AdminBursaryRequests";
 import AdminAppointments from "./pages/AdminAppointments";
 import AdminPassportPhoto from "./pages/AdminPassportPhoto";
+import AdminSecurity from "./pages/AdminSecurity";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
