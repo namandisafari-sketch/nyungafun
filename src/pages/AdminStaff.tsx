@@ -41,6 +41,8 @@ interface StaffForm {
   emergency_contact_name: string;
   emergency_contact_phone: string;
   emergency_contact_relationship: string;
+  left_thumb_url: string;
+  right_thumb_url: string;
 }
 
 const emptyForm: StaffForm = {
@@ -49,6 +51,7 @@ const emptyForm: StaffForm = {
   employment_status: "active", access_level: "standard",
   district: "", sub_county: "", parish: "", village: "",
   emergency_contact_name: "", emergency_contact_phone: "", emergency_contact_relationship: "",
+  left_thumb_url: "", right_thumb_url: "",
 };
 
 const departments = ["Administration", "Finance", "IT", "Operations", "Legal", "Field", "Other"];
