@@ -41,8 +41,8 @@ const FakeErrorPage = ({ onUnlock }: FakeErrorPageProps) => {
           style={{
             cursor: "default",
             marginBottom: 28,
-            width: 48,
-            height: 48,
+            width: 72,
+            height: 72,
           }}
         >
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" shapeRendering="crispEdges">
