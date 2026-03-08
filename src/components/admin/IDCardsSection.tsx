@@ -138,28 +138,28 @@ const IDCardsSection = ({ applications: initialApplications, schools }: IDCardsS
   }, [schools]);
 
   const handleThumbprintCapture = async (dataUrl: string) => {
-    if (!selectedId) return;
+    if (!selectedId || !dataUrl) return;
     try {
-      // Upload to storage
       const fileName = `thumbprints/${selectedId}_right_thumb_${Date.now()}.png`;
-      const base64 = dataUrl.split(",")[1];
-      const byteArray = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+
+      // Convert data URL to blob properly
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+
       const { error: uploadError } = await supabase.storage
         .from("application-documents")
-        .upload(fileName, byteArray, { contentType: "image/png", upsert: true });
+        .upload(fileName, blob, { contentType: "image/png", upsert: true });
       if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage.from("application-documents").getPublicUrl(fileName);
       const publicUrl = urlData.publicUrl;
 
-      // Update application record
       const { error: updateError } = await supabase
         .from("applications")
         .update({ right_thumb_url: publicUrl } as any)
         .eq("id", selectedId);
       if (updateError) throw updateError;
 
-      // Update local state
       setApplications((prev) =>
         prev.map((a) => (a.id === selectedId ? { ...a, right_thumb_url: publicUrl } : a))
       );
