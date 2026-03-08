@@ -130,7 +130,7 @@ const WebAuthnRegistrationSection = ({ userId, userName }: { userId: string; use
         <Button
           type="button"
           onClick={handleRegister}
-          disabled={registering || isInIframe}
+          disabled={registering}
           variant={credentials.length > 0 ? "outline" : "default"}
           className="w-full gap-2"
           size="sm"
