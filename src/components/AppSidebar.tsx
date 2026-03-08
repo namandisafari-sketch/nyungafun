@@ -75,7 +75,7 @@ const schoolItems = [
 
 export function AppSidebar() {
   const location = useLocation();
-  const { isAdmin, isSchool, signOut, user } = useAuth();
+  const { isAdmin, isSchool, signOut, user, userRole } = useAuth();
   const { canAccess } = useStaffPermissions();
 
   // Admin sees all; staff sees only permitted modules; school sees school portal
