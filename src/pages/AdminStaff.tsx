@@ -17,7 +17,7 @@ import { toPng } from "html-to-image";
 import LocationSelector from "@/components/register/LocationSelector";
 import StaffIDCard from "@/components/admin/StaffIDCard";
 import ThumbprintCapture from "@/components/admin/ThumbprintCapture";
-import { ALL_MODULES } from "@/hooks/useStaffPermissions";
+import { ALL_MODULES, SYSTEM_ROLES, ROLE_MODULE_PRESETS, getRoleLabel } from "@/hooks/useStaffPermissions";
 import {
   isPlatformAuthenticatorAvailable,
   registerFingerprint,
