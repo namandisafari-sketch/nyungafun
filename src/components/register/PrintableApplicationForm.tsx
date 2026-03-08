@@ -132,8 +132,8 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
             <div style={{ border: "1.5px solid #1a2456", width: "90px", height: "100px", textAlign: "center", fontSize: "8pt", padding: "2px" }}>
               <div style={{ fontWeight: "bold", fontSize: "7pt" }}>PARENT'S PHOTO</div>
-              {form.parentIdUrl && (
-                <img src={form.parentIdUrl} alt="" style={{ maxWidth: "80px", maxHeight: "80px", objectFit: "cover" }} />
+              {(parentPassportPhotoUrl || form.parentPassportPhotoUrl) && (
+                <img src={parentPassportPhotoUrl || form.parentPassportPhotoUrl} alt="" style={{ maxWidth: "80px", maxHeight: "80px", objectFit: "cover" }} />
               )}
             </div>
 
