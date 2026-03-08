@@ -8,6 +8,7 @@ import PassportPhotoCapture from "./PassportPhotoCapture";
 interface Props {
   form: ApplicationForm;
   update: (field: string, value: any) => void;
+  userId: string;
 }
 
 const ParentDetailFields = ({
