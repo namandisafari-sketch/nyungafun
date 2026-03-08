@@ -3,10 +3,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApplicationForm, ParentDetail, GuardianDetail, NextOfKin } from "./types";
+import PassportPhotoCapture from "./PassportPhotoCapture";
 
 interface Props {
   form: ApplicationForm;
   update: (field: string, value: any) => void;
+  userId: string;
 }
 
 const ParentDetailFields = ({
@@ -53,7 +55,7 @@ const ParentDetailFields = ({
   </div>
 );
 
-const StepParentGuardian = ({ form, update }: Props) => {
+const StepParentGuardian = ({ form, update, userId }: Props) => {
   const updateFather = (field: keyof ParentDetail, value: string) => {
     update("fatherDetails", { ...form.fatherDetails, [field]: value });
   };
@@ -91,6 +93,17 @@ const StepParentGuardian = ({ form, update }: Props) => {
                 <SelectItem value="guardian">Guardian</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Parent Passport Photo */}
+          <div className="space-y-2 pt-2 border-t border-border">
+            <Label className="font-medium">Parent/Guardian Passport Photo</Label>
+            <p className="text-xs text-muted-foreground">Capture or upload a passport-size photo of the parent or guardian</p>
+            <PassportPhotoCapture
+              userId={userId}
+              value={form.parentPassportPhotoUrl}
+              onChange={(url) => update("parentPassportPhotoUrl", url)}
+            />
           </div>
         </CardContent>
       </Card>

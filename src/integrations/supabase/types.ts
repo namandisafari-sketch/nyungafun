@@ -83,7 +83,9 @@ export type Database = {
           parent_name: string
           parent_nin: string | null
           parent_occupation: string | null
+          parent_passport_photo_url: string | null
           parent_phone: string
+          parent_signature_url: string | null
           parish: string | null
           passport_photo_url: string | null
           personal_statement: string | null
@@ -104,6 +106,7 @@ export type Database = {
           school_type: string | null
           status: Database["public"]["Enums"]["application_status"]
           student_name: string
+          student_signature_url: string | null
           sub_county: string | null
           subject_combination: string | null
           subject_grades: Json | null
@@ -161,7 +164,9 @@ export type Database = {
           parent_name: string
           parent_nin?: string | null
           parent_occupation?: string | null
+          parent_passport_photo_url?: string | null
           parent_phone: string
+          parent_signature_url?: string | null
           parish?: string | null
           passport_photo_url?: string | null
           personal_statement?: string | null
@@ -182,6 +187,7 @@ export type Database = {
           school_type?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           student_name: string
+          student_signature_url?: string | null
           sub_county?: string | null
           subject_combination?: string | null
           subject_grades?: Json | null
@@ -239,7 +245,9 @@ export type Database = {
           parent_name?: string
           parent_nin?: string | null
           parent_occupation?: string | null
+          parent_passport_photo_url?: string | null
           parent_phone?: string
+          parent_signature_url?: string | null
           parish?: string | null
           passport_photo_url?: string | null
           personal_statement?: string | null
@@ -260,6 +268,7 @@ export type Database = {
           school_type?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           student_name?: string
+          student_signature_url?: string | null
           sub_county?: string | null
           subject_combination?: string | null
           subject_grades?: Json | null

@@ -6,6 +6,9 @@ interface PrintableApplicationFormProps {
   form: ApplicationForm;
   applicationId?: string;
   passportPhotoUrl?: string;
+  parentPassportPhotoUrl?: string;
+  studentSignatureUrl?: string;
+  parentSignatureUrl?: string;
 }
 
 const dotLine = (width = "100%") => (
@@ -54,7 +57,7 @@ const checkbox = (checked: boolean) => (
 );
 
 const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplicationFormProps>(
-  ({ form, applicationId, passportPhotoUrl }, ref) => {
+  ({ form, applicationId, passportPhotoUrl, parentPassportPhotoUrl, studentSignatureUrl, parentSignatureUrl }, ref) => {
     const pageStyle: React.CSSProperties = {
       width: "210mm",
       minHeight: "297mm",
@@ -129,8 +132,8 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
             <div style={{ border: "1.5px solid #1a2456", width: "90px", height: "100px", textAlign: "center", fontSize: "8pt", padding: "2px" }}>
               <div style={{ fontWeight: "bold", fontSize: "7pt" }}>PARENT'S PHOTO</div>
-              {form.parentIdUrl && (
-                <img src={form.parentIdUrl} alt="" style={{ maxWidth: "80px", maxHeight: "80px", objectFit: "cover" }} />
+              {(parentPassportPhotoUrl || form.parentPassportPhotoUrl) && (
+                <img src={parentPassportPhotoUrl || form.parentPassportPhotoUrl} alt="" style={{ maxWidth: "80px", maxHeight: "80px", objectFit: "cover" }} />
               )}
             </div>
 
@@ -440,13 +443,27 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
               <div style={{ width: "48%" }}>
                 <p><strong>Student</strong></p>
                 <p>Name: {val(form.studentName, "80%")}</p>
-                <p>Sign: {val("", "80%")}</p>
+                {(studentSignatureUrl || form.studentSignatureUrl) ? (
+                  <div style={{ marginTop: "4px" }}>
+                    <p style={{ fontSize: "9pt", color: "#666" }}>Sign:</p>
+                    <img src={studentSignatureUrl || form.studentSignatureUrl} alt="Student signature" style={{ maxHeight: "40px", objectFit: "contain" }} />
+                  </div>
+                ) : (
+                  <p>Sign: {val("", "80%")}</p>
+                )}
                 <p>Date: {val(form.declarationDate || "", "80%")}</p>
               </div>
               <div style={{ width: "48%" }}>
                 <p><strong>Parent/Guardian</strong></p>
-                <p>{val("", "80%")}</p>
-                <p>{val("", "80%")}</p>
+                <p>{val(form.fatherDetails.name || form.motherDetails.name || form.guardianDetails.name || "", "80%")}</p>
+                {(parentSignatureUrl || form.parentSignatureUrl) ? (
+                  <div style={{ marginTop: "4px" }}>
+                    <p style={{ fontSize: "9pt", color: "#666" }}>Sign:</p>
+                    <img src={parentSignatureUrl || form.parentSignatureUrl} alt="Parent signature" style={{ maxHeight: "40px", objectFit: "contain" }} />
+                  </div>
+                ) : (
+                  <p>{val("", "80%")}</p>
+                )}
                 <p>{val("", "80%")}</p>
               </div>
             </div>

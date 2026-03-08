@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ApplicationForm, SchoolRow, formatUGX } from "./types";
 import { Badge } from "@/components/ui/badge";
 import FileUpload from "./FileUpload";
+import SignaturePad from "./SignaturePad";
 
 interface Props {
   form: ApplicationForm;
@@ -147,6 +148,23 @@ const StepQualificationDeclaration = ({ form, update, schools, selectedSchool, s
             application form.
           </p>
         </div>
+
+        {/* Signatures */}
+        <div className="grid sm:grid-cols-2 gap-6">
+          <SignaturePad
+            label="Student"
+            userId={userId}
+            value={form.studentSignatureUrl}
+            onChange={(url) => update("studentSignatureUrl", url)}
+          />
+          <SignaturePad
+            label="Parent/Guardian"
+            userId={userId}
+            value={form.parentSignatureUrl}
+            onChange={(url) => update("parentSignatureUrl", url)}
+          />
+        </div>
+
         <div className="flex items-start gap-3 pt-2">
           <Checkbox
             id="declarationConsent"

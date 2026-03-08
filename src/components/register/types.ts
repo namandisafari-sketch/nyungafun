@@ -114,6 +114,9 @@ export interface ApplicationForm {
   affordableFeesAmount: number;
   declarationConsent: boolean;
   declarationDate: string;
+  studentSignatureUrl: string;
+  parentSignatureUrl: string;
+  parentPassportPhotoUrl: string;
 
   // Legacy fields kept for compatibility
   schoolId: string;
@@ -218,6 +221,9 @@ export const initialForm: ApplicationForm = {
   affordableFeesAmount: 0,
   declarationConsent: false,
   declarationDate: "",
+  studentSignatureUrl: "",
+  parentSignatureUrl: "",
+  parentPassportPhotoUrl: "",
 
   // Legacy
   schoolId: "",
