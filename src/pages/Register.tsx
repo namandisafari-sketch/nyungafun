@@ -16,6 +16,7 @@ import StepStudentParticulars from "@/components/register/StepStudentParticulars
 import StepResultsLocationHealth from "@/components/register/StepResultsLocationHealth";
 import StepParentGuardian from "@/components/register/StepParentGuardian";
 import StepQualificationDeclaration from "@/components/register/StepQualificationDeclaration";
+import StepLawyerForm from "@/components/register/StepLawyerForm";
 
 const TOTAL_STEPS = 4;
 
