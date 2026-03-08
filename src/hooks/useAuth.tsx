@@ -9,6 +9,7 @@ interface AuthContextType {
   loading: boolean;
   isAdmin: boolean;
   isSchool: boolean;
+  userRole: string | null;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
   signOut: () => Promise<void>;
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSchool, setIsSchool] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   const checkRoles = async (userId: string) => {
     const { data } = await supabase
@@ -31,6 +33,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const roles = (data || []).map((r: any) => r.role);
     setIsAdmin(roles.includes("admin"));
     setIsSchool(roles.includes("school"));
+    // Set the primary role (first non-parent role, or fallback)
+    const primaryRole = roles.find((r: string) => r !== "parent") || roles[0] || null;
+    setUserRole(primaryRole);
   };
 
   useEffect(() => {
@@ -42,6 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setIsAdmin(false);
         setIsSchool(false);
+        setUserRole(null);
       }
       setLoading(false);
     });
@@ -84,10 +90,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSession(null);
     setIsAdmin(false);
     setIsSchool(false);
+    setUserRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isAdmin, isSchool, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, isAdmin, isSchool, userRole, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
