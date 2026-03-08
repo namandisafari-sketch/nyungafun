@@ -126,7 +126,7 @@ export function AppSidebar() {
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-sidebar-foreground truncate">{user?.email}</p>
             <p className="text-[10px] text-sidebar-foreground/50 capitalize">
-              {isAdmin ? "Admin" : isSchool ? "School" : "Staff"}
+              {getRoleLabel(userRole || "staff")}
             </p>
           </div>
           <button
