@@ -22,6 +22,7 @@ import {
   Package,
   Calculator,
   ClipboardList,
+  HardDrive,
 } from "lucide-react";
 import {
   Sidebar,
