@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
+import { useStaffPermissions } from "@/hooks/useStaffPermissions";
 import {
   LayoutDashboard,
   FileText,
@@ -18,11 +19,11 @@ import {
   Search,
   CalendarDays,
   Link2,
-  Camera,
   Package,
   Calculator,
   ClipboardList,
   HardDrive,
+  Printer,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,43 +39,49 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 
-const adminItems = [
-  { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { title: "Applications", url: "/admin/applications", icon: FileText },
-  { title: "Students", url: "/admin/students", icon: GraduationCap },
-  { title: "Student Search", url: "/admin/student-search", icon: Search },
-  { title: "Schools", url: "/admin/schools", icon: School },
-  { title: "Receipts", url: "/admin/receipts", icon: Receipt },
-  { title: "ID Cards", url: "/admin/id-cards", icon: CreditCard },
-  { title: "Payment Codes", url: "/admin/payments", icon: Ticket },
-  { title: "Payment History", url: "/admin/payment-history", icon: Banknote },
-  { title: "Payments Analytics", url: "/admin/payments-dashboard", icon: PieChart },
-  { title: "Bursary Requests", url: "/admin/bursary-requests", icon: Link2 },
-  { title: "Appointments", url: "/admin/appointments", icon: CalendarDays },
-  { title: "Staff", url: "/admin/staff", icon: Users },
-  { title: "Materials", url: "/admin/materials", icon: Package },
-  { title: "Accounting", url: "/admin/accounting", icon: Calculator },
-  { title: "Attendance", url: "/admin/attendance", icon: CalendarDays },
-  { title: "Audit Logs", url: "/admin/audit-logs", icon: ClipboardList },
-  { title: "Backup", url: "/admin/backup", icon: HardDrive },
-  { title: "Security", url: "/admin/security", icon: ShieldCheck },
-  { title: "Settings", url: "/admin/settings", icon: Settings },
-];
+const iconMap: Record<string, any> = {
+  LayoutDashboard, FileText, GraduationCap, School, Receipt, Settings,
+  ShieldCheck, Users, CreditCard, Ticket, Banknote, PieChart, Search,
+  CalendarDays, Link2, Package, Calculator, ClipboardList, HardDrive, Printer,
+};
 
-const staffItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Applications", url: "/dashboard", icon: FileText },
+const allAdminItems = [
+  { title: "Dashboard", url: "/admin", icon: LayoutDashboard, moduleKey: "dashboard" },
+  { title: "Applications", url: "/admin/applications", icon: FileText, moduleKey: "applications" },
+  { title: "Students", url: "/admin/students", icon: GraduationCap, moduleKey: "students" },
+  { title: "Student Search", url: "/admin/student-search", icon: Search, moduleKey: "student-search" },
+  { title: "Schools", url: "/admin/schools", icon: School, moduleKey: "schools" },
+  { title: "Receipts", url: "/admin/receipts", icon: Receipt, moduleKey: "receipts" },
+  { title: "ID Cards", url: "/admin/id-cards", icon: CreditCard, moduleKey: "id-cards" },
+  { title: "Payment Codes", url: "/admin/payments", icon: Ticket, moduleKey: "payments" },
+  { title: "Payment History", url: "/admin/payment-history", icon: Banknote, moduleKey: "payment-history" },
+  { title: "Payments Analytics", url: "/admin/payments-dashboard", icon: PieChart, moduleKey: "payments-dashboard" },
+  { title: "Bursary Requests", url: "/admin/bursary-requests", icon: Link2, moduleKey: "bursary-requests" },
+  { title: "Appointments", url: "/admin/appointments", icon: CalendarDays, moduleKey: "appointments" },
+  { title: "Staff", url: "/admin/staff", icon: Users, moduleKey: "staff" },
+  { title: "Materials", url: "/admin/materials", icon: Package, moduleKey: "materials" },
+  { title: "Accounting", url: "/admin/accounting", icon: Calculator, moduleKey: "accounting" },
+  { title: "Photocopying", url: "/admin/photocopying", icon: Printer, moduleKey: "photocopying" },
+  { title: "Attendance", url: "/admin/attendance", icon: CalendarDays, moduleKey: "attendance" },
+  { title: "Audit Logs", url: "/admin/audit-logs", icon: ClipboardList, moduleKey: "audit-logs" },
+  { title: "Backup", url: "/admin/backup", icon: HardDrive, moduleKey: "backup" },
+  { title: "Security", url: "/admin/security", icon: ShieldCheck, moduleKey: "security" },
+  { title: "Settings", url: "/admin/settings", icon: Settings, moduleKey: "settings" },
 ];
 
 const schoolItems = [
-  { title: "School Portal", url: "/school", icon: School },
+  { title: "School Portal", url: "/school", icon: School, moduleKey: "school" },
 ];
 
 export function AppSidebar() {
   const location = useLocation();
   const { isAdmin, isSchool, signOut, user } = useAuth();
+  const { canAccess } = useStaffPermissions();
 
-  const items = isAdmin ? adminItems : isSchool ? schoolItems : staffItems;
+  // Admin sees all; staff sees only permitted modules; school sees school portal
+  const items = isSchool
+    ? schoolItems
+    : allAdminItems.filter((item) => canAccess(item.moduleKey));
 
   return (
     <Sidebar>
