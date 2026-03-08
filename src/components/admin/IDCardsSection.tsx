@@ -10,7 +10,9 @@ import { toPng } from "html-to-image";
 import { toast } from "sonner";
 import { differenceInYears } from "date-fns";
 import JSZip from "jszip";
+import { supabase } from "@/integrations/supabase/client";
 import StudentIDCard from "./StudentIDCard";
+import ThumbprintCapture from "./ThumbprintCapture";
 
 interface Application {
   id: string;
