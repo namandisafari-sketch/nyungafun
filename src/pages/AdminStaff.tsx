@@ -63,6 +63,102 @@ const emptyForm: StaffForm = {
 const departments = ["Administration", "Finance", "IT", "Operations", "Legal", "Field", "Other"];
 const accessLevels = ["standard", "elevated", "admin"];
 
+/** Inline component for registering hardware fingerprint (WebAuthn) from staff form */
+const WebAuthnRegistrationSection = ({ userId, userName }: { userId: string; userName: string }) => {
+  const queryClient = useQueryClient();
+  const [registering, setRegistering] = useState(false);
+
+  const isInIframe = (() => {
+    try { return window.self !== window.top; } catch { return true; }
+  })();
+
+  const { data: credentials = [] } = useQuery({
+    queryKey: ["staff-webauthn", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("webauthn_credentials")
+        .select("*")
+        .eq("user_id", userId);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!userId,
+  });
+
+  const handleRegister = async () => {
+    if (!userId) {
+      toast.error("Save the staff profile first, then register fingerprint");
+      return;
+    }
+    setRegistering(true);
+    try {
+      const cred = await registerFingerprint(userId, userName || "staff", userName || "Staff");
+      const { error } = await supabase.from("webauthn_credentials").insert({
+        user_id: userId,
+        credential_id: cred.credentialId,
+        public_key: cred.publicKey,
+        counter: cred.counter,
+        device_name: navigator.userAgent.includes("Windows") ? "Windows Laptop" :
+                     navigator.userAgent.includes("Mac") ? "MacBook" : "Device",
+      });
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ["staff-webauthn", userId] });
+      toast.success("Hardware fingerprint registered for attendance!");
+    } catch (e: any) {
+      toast.error(e.message || "Fingerprint registration failed");
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  if (!userId) return null;
+
+  return (
+    <div className="space-y-2">
+      <Label className="flex items-center gap-1.5">
+        <ShieldCheck className="w-4 h-4 text-primary" />
+        Hardware Fingerprint (for biometric attendance)
+      </Label>
+      <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
+        {isInIframe && (
+          <div className="flex items-center gap-2 text-xs text-amber-600">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            <span>Fingerprint registration requires the <a href={window.location.href} target="_blank" rel="noopener noreferrer" className="underline font-medium text-primary">published URL</a> (blocked in preview)</span>
+          </div>
+        )}
+        {credentials.length > 0 && (
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-sm text-green-600">
+              <ShieldCheck className="h-4 w-4" />
+              <span>{credentials.length} fingerprint(s) registered</span>
+            </div>
+            {credentials.map((c: any) => (
+              <p key={c.id} className="text-xs text-muted-foreground pl-6">
+                {c.device_name || "Device"} — {format(new Date(c.created_at), "dd MMM yyyy")}
+              </p>
+            ))}
+          </div>
+        )}
+        <Button
+          type="button"
+          onClick={handleRegister}
+          disabled={registering || isInIframe}
+          variant={credentials.length > 0 ? "outline" : "default"}
+          className="w-full gap-2"
+          size="sm"
+        >
+          {registering ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Fingerprint className="h-4 w-4" />
+          )}
+          {credentials.length > 0 ? "Register Another Fingerprint" : "Register Fingerprint for Attendance"}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const AdminStaff = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
