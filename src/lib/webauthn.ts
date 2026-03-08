@@ -81,8 +81,15 @@ export async function registerFingerprint(
       requireResidentKey: false,
     },
     timeout: 60000,
-    attestation: "none",
+    attestation: "direct",
   };
+
+  // Use hints to prefer client-device (Windows Hello/Touch ID) over cloud passkey providers
+  const createOptions: CredentialCreationOptions = {
+    publicKey: publicKeyOptions,
+  };
+  // @ts-ignore - hints is a newer WebAuthn spec property
+  createOptions.publicKey.hints = ["client-device"];
 
   const credential = (await navigator.credentials.create({
     publicKey: publicKeyOptions,
