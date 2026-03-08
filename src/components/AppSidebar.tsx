@@ -19,6 +19,8 @@ import {
   CalendarDays,
   Link2,
   Camera,
+  Package,
+  Calculator,
 } from "lucide-react";
 import {
   Sidebar,
