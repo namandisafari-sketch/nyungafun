@@ -8,11 +8,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Fingerprint, Mail } from "lucide-react";
 import dataCentreBg from "@/assets/data-centre-bg.png";
+import FakeErrorPage from "@/components/FakeErrorPage";
 
 const Auth = () => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
   const [authMethod, setAuthMethod] = useState<"passkey" | "email">("passkey");
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
 
