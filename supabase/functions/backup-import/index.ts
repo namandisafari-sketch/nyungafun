@@ -71,27 +71,18 @@ Deno.serve(async (req) => {
     }
 
     const { data: backupData, metadata } = body;
-    const mode = body.mode || "upsert"; // "upsert" or "clean_import"
-    const results: Record<string, { inserted: number; errors: string[] }> = {};
+    const results: Record<string, { inserted: number; skipped: number; errors: string[] }> = {};
 
     // Process tables in dependency order
     const tablesToImport = IMPORT_ORDER.filter((t) => backupData[t] && backupData[t].length > 0);
 
     for (const table of tablesToImport) {
       const rows = backupData[table];
-      results[table] = { inserted: 0, errors: [] };
+      results[table] = { inserted: 0, skipped: 0, errors: [] };
 
       if (!rows || rows.length === 0) continue;
 
-      // If clean import, delete existing data first (reverse order for FK)
-      if (mode === "clean_import") {
-        const { error: delError } = await adminClient.from(table).delete().neq("id", "00000000-0000-0000-0000-000000000000");
-        if (delError) {
-          results[table].errors.push(`Delete failed: ${delError.message}`);
-        }
-      }
-
-      // Insert in batches of 500
+      // Insert in batches of 500, skip existing records
       const batchSize = 500;
       for (let i = 0; i < rows.length; i += batchSize) {
         const batch = rows.slice(i, i + batchSize);
