@@ -104,6 +104,17 @@ const AdminStaff = () => {
     return data.publicUrl;
   };
 
+  // Upload thumb data URL as image
+  const uploadThumb = async (dataUrl: string, userId: string, side: string): Promise<string> => {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const path = `staff-thumbs/${userId}-${side}-${Date.now()}.png`;
+    const { error } = await supabase.storage.from("application-documents").upload(path, blob, { upsert: true, contentType: "image/png" });
+    if (error) throw error;
+    const { data } = supabase.storage.from("application-documents").getPublicUrl(path);
+    return data.publicUrl;
+  };
+
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -112,7 +123,18 @@ const AdminStaff = () => {
         photoUrl = await uploadPhoto(photoFile, form.user_id);
       }
 
-      const payload = { ...form, photo_url: photoUrl };
+      let leftThumbUrl = form.left_thumb_url;
+      let rightThumbUrl = form.right_thumb_url;
+
+      // Upload thumbs if they're data URLs (newly captured)
+      if (leftThumbUrl && leftThumbUrl.startsWith("data:")) {
+        leftThumbUrl = await uploadThumb(leftThumbUrl, form.user_id, "left");
+      }
+      if (rightThumbUrl && rightThumbUrl.startsWith("data:")) {
+        rightThumbUrl = await uploadThumb(rightThumbUrl, form.user_id, "right");
+      }
+
+      const payload = { ...form, photo_url: photoUrl, left_thumb_url: leftThumbUrl, right_thumb_url: rightThumbUrl };
 
       if (editingId) {
         const { error } = await supabase.from("staff_profiles").update(payload).eq("id", editingId);
