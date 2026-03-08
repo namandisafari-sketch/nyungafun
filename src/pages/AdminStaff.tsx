@@ -18,7 +18,7 @@ import StaffIDCard from "@/components/admin/StaffIDCard";
 import ThumbprintCapture from "@/components/admin/ThumbprintCapture";
 import {
   Users, Plus, Search, Edit, CreditCard, Loader2, Trash2, Download, Eye,
-  UserCircle, Briefcase, MapPin, Phone,
+  UserCircle, Briefcase, MapPin, Phone, Fingerprint,
 } from "lucide-react";
 
 interface StaffForm {
