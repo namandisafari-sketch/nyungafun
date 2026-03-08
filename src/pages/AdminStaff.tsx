@@ -10,12 +10,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { toPng } from "html-to-image";
 import LocationSelector from "@/components/register/LocationSelector";
 import StaffIDCard from "@/components/admin/StaffIDCard";
 import ThumbprintCapture from "@/components/admin/ThumbprintCapture";
+import { ALL_MODULES } from "@/hooks/useStaffPermissions";
 import {
   isPlatformAuthenticatorAvailable,
   registerFingerprint,
@@ -23,6 +25,7 @@ import {
 import {
   Users, Plus, Search, Edit, CreditCard, Loader2, Trash2, Download, Eye,
   UserCircle, Briefcase, MapPin, Phone, Fingerprint, ShieldCheck, AlertTriangle,
+  UserPlus, Key, Settings2,
 } from "lucide-react";
 
 interface StaffForm {
@@ -166,6 +169,17 @@ const AdminStaff = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<StaffForm>(emptyForm);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [activeTab, setActiveTab] = useState("staff-list");
+
+  // Account creation state
+  const [showCreateAccount, setShowCreateAccount] = useState(false);
+  const [accountForm, setAccountForm] = useState({ email: "", password: "", full_name: "", role: "staff" });
+  const [selectedModules, setSelectedModules] = useState<string[]>(["dashboard"]);
+  const [creatingAccount, setCreatingAccount] = useState(false);
+
+  // Permissions editing
+  const [showPermissions, setShowPermissions] = useState<any>(null);
+  const [editPermissions, setEditPermissions] = useState<string[]>([]);
 
   // Fetch staff profiles
   const { data: staff = [], isLoading } = useQuery({
@@ -185,6 +199,16 @@ const AdminStaff = () => {
     queryKey: ["system-users-for-staff"],
     queryFn: async () => {
       const { data, error } = await supabase.from("profiles").select("user_id, full_name, email");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch all permissions for display
+  const { data: allPermissions = [] } = useQuery({
+    queryKey: ["all-staff-permissions"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("staff_permissions").select("*");
       if (error) throw error;
       return data;
     },
@@ -226,7 +250,6 @@ const AdminStaff = () => {
       let leftThumbUrl = form.left_thumb_url;
       let rightThumbUrl = form.right_thumb_url;
 
-      // Upload thumbs if they're data URLs (newly captured)
       if (leftThumbUrl && leftThumbUrl.startsWith("data:")) {
         leftThumbUrl = await uploadThumb(leftThumbUrl, form.user_id, "left");
       }
@@ -318,6 +341,82 @@ const AdminStaff = () => {
   const updateField = (field: keyof StaffForm, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
+  // Create staff account
+  const handleCreateAccount = async () => {
+    if (!accountForm.email || !accountForm.password || !accountForm.full_name) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+    if (accountForm.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setCreatingAccount(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-staff-account", {
+        body: {
+          email: accountForm.email,
+          password: accountForm.password,
+          full_name: accountForm.full_name,
+          role: accountForm.role,
+          modules: selectedModules,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      queryClient.invalidateQueries({ queryKey: ["system-users-for-staff"] });
+      queryClient.invalidateQueries({ queryKey: ["all-staff-permissions"] });
+      toast.success(`Account created for ${accountForm.full_name}`);
+      setAccountForm({ email: "", password: "", full_name: "", role: "staff" });
+      setSelectedModules(["dashboard"]);
+      setShowCreateAccount(false);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to create account");
+    } finally {
+      setCreatingAccount(false);
+    }
+  };
+
+  // Save permissions
+  const savePermissions = useMutation({
+    mutationFn: async ({ userId, modules }: { userId: string; modules: string[] }) => {
+      // Delete existing permissions
+      await supabase.from("staff_permissions").delete().eq("user_id", userId);
+      // Insert new ones
+      if (modules.length > 0) {
+        const rows = modules.map((m) => ({ user_id: userId, module_key: m, can_access: true }));
+        const { error } = await supabase.from("staff_permissions").insert(rows);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-staff-permissions"] });
+      toast.success("Permissions updated");
+      setShowPermissions(null);
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const openPermissions = (s: any) => {
+    const userPerms = allPermissions
+      .filter((p: any) => p.user_id === s.user_id && p.can_access)
+      .map((p: any) => p.module_key);
+    setEditPermissions(userPerms.length > 0 ? userPerms : ["dashboard"]);
+    setShowPermissions(s);
+  };
+
+  const toggleModule = (moduleKey: string, checked: boolean, target: "create" | "edit") => {
+    if (target === "create") {
+      setSelectedModules((prev) =>
+        checked ? [...prev, moduleKey] : prev.filter((m) => m !== moduleKey)
+      );
+    } else {
+      setEditPermissions((prev) =>
+        checked ? [...prev, moduleKey] : prev.filter((m) => m !== moduleKey)
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -330,9 +429,14 @@ const AdminStaff = () => {
             {staff.length} staff members · {activeCount} active
           </p>
         </div>
-        <Button onClick={() => { resetForm(); setShowForm(true); }} className="gap-2">
-          <Plus className="h-4 w-4" /> Add Staff
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowCreateAccount(true)} className="gap-2">
+            <UserPlus className="h-4 w-4" /> Create Account
+          </Button>
+          <Button onClick={() => { resetForm(); setShowForm(true); }} className="gap-2">
+            <Plus className="h-4 w-4" /> Add Staff Profile
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -365,7 +469,7 @@ const AdminStaff = () => {
                   {filteredStaff.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center text-muted-foreground py-12">
-                        {staff.length === 0 ? "No staff profiles yet. Click 'Add Staff' to get started." : "No results found."}
+                        {staff.length === 0 ? "No staff profiles yet. Click 'Add Staff Profile' to get started." : "No results found."}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -395,6 +499,9 @@ const AdminStaff = () => {
                             <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => openEdit(s)} title="Edit">
                               <Edit className="h-4 w-4" />
                             </Button>
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => openPermissions(s)} title="Permissions">
+                              <Key className="h-4 w-4" />
+                            </Button>
                             <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setShowIDCard(s)} title="ID Card">
                               <CreditCard className="h-4 w-4" />
                             </Button>
@@ -415,7 +522,108 @@ const AdminStaff = () => {
         </CardContent>
       </Card>
 
-      {/* Add/Edit Dialog */}
+      {/* Create Account Dialog */}
+      <Dialog open={showCreateAccount} onOpenChange={setShowCreateAccount}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5" /> Create Staff Account
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Full Name *</Label>
+                <Input value={accountForm.full_name} onChange={(e) => setAccountForm(p => ({ ...p, full_name: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Email *</Label>
+                <Input type="email" value={accountForm.email} onChange={(e) => setAccountForm(p => ({ ...p, email: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Password *</Label>
+                <Input type="password" value={accountForm.password} onChange={(e) => setAccountForm(p => ({ ...p, password: e.target.value }))} placeholder="Min 6 characters" />
+              </div>
+              <div className="space-y-2">
+                <Label>System Role</Label>
+                <Select value={accountForm.role} onValueChange={(v) => setAccountForm(p => ({ ...p, role: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-background">
+                    <SelectItem value="staff">Staff (limited access)</SelectItem>
+                    <SelectItem value="admin">Admin (full access)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {accountForm.role === "staff" && (
+              <div className="space-y-3">
+                <Label className="flex items-center gap-2">
+                  <Settings2 className="h-4 w-4 text-primary" />
+                  Module Access Permissions
+                </Label>
+                <p className="text-xs text-muted-foreground">Select which modules this staff member can access</p>
+                <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto rounded-lg border p-3">
+                  {ALL_MODULES.map((mod) => (
+                    <label key={mod.key} className="flex items-center gap-2 py-1 px-2 rounded hover:bg-muted/50 cursor-pointer text-sm">
+                      <Checkbox
+                        checked={selectedModules.includes(mod.key)}
+                        onCheckedChange={(checked) => toggleModule(mod.key, !!checked, "create")}
+                      />
+                      <span>{mod.label}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">{selectedModules.length} module(s) selected</p>
+              </div>
+            )}
+
+            <Button
+              className="w-full gap-2"
+              onClick={handleCreateAccount}
+              disabled={creatingAccount || !accountForm.email || !accountForm.password || !accountForm.full_name}
+            >
+              {creatingAccount ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+              Create Account
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Permissions Edit Dialog */}
+      <Dialog open={!!showPermissions} onOpenChange={(open) => { if (!open) setShowPermissions(null); }}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Key className="h-5 w-5" /> Module Permissions — {showPermissions?.full_name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto rounded-lg border p-3">
+              {ALL_MODULES.map((mod) => (
+                <label key={mod.key} className="flex items-center gap-2 py-1 px-2 rounded hover:bg-muted/50 cursor-pointer text-sm">
+                  <Checkbox
+                    checked={editPermissions.includes(mod.key)}
+                    onCheckedChange={(checked) => toggleModule(mod.key, !!checked, "edit")}
+                  />
+                  <span>{mod.label}</span>
+                </label>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">{editPermissions.length} module(s) selected</p>
+            <Button
+              className="w-full"
+              onClick={() => savePermissions.mutate({ userId: showPermissions?.user_id, modules: editPermissions })}
+              disabled={savePermissions.isPending}
+            >
+              {savePermissions.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Save Permissions
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add/Edit Profile Dialog */}
       <Dialog open={showForm} onOpenChange={(open) => { if (!open) resetForm(); }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
