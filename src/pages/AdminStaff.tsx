@@ -17,7 +17,7 @@ import { toPng } from "html-to-image";
 import LocationSelector from "@/components/register/LocationSelector";
 import StaffIDCard from "@/components/admin/StaffIDCard";
 import ThumbprintCapture from "@/components/admin/ThumbprintCapture";
-import { ALL_MODULES } from "@/hooks/useStaffPermissions";
+import { ALL_MODULES, SYSTEM_ROLES, ROLE_MODULE_PRESETS, getRoleLabel } from "@/hooks/useStaffPermissions";
 import {
   isPlatformAuthenticatorAvailable,
   registerFingerprint,
@@ -546,17 +546,24 @@ const AdminStaff = () => {
               </div>
               <div className="space-y-2">
                 <Label>System Role</Label>
-                <Select value={accountForm.role} onValueChange={(v) => setAccountForm(p => ({ ...p, role: v }))}>
+                <Select value={accountForm.role} onValueChange={(v) => {
+                  setAccountForm(p => ({ ...p, role: v }));
+                  // Auto-select default modules for this role
+                  setSelectedModules(ROLE_MODULE_PRESETS[v] || ["dashboard"]);
+                }}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent className="bg-background">
-                    <SelectItem value="staff">Staff (limited access)</SelectItem>
-                    <SelectItem value="admin">Admin (full access)</SelectItem>
+                    {SYSTEM_ROLES.map((r) => (
+                      <SelectItem key={r.value} value={r.value}>
+                        {r.label} — {r.description}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            {accountForm.role === "staff" && (
+            {accountForm.role !== "admin" && (
               <div className="space-y-3">
                 <Label className="flex items-center gap-2">
                   <Settings2 className="h-4 w-4 text-primary" />

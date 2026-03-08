@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
-import { useStaffPermissions } from "@/hooks/useStaffPermissions";
+import { useStaffPermissions, getRoleLabel } from "@/hooks/useStaffPermissions";
 import {
   LayoutDashboard,
   FileText,
@@ -75,7 +75,7 @@ const schoolItems = [
 
 export function AppSidebar() {
   const location = useLocation();
-  const { isAdmin, isSchool, signOut, user } = useAuth();
+  const { isAdmin, isSchool, signOut, user, userRole } = useAuth();
   const { canAccess } = useStaffPermissions();
 
   // Admin sees all; staff sees only permitted modules; school sees school portal
@@ -126,7 +126,7 @@ export function AppSidebar() {
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-sidebar-foreground truncate">{user?.email}</p>
             <p className="text-[10px] text-sidebar-foreground/50 capitalize">
-              {isAdmin ? "Admin" : isSchool ? "School" : "Staff"}
+              {getRoleLabel(userRole || "staff")}
             </p>
           </div>
           <button
