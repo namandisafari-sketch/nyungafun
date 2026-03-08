@@ -221,6 +221,9 @@ export const initialForm: ApplicationForm = {
   affordableFeesAmount: 0,
   declarationConsent: false,
   declarationDate: "",
+  studentSignatureUrl: "",
+  parentSignatureUrl: "",
+  parentPassportPhotoUrl: "",
 
   // Legacy
   schoolId: "",
