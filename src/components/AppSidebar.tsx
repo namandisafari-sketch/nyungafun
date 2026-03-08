@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
-import { useStaffPermissions } from "@/hooks/useStaffPermissions";
+import { useStaffPermissions, getRoleLabel } from "@/hooks/useStaffPermissions";
 import {
   LayoutDashboard,
   FileText,
