@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Stamp, PlusCircle, Loader2, CheckCircle } from "lucide-react";
+import { FileText, Stamp, PlusCircle, Loader2, CheckCircle, Printer } from "lucide-react";
 import SignaturePad from "@/components/register/SignaturePad";
+import PrintableLawyerForm from "./PrintableLawyerForm";
 import lawyerStampImg from "@/assets/lawyer-stamp.png";
 import { toast } from "sonner";
 
@@ -55,6 +56,8 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
   const [responses, setResponses] = useState<Record<string, any>>({});
   const [signatureUrl, setSignatureUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitBoth, setSubmitBoth] = useState(true);
+  const printRef = useRef<HTMLDivElement>(null);
 
   // All active templates available for (re)submission by admin
   const availableTemplates = templates.filter((t) => t.is_active);
@@ -63,6 +66,164 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
 
   const updateResponse = (fieldId: string, value: any) => {
     setResponses((prev) => ({ ...prev, [fieldId]: value }));
+  };
+
+  const handlePrint = (sub: LawyerFormSubmission) => {
+    const tpl = templates.find((t) => t.id === sub.template_id);
+    if (!tpl) return;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast.error("Please allow popups to print");
+      return;
+    }
+
+    const formResponses = (sub.responses || {}) as Record<string, any>;
+    const submittedDate = sub.submitted_at || sub.created_at;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html><head><title>${tpl.title} - Print</title>
+      <style>
+        @media print { body { margin: 0; } }
+        body { font-family: "Times New Roman", serif; color: #000; background: #fff; padding: 40px 50px; max-width: 210mm; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h2 { font-size: 16px; font-weight: bold; margin: 4px 0; text-transform: uppercase; }
+        .header p { font-size: 11px; margin: 0; font-style: italic; }
+        hr { border: 1px solid #000; margin: 12px 0; }
+        .title { text-align: center; margin-bottom: 16px; }
+        .title h3 { font-size: 14px; font-weight: bold; text-transform: uppercase; text-decoration: underline; margin: 8px 0; }
+        .title p { font-size: 10px; font-style: italic; max-width: 500px; margin: 4px auto; }
+        .field { margin-bottom: 12px; font-size: 11px; }
+        .field-label { font-weight: bold; }
+        .field-value { border-bottom: 1px dotted #000; padding-bottom: 1px; min-width: 200px; display: inline-block; }
+        .checkbox-field { display: flex; gap: 8px; align-items: flex-start; font-size: 11px; }
+        .sig-section { margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; }
+        .sig-section img { height: 50px; border: 1px solid #ccc; border-radius: 4px; padding: 4px; }
+        .stamp-section { text-align: center; }
+        .stamp-section img { height: 70px; opacity: 0.9; transform: rotate(-5deg); }
+        .stamp-section p { font-size: 9px; margin-top: 4px; }
+        .footer { margin-top: 30px; border-top: 1px solid #000; padding-top: 8px; text-align: center; font-size: 9px; color: #555; }
+        @media print { @page { size: A4; margin: 15mm; } }
+      </style></head><body>
+      <div class="header">
+        <h2>NYUNGA FOUNDATION</h2>
+        <p>"Empowering Communities Through Education"</p>
+      </div>
+      <hr/>
+      <div class="title">
+        <h3>${tpl.title}</h3>
+        ${tpl.description ? `<p>${tpl.description}</p>` : ""}
+      </div>
+      <div>
+        ${(tpl.fields || []).map((field: FormField) => {
+          if (field.type === "checkbox") {
+            return `<div class="checkbox-field"><span style="font-size:14px;line-height:1">${formResponses[field.id] ? "☑" : "☐"}</span><span>${field.label}</span></div>`;
+          }
+          return `<div class="field"><span class="field-label">${field.label}: </span><span class="field-value">${formResponses[field.id] || "______________________"}</span></div>`;
+        }).join("")}
+      </div>
+      <div class="sig-section">
+        <div>
+          <p style="font-size:11px;font-weight:bold;margin-bottom:8px">Parent / Guardian Signature:</p>
+          ${sub.signed_document_url ? `<img src="${sub.signed_document_url}" alt="Signature"/>` : `<div style="border-bottom:1px solid #000;width:200px;height:40px"></div>`}
+          <p style="font-size:10px;margin-top:4px">Date: ${new Date(submittedDate).toLocaleDateString("en-UG", { day: "numeric", month: "long", year: "numeric" })}</p>
+        </div>
+        <div class="stamp-section">
+          <p style="font-size:11px;font-weight:bold;margin-bottom:8px">Certified by Advocate:</p>
+          <img src="${lawyerStampImg}" alt="Stamp"/>
+          <p>Advocate Lubwama Ezra Tonny</p>
+          <p>ezratonny85@gmail.com</p>
+        </div>
+      </div>
+      <div class="footer">This document was generated electronically by Nyunga Foundation Bursary Management System. Submitted on ${new Date(submittedDate).toLocaleDateString("en-UG", { day: "numeric", month: "long", year: "numeric" })}.</div>
+      </body></html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
+  };
+
+  const handlePrintAll = () => {
+    if (submissions.length === 0) return;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast.error("Please allow popups to print");
+      return;
+    }
+
+    const pages = submissions.map((sub) => {
+      const tpl = templates.find((t) => t.id === sub.template_id);
+      if (!tpl) return "";
+      const formResponses = (sub.responses || {}) as Record<string, any>;
+      const submittedDate = sub.submitted_at || sub.created_at;
+
+      return `
+        <div class="page">
+          <div class="header">
+            <h2>NYUNGA FOUNDATION</h2>
+            <p>"Empowering Communities Through Education"</p>
+          </div>
+          <hr/>
+          <div class="title">
+            <h3>${tpl.title}</h3>
+            ${tpl.description ? `<p>${tpl.description}</p>` : ""}
+          </div>
+          <div>
+            ${(tpl.fields || []).map((field: FormField) => {
+              if (field.type === "checkbox") {
+                return `<div class="checkbox-field"><span style="font-size:14px;line-height:1">${formResponses[field.id] ? "☑" : "☐"}</span><span>${field.label}</span></div>`;
+              }
+              return `<div class="field"><span class="field-label">${field.label}: </span><span class="field-value">${formResponses[field.id] || "______________________"}</span></div>`;
+            }).join("")}
+          </div>
+          <div class="sig-section">
+            <div>
+              <p style="font-size:11px;font-weight:bold;margin-bottom:8px">Parent / Guardian Signature:</p>
+              ${sub.signed_document_url ? `<img src="${sub.signed_document_url}" alt="Signature"/>` : `<div style="border-bottom:1px solid #000;width:200px;height:40px"></div>`}
+              <p style="font-size:10px;margin-top:4px">Date: ${new Date(submittedDate).toLocaleDateString("en-UG", { day: "numeric", month: "long", year: "numeric" })}</p>
+            </div>
+            <div class="stamp-section">
+              <p style="font-size:11px;font-weight:bold;margin-bottom:8px">Certified by Advocate:</p>
+              <img src="${lawyerStampImg}" alt="Stamp"/>
+              <p>Advocate Lubwama Ezra Tonny</p>
+              <p>ezratonny85@gmail.com</p>
+            </div>
+          </div>
+          <div class="footer">This document was generated electronically by Nyunga Foundation. Submitted on ${new Date(submittedDate).toLocaleDateString("en-UG", { day: "numeric", month: "long", year: "numeric" })}.</div>
+        </div>
+      `;
+    });
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html><head><title>Legal Forms - Print All</title>
+      <style>
+        @media print { body { margin: 0; } .page { page-break-after: always; } .page:last-child { page-break-after: auto; } }
+        body { font-family: "Times New Roman", serif; color: #000; background: #fff; }
+        .page { padding: 40px 50px; max-width: 210mm; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h2 { font-size: 16px; font-weight: bold; margin: 4px 0; text-transform: uppercase; }
+        .header p { font-size: 11px; margin: 0; font-style: italic; }
+        hr { border: 1px solid #000; margin: 12px 0; }
+        .title { text-align: center; margin-bottom: 16px; }
+        .title h3 { font-size: 14px; font-weight: bold; text-transform: uppercase; text-decoration: underline; margin: 8px 0; }
+        .title p { font-size: 10px; font-style: italic; max-width: 500px; margin: 4px auto; }
+        .field { margin-bottom: 12px; font-size: 11px; }
+        .field-label { font-weight: bold; }
+        .field-value { border-bottom: 1px dotted #000; padding-bottom: 1px; min-width: 200px; display: inline-block; }
+        .checkbox-field { display: flex; gap: 8px; align-items: flex-start; font-size: 11px; margin-bottom: 12px; }
+        .sig-section { margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; }
+        .sig-section img { height: 50px; border: 1px solid #ccc; border-radius: 4px; padding: 4px; }
+        .stamp-section { text-align: center; }
+        .stamp-section img { height: 70px; opacity: 0.9; transform: rotate(-5deg); }
+        .stamp-section p { font-size: 9px; margin-top: 4px; }
+        .footer { margin-top: 30px; border-top: 1px solid #000; padding-top: 8px; text-align: center; font-size: 9px; color: #555; }
+        @media print { @page { size: A4; margin: 15mm; } }
+      </style></head><body>${pages.join("")}</body></html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
   };
 
   const handleSubmit = async () => {
@@ -92,23 +253,34 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
       locationStr = "Location unavailable";
     }
 
-    const { error } = await supabase.from("lawyer_form_submissions").insert({
+    // If "submit both versions" is checked, submit for all active templates using the same signature
+    const templatesToSubmit = submitBoth
+      ? availableTemplates.map((t) => t.id)
+      : [selectedTemplateId];
+
+    const insertRows = templatesToSubmit.map((tId) => ({
       application_id: applicationId,
-      template_id: selectedTemplateId,
+      template_id: tId,
       user_id: userId,
-      responses,
+      responses: tId === selectedTemplateId ? responses : {},
       signed_document_url: signatureUrl || null,
       status: "submitted",
       submitted_at: new Date().toISOString(),
       filled_from_location: locationStr,
-    } as any);
+    }));
+
+    const { error } = await supabase.from("lawyer_form_submissions").insert(insertRows as any);
 
     setSubmitting(false);
 
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Legal form submitted successfully");
+      toast.success(
+        submitBoth && templatesToSubmit.length > 1
+          ? `${templatesToSubmit.length} legal forms submitted (signature shared across all versions)`
+          : "Legal form submitted successfully"
+      );
       setShowNewForm(false);
       setSelectedTemplateId("");
       setResponses({});
@@ -119,6 +291,15 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
 
   return (
     <div className="space-y-4">
+      {/* Print all button */}
+      {submissions.length > 0 && (
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm" className="gap-2" onClick={handlePrintAll}>
+            <Printer size={14} /> Print All Legal Forms
+          </Button>
+        </div>
+      )}
+
       {/* Existing submissions */}
       {submissions.map((sub) => {
         const tpl = templates.find((t) => t.id === sub.template_id);
@@ -132,7 +313,12 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
                   <FileText size={16} className="text-primary" />
                   {tpl?.title || "Legal Form"}
                 </h4>
-                <Badge variant={sub.status === "submitted" ? "default" : "outline"}>{sub.status}</Badge>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" className="gap-1 h-7 px-2 text-xs" onClick={() => handlePrint(sub)}>
+                    <Printer size={12} /> Print
+                  </Button>
+                  <Badge variant={sub.status === "submitted" ? "default" : "outline"}>{sub.status}</Badge>
+                </div>
               </div>
               {tpl?.description && <p className="text-xs text-muted-foreground">{tpl.description}</p>}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
@@ -265,11 +451,28 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
                   </div>
                 ))}
 
+                {/* Submit both versions option */}
+                {availableTemplates.length > 1 && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border">
+                    <Checkbox
+                      checked={submitBoth}
+                      onCheckedChange={(v) => setSubmitBoth(!!v)}
+                    />
+                    <div>
+                      <p className="text-sm font-medium">Submit both English & Luganda versions</p>
+                      <p className="text-xs text-muted-foreground">The same signature will be applied to all form versions automatically.</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Signature */}
                 <div className="border-t border-border pt-4 mt-4">
                   <Label className="text-sm font-semibold mb-2 block">Parent / Applicant Signature</Label>
                   <p className="text-xs text-muted-foreground mb-3">
                     By signing below, you confirm that you have read, understood, and agree to the terms in this legal form.
+                    {submitBoth && availableTemplates.length > 1 && (
+                      <span className="font-medium text-primary"> This signature will be used on all form versions.</span>
+                    )}
                   </p>
                   <SignaturePad
                     label="Applicant / Parent"
@@ -302,7 +505,7 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
                 <div className="flex gap-2 pt-2">
                   <Button onClick={handleSubmit} disabled={submitting} className="gap-2">
                     {submitting ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
-                    Submit Legal Form
+                    {submitBoth && availableTemplates.length > 1 ? "Submit All Versions" : "Submit Legal Form"}
                   </Button>
                   <Button variant="outline" onClick={() => { setShowNewForm(false); setSelectedTemplateId(""); setResponses({}); setSignatureUrl(""); }}>
                     Cancel
