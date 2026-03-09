@@ -177,6 +177,31 @@ const StepLawyerForm = ({ userId, responses, setResponses, lawyerSignatureUrl, s
             value={lawyerSignatureUrl}
             onChange={setLawyerSignatureUrl}
           />
+
+          {/* Lawyer stamp - auto-applied after signature */}
+          {lawyerSignatureUrl && (
+            <div className="mt-6 pt-6 border-t border-border">
+              <div className="flex items-center gap-2 mb-3">
+                <Stamp size={18} className="text-primary" />
+                <p className="text-sm font-semibold text-foreground">Certified by Advocate</p>
+              </div>
+              <div className="flex items-center gap-6 flex-wrap">
+                <div className="bg-background border border-border rounded-lg p-3 inline-block">
+                  <img
+                    src={lawyerStampImg}
+                    alt="Advocate Lubwama Ezra Tonny - Official Stamp"
+                    className="h-20 object-contain opacity-90"
+                    style={{ transform: "rotate(-5deg)" }}
+                  />
+                </div>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p><span className="font-medium text-foreground">Advocate:</span> Lubwama Ezra Tonny</p>
+                  <p><span className="font-medium text-foreground">Email:</span> ezratonny85@gmail.com</p>
+                  <p><span className="font-medium text-foreground">Stamped on:</span> {new Date().toLocaleDateString("en-UG", { day: "numeric", month: "long", year: "numeric" })}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
