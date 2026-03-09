@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Stamp, PlusCircle, Loader2, CheckCircle, Printer } from "lucide-react";
 import SignaturePad from "@/components/register/SignaturePad";
-import PrintableLawyerForm from "./PrintableLawyerForm";
+import PrintableLawyerForm, { generateFullDocumentHTML } from "./PrintableLawyerForm";
 import lawyerStampImg from "@/assets/lawyer-stamp.png";
 import { toast } from "sonner";
 
