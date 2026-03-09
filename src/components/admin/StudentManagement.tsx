@@ -535,6 +535,16 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
                       <p className="text-sm text-muted-foreground py-4 text-center">No claims filed.</p>
                     )}
                   </TabsContent>
+
+                  <TabsContent value="legal" className="mt-4">
+                    <LawyerFormsTab
+                      applicationId={selectedApp.id}
+                      userId={selectedApp.user_id}
+                      submissions={appLawyerSubs}
+                      templates={lawyerTemplates}
+                      onRefresh={onRefresh}
+                    />
+                  </TabsContent>
                 </Tabs>
               </>
             );
