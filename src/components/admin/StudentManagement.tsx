@@ -453,11 +453,12 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
                 </DialogHeader>
 
                 <Tabs defaultValue="info" className="mt-4">
-                  <TabsList className="w-full">
+                  <TabsList className="w-full flex-wrap">
                     <TabsTrigger value="info" className="flex-1">Info</TabsTrigger>
                     <TabsTrigger value="expenses" className="flex-1">Expenses ({appExpenses.length})</TabsTrigger>
                     <TabsTrigger value="reports" className="flex-1">Reports ({appReports.length})</TabsTrigger>
                     <TabsTrigger value="claims" className="flex-1">Claims ({appClaims.length})</TabsTrigger>
+                    <TabsTrigger value="legal" className="flex-1 gap-1"><Scale size={12} /> Legal ({appLawyerSubs.length})</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="info" className="mt-4">
