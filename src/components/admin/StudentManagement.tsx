@@ -418,6 +418,7 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
             const appExpenses = expenses.filter((e) => e.application_id === selectedApp.id);
             const appClaims = claims.filter((c) => c.application_id === selectedApp.id);
             const appReports = reportCards.filter((r) => r.application_id === selectedApp.id);
+            const appLawyerSubs = lawyerSubmissions.filter((s: any) => s.application_id === selectedApp.id);
             const totalSpent = appExpenses.reduce((s, e) => s + e.amount, 0);
 
             if (editMode) {
