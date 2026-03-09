@@ -123,18 +123,22 @@ const AdminApplications = () => {
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
 
   const fetchData = async () => {
-    const [appsRes, expsRes, schoolsRes, claimsRes, reportsRes] = await Promise.all([
+    const [appsRes, expsRes, schoolsRes, claimsRes, reportsRes, lawyerSubsRes, lawyerTplRes] = await Promise.all([
       supabase.from("applications").select("*").order("created_at", { ascending: false }),
       supabase.from("expenses").select("*").order("created_at", { ascending: false }),
       supabase.from("schools").select("*"),
       supabase.from("student_claims").select("*").order("created_at", { ascending: false }),
       supabase.from("report_cards").select("*").order("created_at", { ascending: false }),
+      supabase.from("lawyer_form_submissions").select("*").order("created_at", { ascending: false }),
+      supabase.from("lawyer_form_templates").select("*"),
     ]);
     setApplications((appsRes.data as unknown as Application[]) || []);
     setExpenses((expsRes.data as unknown as Expense[]) || []);
     setSchools((schoolsRes.data as unknown as SchoolRow[]) || []);
     setClaims((claimsRes.data as unknown as Claim[]) || []);
     setReportCards((reportsRes.data as unknown as ReportCard[]) || []);
+    setLawyerSubmissions((lawyerSubsRes.data as unknown as LawyerFormSubmission[]) || []);
+    setLawyerTemplates((lawyerTplRes.data as unknown as LawyerFormTemplate[]) || []);
     setLoading(false);
   };
 
