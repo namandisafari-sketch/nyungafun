@@ -125,69 +125,20 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
       if (!tpl) return "";
       const formResponses = (sub.responses || {}) as Record<string, any>;
       const submittedDate = sub.submitted_at || sub.created_at;
+      const fullDoc = generateFullDocumentHTML(tpl.id, formResponses, sub.signed_document_url || null, submittedDate);
 
-      return `
-        <div class="page">
-          <div class="header">
-            <h2>NYUNGA FOUNDATION</h2>
-            <p>"Empowering Communities Through Education"</p>
-          </div>
-          <hr/>
-          <div class="title">
-            <h3>${tpl.title}</h3>
-            ${tpl.description ? `<p>${tpl.description}</p>` : ""}
-          </div>
-          <div>
-            ${(tpl.fields || []).map((field: FormField) => {
-              if (field.type === "checkbox") {
-                return `<div class="checkbox-field"><span style="font-size:14px;line-height:1">${formResponses[field.id] ? "☑" : "☐"}</span><span>${field.label}</span></div>`;
-              }
-              return `<div class="field"><span class="field-label">${field.label}: </span><span class="field-value">${formResponses[field.id] || "______________________"}</span></div>`;
-            }).join("")}
-          </div>
-          <div class="sig-section">
-            <div>
-              <p style="font-size:11px;font-weight:bold;margin-bottom:8px">Parent / Guardian Signature:</p>
-              ${sub.signed_document_url ? `<img src="${sub.signed_document_url}" alt="Signature"/>` : `<div style="border-bottom:1px solid #000;width:200px;height:40px"></div>`}
-              <p style="font-size:10px;margin-top:4px">Date: ${new Date(submittedDate).toLocaleDateString("en-UG", { day: "numeric", month: "long", year: "numeric" })}</p>
-            </div>
-            <div class="stamp-section">
-              <p style="font-size:11px;font-weight:bold;margin-bottom:8px">Certified by Advocate:</p>
-              <img src="${lawyerStampImg}" alt="Stamp"/>
-              <p>Advocate Lubwama Ezra Tonny</p>
-              <p>ezratonny85@gmail.com</p>
-            </div>
-          </div>
-          <div class="footer">This document was generated electronically by Nyunga Foundation. Submitted on ${new Date(submittedDate).toLocaleDateString("en-UG", { day: "numeric", month: "long", year: "numeric" })}.</div>
-        </div>
-      `;
+      if (fullDoc) {
+        return `<div class="page">${fullDoc}</div>`;
+      }
+      return `<div class="page"><h2>${tpl.title}</h2><p>Document content unavailable</p></div>`;
     });
 
     printWindow.document.write(`
       <!DOCTYPE html>
       <html><head><title>Legal Forms - Print All</title>
       <style>
-        @media print { body { margin: 0; } .page { page-break-after: always; } .page:last-child { page-break-after: auto; } }
-        body { font-family: "Times New Roman", serif; color: #000; background: #fff; }
-        .page { padding: 40px 50px; max-width: 210mm; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h2 { font-size: 16px; font-weight: bold; margin: 4px 0; text-transform: uppercase; }
-        .header p { font-size: 11px; margin: 0; font-style: italic; }
-        hr { border: 1px solid #000; margin: 12px 0; }
-        .title { text-align: center; margin-bottom: 16px; }
-        .title h3 { font-size: 14px; font-weight: bold; text-transform: uppercase; text-decoration: underline; margin: 8px 0; }
-        .title p { font-size: 10px; font-style: italic; max-width: 500px; margin: 4px auto; }
-        .field { margin-bottom: 12px; font-size: 11px; }
-        .field-label { font-weight: bold; }
-        .field-value { border-bottom: 1px dotted #000; padding-bottom: 1px; min-width: 200px; display: inline-block; }
-        .checkbox-field { display: flex; gap: 8px; align-items: flex-start; font-size: 11px; margin-bottom: 12px; }
-        .sig-section { margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; }
-        .sig-section img { height: 50px; border: 1px solid #ccc; border-radius: 4px; padding: 4px; }
-        .stamp-section { text-align: center; }
-        .stamp-section img { height: 70px; opacity: 0.9; transform: rotate(-5deg); }
-        .stamp-section p { font-size: 9px; margin-top: 4px; }
-        .footer { margin-top: 30px; border-top: 1px solid #000; padding-top: 8px; text-align: center; font-size: 9px; color: #555; }
-        @media print { @page { size: A4; margin: 15mm; } }
+        @media print { body { margin: 0; } .page { page-break-after: always; } .page:last-child { page-break-after: auto; } @page { size: A4; margin: 15mm; } }
+        body { margin: 0; padding: 0; }
       </style></head><body>${pages.join("")}</body></html>
     `);
     printWindow.document.close();
