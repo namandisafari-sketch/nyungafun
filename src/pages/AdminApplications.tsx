@@ -442,8 +442,9 @@ const AdminApplications = () => {
                 </DialogHeader>
 
                 <Tabs defaultValue="info" className="mt-4">
-                  <TabsList className="w-full">
+                  <TabsList className="w-full flex-wrap h-auto gap-1">
                     <TabsTrigger value="info" className="flex-1">Info</TabsTrigger>
+                    <TabsTrigger value="legal" className="flex-1">Legal Forms ({appLawyerForms.length})</TabsTrigger>
                     <TabsTrigger value="expenses" className="flex-1">Expenses ({appExpenses.length})</TabsTrigger>
                     <TabsTrigger value="reports" className="flex-1">Reports ({appReports.length})</TabsTrigger>
                     <TabsTrigger value="claims" className="flex-1">Claims ({appClaims.length})</TabsTrigger>
