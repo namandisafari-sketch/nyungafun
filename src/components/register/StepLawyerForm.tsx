@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { FileText, CheckCircle, Loader2 } from "lucide-react";
+import { FileText, CheckCircle, Loader2, Stamp } from "lucide-react";
 import SignaturePad from "./SignaturePad";
+import lawyerStampImg from "@/assets/lawyer-stamp.png";
 
 interface FormField {
   id: string;
