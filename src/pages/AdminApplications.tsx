@@ -67,6 +67,24 @@ interface ReportCard {
   created_at: string;
 }
 
+interface LawyerFormSubmission {
+  id: string;
+  application_id: string;
+  template_id: string;
+  responses: Record<string, any>;
+  status: string;
+  submitted_at: string | null;
+  signed_document_url: string | null;
+  created_at: string;
+}
+
+interface LawyerFormTemplate {
+  id: string;
+  title: string;
+  description: string | null;
+  fields: any[];
+}
+
 const formatUGX = (amount: number) =>
   new Intl.NumberFormat("en-UG", { style: "currency", currency: "UGX", maximumFractionDigits: 0 }).format(amount);
 
