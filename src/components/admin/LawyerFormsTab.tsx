@@ -205,6 +205,7 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
       setSelectedTemplateId("");
       setResponses({});
       setSignatureUrl("");
+      setManualAppNumber("");
       onRefresh();
     }
   };
