@@ -237,8 +237,8 @@ export const generateLugandaDocumentHTML = (r: Record<string, any>, signatureUrl
 
   <div style="margin-top:12px">
     <p><strong>(v) &nbsp;&nbsp;Munnamateeka alambise enteekateeka eno era avunanyizibwa okugirondoola okukakasa nti enteekebwa mu nkola buli muntu okutuukiriza obuvunanyizibwa bwe.</strong></p>
-    <p>&nbsp;&nbsp;&nbsp;Erinnya: <strong>LUBWAMA EZRA TONNY</strong>&nbsp;&nbsp;Omukono.................</p>
-    <p>&nbsp;&nbsp;&nbsp;Essimu: 0703022565&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ennaku z'Omwezi: ${dateStr}</p>
+     <p>&nbsp;&nbsp;&nbsp;Erinnya: <strong>LUBWAMA EZRA TONNY</strong>&nbsp;&nbsp;Omukono <img src="${lawyerSignatureImg}" alt="Advocate Signature" style="height:40px;vertical-align:middle;"/></p>
+     <p>&nbsp;&nbsp;&nbsp;Essimu: 0703022565&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ennaku z'Omwezi: ${dateStr}</p>
   </div>
 
   <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px">
