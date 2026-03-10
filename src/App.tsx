@@ -32,6 +32,7 @@ import AdminAccounting from "./pages/AdminAccounting";
 import AdminAuditLogs from "./pages/AdminAuditLogs";
 import AdminBackup from "./pages/AdminBackup";
 import AdminPhotocopying from "./pages/AdminPhotocopying";
+import AdminScannerInbox from "./pages/AdminScannerInbox";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
