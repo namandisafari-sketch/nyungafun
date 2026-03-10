@@ -166,6 +166,7 @@ export const generateLugandaDocumentHTML = (r: Record<string, any>, signatureUrl
   const dateStr = new Date(submittedAt).toLocaleDateString("en-UG", { day: "numeric", month: "long", year: "numeric" });
   return `
 <div style="font-family:'Times New Roman',serif;color:#000;background:#fff;padding:40px 50px;max-width:210mm;margin:0 auto;font-size:12px;line-height:1.6">
+  ${r.application_number ? `<p style="text-align:right;font-size:11px;margin:0 0 6px 0"><strong>Application No:</strong> ${r.application_number}</p>` : ""}
   <p style="font-weight:bold;font-size:13px;text-decoration:underline;text-align:center;margin-bottom:4px">ENTEESEGANYA N'OKUKKAANYA EBITUUKIDDWAKO WAKATI W'ESSOMERO LYA: ${blank(r.essomero, 200)}</p>
   <p style="text-align:center;font-size:12px">${blank(r.essomero, 300)} <strong>NYUNGA FOUNDATION, N'OMUZADDE WA</strong></p>
   <p style="text-align:center;font-size:12px">${blank(r.omuzadde_erinnya, 300)} <strong>AGENDA MU</strong> ${blank(r.agenda, 60)} <strong>OMWAKA</strong>${blank(r.omwaka, 80)}</p>
