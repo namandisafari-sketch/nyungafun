@@ -24,6 +24,7 @@ import {
   ClipboardList,
   HardDrive,
   Printer,
+  ScanLine,
 } from "lucide-react";
 import {
   Sidebar,
@@ -42,7 +43,7 @@ import {
 const iconMap: Record<string, any> = {
   LayoutDashboard, FileText, GraduationCap, School, Receipt, Settings,
   ShieldCheck, Users, CreditCard, Ticket, Banknote, PieChart, Search,
-  CalendarDays, Link2, Package, Calculator, ClipboardList, HardDrive, Printer,
+  CalendarDays, Link2, Package, Calculator, ClipboardList, HardDrive, Printer, ScanLine,
 };
 
 const allAdminItems = [
@@ -62,6 +63,7 @@ const allAdminItems = [
   { title: "Materials", url: "/admin/materials", icon: Package, moduleKey: "materials" },
   { title: "Accounting", url: "/admin/accounting", icon: Calculator, moduleKey: "accounting" },
   { title: "Photocopying", url: "/admin/photocopying", icon: Printer, moduleKey: "photocopying" },
+  { title: "Scanner Inbox", url: "/admin/scanner-inbox", icon: ScanLine, moduleKey: "scanner-inbox" },
   { title: "Attendance", url: "/admin/attendance", icon: CalendarDays, moduleKey: "attendance" },
   { title: "Audit Logs", url: "/admin/audit-logs", icon: ClipboardList, moduleKey: "audit-logs" },
   { title: "Backup", url: "/admin/backup", icon: HardDrive, moduleKey: "backup" },
