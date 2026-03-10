@@ -102,8 +102,8 @@ export async function mergeBooklet(
   const [p3] = await merged.copyPages(fileB.right, [0]);
   merged.addPage(p3);
 
-  // Page 4 = File A Left half
-  const [p4] = await merged.copyPages(fileA.left, [0]);
+  // Page 4 = File A Right half
+  const [p4] = await merged.copyPages(fileA.right, [0]);
   merged.addPage(p4);
 
   const pdfBytes = await merged.save();
