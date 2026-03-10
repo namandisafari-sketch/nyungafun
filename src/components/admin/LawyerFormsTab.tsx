@@ -182,7 +182,7 @@ const LawyerFormsTab = ({ applicationId, userId, submissions, templates, onRefre
       application_id: applicationId,
       template_id: tId,
       user_id: userId,
-      responses: tId === selectedTemplateId ? responses : {},
+      responses: { ...(tId === selectedTemplateId ? responses : {}), application_number: manualAppNumber },
       signed_document_url: signatureUrl || null,
       status: "submitted",
       submitted_at: new Date().toISOString(),
