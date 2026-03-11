@@ -194,11 +194,24 @@ async function checkDuplicateFile(originalFilename: string): Promise<boolean> {
 
 async function processOnePair(item: PairItem, userId: string): Promise<PairItem> {
   try {
+    // Check for duplicate file already processed
+    const isDuplicate = await checkDuplicateFile(item.pdf.name);
+    if (isDuplicate) {
+      return { ...item, status: "error", error: "Already processed (duplicate)" };
+    }
+
     const imageBase64 = await fileToBase64(item.png);
     const { data: ocrData, error: ocrError } = await invokeOCRWithRetry(imageBase64);
 
-    if (ocrError) throw new Error(ocrError.message || "OCR failed");
+    if (ocrError) {
+      if (ocrError.message?.toLowerCase().includes("rate limit")) {
+        onOCRThrottle();
+      }
+      throw new Error(ocrError.message || "OCR failed");
+    }
     if (ocrData?.error) throw new Error(ocrData.error);
+
+    onOCRSuccess();
 
     const appNum = ocrData.application_number;
     const confidence = ocrData.confidence || 0;
