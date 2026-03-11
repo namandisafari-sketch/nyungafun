@@ -403,7 +403,7 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
 
       {/* Student card grid */}
       {filtered.length === 0 ? (
-        <Card><CardContent className="py-8 text-center text-muted-foreground">No sponsored students found.</CardContent></Card>
+        <Card><CardContent className="py-8 text-center text-muted-foreground">No matching student records found.</CardContent></Card>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((app) => {
