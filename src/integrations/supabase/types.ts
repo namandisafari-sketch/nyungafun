@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           device_fingerprint: string | null
           email: string | null
+          failure_reason: string | null
           id: string
           ip_address: string | null
           success: boolean
@@ -29,6 +30,7 @@ export type Database = {
           created_at?: string
           device_fingerprint?: string | null
           email?: string | null
+          failure_reason?: string | null
           id?: string
           ip_address?: string | null
           success?: boolean
@@ -39,6 +41,7 @@ export type Database = {
           created_at?: string
           device_fingerprint?: string | null
           email?: string | null
+          failure_reason?: string | null
           id?: string
           ip_address?: string | null
           success?: boolean
@@ -92,6 +95,7 @@ export type Database = {
           id: string
           key: string
           updated_at: string
+          updated_by: string | null
           value: Json
         }
         Insert: {
@@ -99,6 +103,7 @@ export type Database = {
           id?: string
           key: string
           updated_at?: string
+          updated_by?: string | null
           value?: Json
         }
         Update: {
@@ -106,6 +111,7 @@ export type Database = {
           id?: string
           key?: string
           updated_at?: string
+          updated_by?: string | null
           value?: Json
         }
         Relationships: []
@@ -117,11 +123,13 @@ export type Database = {
           admission_letter_url: string | null
           affordable_fees_amount: number | null
           birth_certificate_url: string | null
+          children_in_school: number | null
           chronic_disease: boolean | null
           chronic_disease_details: string | null
           class_grade: string | null
           course_program: string | null
           created_at: string
+          current_fee_payer: string | null
           current_school: string | null
           date_of_birth: string | null
           deceased_parent: string | null
@@ -129,10 +137,14 @@ export type Database = {
           declaration_date: string | null
           district: string | null
           education_level: string
+          expected_graduation_year: string | null
           father_details: Json | null
+          fees_per_term: number | null
           gender: string | null
           guardian_details: Json | null
+          household_income_range: string | null
           id: string
+          institution_name: string | null
           lci_chairperson: string | null
           lci_contact: string | null
           mother_details: Json | null
@@ -142,36 +154,50 @@ export type Database = {
           next_of_kin: Json | null
           nin: string | null
           orphan_status: string | null
+          outstanding_balances: number | null
           parent_email: string | null
           parent_id_url: string | null
+          parent_monthly_income: string | null
           parent_name: string
+          parent_nin: string | null
+          parent_occupation: string | null
           parent_passport_photo_url: string | null
           parent_phone: string
           parent_signature_url: string | null
           parish: string | null
           passport_photo_url: string | null
+          personal_statement: string | null
           physical_defect: boolean | null
           physical_defect_details: string | null
+          previous_bursary: boolean | null
           previous_fees_amount: number | null
           previous_schools: Json | null
+          proof_of_need_url: string | null
           reason: string | null
           registration_number: string | null
           relationship: string | null
           religion: string | null
           report_card_url: string | null
           reviewed_at: string | null
+          reviewed_by: string | null
+          right_thumb_url: string | null
           school_id: string | null
+          school_type: string | null
           status: string
           student_name: string
           student_signature_url: string | null
           sub_county: string | null
           subject_combination: string | null
           subject_grades: Json | null
+          transcript_url: string | null
           tribe: string | null
+          uneb_index_number: string | null
+          updated_at: string | null
           user_id: string
           village: string | null
           vulnerability_indicators: Json | null
           who_pays_fees: string | null
+          year_of_study: string | null
         }
         Insert: {
           academic_results?: Json | null
@@ -179,11 +205,13 @@ export type Database = {
           admission_letter_url?: string | null
           affordable_fees_amount?: number | null
           birth_certificate_url?: string | null
+          children_in_school?: number | null
           chronic_disease?: boolean | null
           chronic_disease_details?: string | null
           class_grade?: string | null
           course_program?: string | null
           created_at?: string
+          current_fee_payer?: string | null
           current_school?: string | null
           date_of_birth?: string | null
           deceased_parent?: string | null
@@ -191,10 +219,14 @@ export type Database = {
           declaration_date?: string | null
           district?: string | null
           education_level?: string
+          expected_graduation_year?: string | null
           father_details?: Json | null
+          fees_per_term?: number | null
           gender?: string | null
           guardian_details?: Json | null
+          household_income_range?: string | null
           id?: string
+          institution_name?: string | null
           lci_chairperson?: string | null
           lci_contact?: string | null
           mother_details?: Json | null
@@ -204,36 +236,50 @@ export type Database = {
           next_of_kin?: Json | null
           nin?: string | null
           orphan_status?: string | null
+          outstanding_balances?: number | null
           parent_email?: string | null
           parent_id_url?: string | null
+          parent_monthly_income?: string | null
           parent_name?: string
+          parent_nin?: string | null
+          parent_occupation?: string | null
           parent_passport_photo_url?: string | null
           parent_phone?: string
           parent_signature_url?: string | null
           parish?: string | null
           passport_photo_url?: string | null
+          personal_statement?: string | null
           physical_defect?: boolean | null
           physical_defect_details?: string | null
+          previous_bursary?: boolean | null
           previous_fees_amount?: number | null
           previous_schools?: Json | null
+          proof_of_need_url?: string | null
           reason?: string | null
           registration_number?: string | null
           relationship?: string | null
           religion?: string | null
           report_card_url?: string | null
           reviewed_at?: string | null
+          reviewed_by?: string | null
+          right_thumb_url?: string | null
           school_id?: string | null
+          school_type?: string | null
           status?: string
           student_name: string
           student_signature_url?: string | null
           sub_county?: string | null
           subject_combination?: string | null
           subject_grades?: Json | null
+          transcript_url?: string | null
           tribe?: string | null
+          uneb_index_number?: string | null
+          updated_at?: string | null
           user_id: string
           village?: string | null
           vulnerability_indicators?: Json | null
           who_pays_fees?: string | null
+          year_of_study?: string | null
         }
         Update: {
           academic_results?: Json | null
@@ -241,11 +287,13 @@ export type Database = {
           admission_letter_url?: string | null
           affordable_fees_amount?: number | null
           birth_certificate_url?: string | null
+          children_in_school?: number | null
           chronic_disease?: boolean | null
           chronic_disease_details?: string | null
           class_grade?: string | null
           course_program?: string | null
           created_at?: string
+          current_fee_payer?: string | null
           current_school?: string | null
           date_of_birth?: string | null
           deceased_parent?: string | null
@@ -253,10 +301,14 @@ export type Database = {
           declaration_date?: string | null
           district?: string | null
           education_level?: string
+          expected_graduation_year?: string | null
           father_details?: Json | null
+          fees_per_term?: number | null
           gender?: string | null
           guardian_details?: Json | null
+          household_income_range?: string | null
           id?: string
+          institution_name?: string | null
           lci_chairperson?: string | null
           lci_contact?: string | null
           mother_details?: Json | null
@@ -266,36 +318,50 @@ export type Database = {
           next_of_kin?: Json | null
           nin?: string | null
           orphan_status?: string | null
+          outstanding_balances?: number | null
           parent_email?: string | null
           parent_id_url?: string | null
+          parent_monthly_income?: string | null
           parent_name?: string
+          parent_nin?: string | null
+          parent_occupation?: string | null
           parent_passport_photo_url?: string | null
           parent_phone?: string
           parent_signature_url?: string | null
           parish?: string | null
           passport_photo_url?: string | null
+          personal_statement?: string | null
           physical_defect?: boolean | null
           physical_defect_details?: string | null
+          previous_bursary?: boolean | null
           previous_fees_amount?: number | null
           previous_schools?: Json | null
+          proof_of_need_url?: string | null
           reason?: string | null
           registration_number?: string | null
           relationship?: string | null
           religion?: string | null
           report_card_url?: string | null
           reviewed_at?: string | null
+          reviewed_by?: string | null
+          right_thumb_url?: string | null
           school_id?: string | null
+          school_type?: string | null
           status?: string
           student_name?: string
           student_signature_url?: string | null
           sub_county?: string | null
           subject_combination?: string | null
           subject_grades?: Json | null
+          transcript_url?: string | null
           tribe?: string | null
+          uneb_index_number?: string | null
+          updated_at?: string | null
           user_id?: string
           village?: string | null
           vulnerability_indicators?: Json | null
           who_pays_fees?: string | null
+          year_of_study?: string | null
         }
         Relationships: [
           {
@@ -598,39 +664,51 @@ export type Database = {
           admin_notes: string | null
           application_id: string
           created_at: string
+          filled_from_ip: string | null
           filled_from_location: string | null
           id: string
           responses: Json
+          reviewed_at: string | null
+          reviewed_by: string | null
           signed_document_url: string | null
           status: string
           submitted_at: string | null
           template_id: string | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
           admin_notes?: string | null
           application_id: string
           created_at?: string
+          filled_from_ip?: string | null
           filled_from_location?: string | null
           id?: string
           responses?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           signed_document_url?: string | null
           status?: string
           submitted_at?: string | null
           template_id?: string | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
           admin_notes?: string | null
           application_id?: string
           created_at?: string
+          filled_from_ip?: string | null
           filled_from_location?: string | null
           id?: string
           responses?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           signed_document_url?: string | null
           status?: string
           submitted_at?: string | null
           template_id?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -658,6 +736,7 @@ export type Database = {
           id: string
           is_active: boolean
           title: string
+          updated_at: string | null
         }
         Insert: {
           created_at?: string
@@ -666,6 +745,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           title: string
+          updated_at?: string | null
         }
         Update: {
           created_at?: string
@@ -674,6 +754,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -804,6 +885,9 @@ export type Database = {
           payment_date: string
           payment_method: string
           recorded_by: string | null
+          term: string | null
+          updated_at: string | null
+          year: string | null
         }
         Insert: {
           amount?: number
@@ -815,6 +899,9 @@ export type Database = {
           payment_date?: string
           payment_method?: string
           recorded_by?: string | null
+          term?: string | null
+          updated_at?: string | null
+          year?: string | null
         }
         Update: {
           amount?: number
@@ -826,6 +913,9 @@ export type Database = {
           payment_date?: string
           payment_method?: string
           recorded_by?: string | null
+          term?: string | null
+          updated_at?: string | null
+          year?: string | null
         }
         Relationships: [
           {
@@ -1267,6 +1357,7 @@ export type Database = {
           right_thumb_url: string | null
           role_title: string | null
           staff_number: string | null
+          staff_number_seq: number
           sub_county: string | null
           updated_at: string
           user_id: string
@@ -1295,6 +1386,7 @@ export type Database = {
           right_thumb_url?: string | null
           role_title?: string | null
           staff_number?: string | null
+          staff_number_seq?: number
           sub_county?: string | null
           updated_at?: string
           user_id: string
@@ -1323,6 +1415,7 @@ export type Database = {
           right_thumb_url?: string | null
           role_title?: string | null
           staff_number?: string | null
+          staff_number_seq?: number
           sub_county?: string | null
           updated_at?: string
           user_id?: string
@@ -1380,27 +1473,33 @@ export type Database = {
       }
       trusted_devices: {
         Row: {
+          approved_by: string | null
           created_at: string
           device_fingerprint: string
           device_name: string | null
           id: string
           is_active: boolean
+          last_used_at: string | null
           user_id: string
         }
         Insert: {
+          approved_by?: string | null
           created_at?: string
           device_fingerprint: string
           device_name?: string | null
           id?: string
           is_active?: boolean
+          last_used_at?: string | null
           user_id: string
         }
         Update: {
+          approved_by?: string | null
           created_at?: string
           device_fingerprint?: string
           device_name?: string | null
           id?: string
           is_active?: boolean
+          last_used_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -1460,26 +1559,32 @@ export type Database = {
       }
       webauthn_credentials: {
         Row: {
+          counter: number | null
           created_at: string
           credential_id: string
           device_name: string | null
           id: string
+          last_used_at: string | null
           public_key: string
           user_id: string
         }
         Insert: {
+          counter?: number | null
           created_at?: string
           credential_id: string
           device_name?: string | null
           id?: string
+          last_used_at?: string | null
           public_key: string
           user_id: string
         }
         Update: {
+          counter?: number | null
           created_at?: string
           credential_id?: string
           device_name?: string | null
           id?: string
+          last_used_at?: string | null
           public_key?: string
           user_id?: string
         }
