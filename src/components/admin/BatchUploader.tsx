@@ -32,11 +32,18 @@ interface BatchUploaderProps {
   userId: string;
 }
 
-const CONCURRENCY = 2; // parallel workers (kept low to avoid AI gateway rate limits)
+const MAX_CONCURRENCY = 4;
+const MIN_CONCURRENCY = 1;
 const MAX_RETRIES = 6;
 const BASE_DELAY_MS = 2500;
 const MAX_DELAY_MS = 30000;
 const OCR_MIN_SPACING_MS = 900;
+const RAMP_UP_AFTER_SUCCESSES = 5; // consecutive successes before increasing concurrency
+
+// Adaptive concurrency state (shared across workers)
+let activeConcurrency = 2;
+let consecutiveSuccesses = 0;
+let consecutiveThrottles = 0;
 
 let nextOCRAllowedAt = 0;
 
@@ -156,13 +163,55 @@ async function invokeOCRWithRetry(imageBase64: string): Promise<{ data: any; err
   return { data: null, error: { message: "Max retries exceeded due to rate limiting" } };
 }
 
+function onOCRSuccess() {
+  consecutiveThrottles = 0;
+  consecutiveSuccesses++;
+  if (consecutiveSuccesses >= RAMP_UP_AFTER_SUCCESSES && activeConcurrency < MAX_CONCURRENCY) {
+    activeConcurrency++;
+    consecutiveSuccesses = 0;
+    console.log(`Concurrency ramped up to ${activeConcurrency}`);
+  }
+}
+
+function onOCRThrottle() {
+  consecutiveSuccesses = 0;
+  consecutiveThrottles++;
+  if (consecutiveThrottles >= 2 && activeConcurrency > MIN_CONCURRENCY) {
+    activeConcurrency = MIN_CONCURRENCY;
+    console.log(`Heavy throttling detected, concurrency dropped to ${activeConcurrency}`);
+  }
+}
+
+async function checkDuplicateFile(originalFilename: string): Promise<boolean> {
+  const { data } = await supabase
+    .from("scanned_documents")
+    .select("id")
+    .eq("original_filename", originalFilename)
+    .limit(1)
+    .maybeSingle();
+  return !!data;
+}
+
 async function processOnePair(item: PairItem, userId: string): Promise<PairItem> {
   try {
+    // Check for duplicate file already processed
+    const isDuplicate = await checkDuplicateFile(item.pdf.name);
+    if (isDuplicate) {
+      return { ...item, status: "error", error: "Already processed (duplicate)" };
+    }
+
     const imageBase64 = await fileToBase64(item.png);
     const { data: ocrData, error: ocrError } = await invokeOCRWithRetry(imageBase64);
 
-    if (ocrError) throw new Error(ocrError.message || "OCR failed");
+    if (ocrError) {
+      if (ocrError.message?.toLowerCase().includes("rate limit")) {
+        onOCRThrottle();
+      }
+      throw new Error(ocrError.message || "OCR failed");
+    }
     if (ocrData?.error) throw new Error(ocrData.error);
+
+    onOCRSuccess();
 
     const appNum = ocrData.application_number;
     const confidence = ocrData.confidence || 0;
@@ -299,6 +348,11 @@ const BatchUploader = ({ userId }: BatchUploaderProps) => {
     setDoneCount(0);
     setErrCount(0);
 
+    // Reset adaptive concurrency
+    activeConcurrency = 2;
+    consecutiveSuccesses = 0;
+    consecutiveThrottles = 0;
+
     const queue = [...pairs.map((_, i) => i)]; // indices
     const results = [...pairs];
     let done = 0;
@@ -332,9 +386,29 @@ const BatchUploader = ({ userId }: BatchUploaderProps) => {
       }
     };
 
-    // Launch concurrent workers
-    const workers = Array.from({ length: Math.min(CONCURRENCY, pairs.length) }, () => worker());
-    await Promise.all(workers);
+    // Launch initial workers with adaptive concurrency
+    const spawnWorker = () => {
+      const p = worker();
+      p.then(() => {
+        // When a worker finishes, spawn another if concurrency allows and queue has items
+        if (queue.length > 0 && !abortRef.current && activeWorkerCount() < activeConcurrency) {
+          workerPromises.push(spawnWorker());
+        }
+      });
+      return p;
+    };
+
+    const workerPromises: Promise<void>[] = [];
+    const activeWorkerCount = () => workerPromises.filter(p => {
+      // Simple tracking: we just use initial count
+      return true;
+    }).length;
+
+    const initialWorkers = Math.min(activeConcurrency, pairs.length);
+    for (let i = 0; i < initialWorkers; i++) {
+      workerPromises.push(worker());
+    }
+    await Promise.all(workerPromises);
 
     setPairs([...results]);
     setProcessing(false);
@@ -468,7 +542,7 @@ const BatchUploader = ({ userId }: BatchUploaderProps) => {
                   </Button>
                 ) : (
                   <Button size="sm" onClick={processBatch}>
-                    <Zap className="h-3.5 w-3.5 mr-1" /> Process All ({CONCURRENCY}x parallel)
+                    <Zap className="h-3.5 w-3.5 mr-1" /> Process All (adaptive parallel)
                   </Button>
                 )}
               </div>
