@@ -113,6 +113,7 @@ const AdminStudents = () => {
         expenses={expenses}
         claims={claims}
         reportCards={reportCards}
+        scannedDocuments={scannedDocuments}
         lawyerSubmissions={lawyerSubmissions}
         lawyerTemplates={lawyerTemplates}
         userId={user!.id}
