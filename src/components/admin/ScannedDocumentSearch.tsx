@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Search, FileText, Eye, ExternalLink, Loader2, FileWarning } from "lucide-react";
+import PDFBlobPreview from "@/components/admin/PDFBlobPreview";
+import { Search, FileText, Eye, Loader2, FileWarning } from "lucide-react";
 
 interface ScannedDoc {
   id: string;
@@ -72,12 +73,34 @@ const ScannedDocumentSearch = () => {
     search("");
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     search(query);
   };
 
+  const closePreview = () => {
+    if (previewUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewDoc(null);
+    setPreviewUrl(null);
+    setPreviewLoading(false);
+    setPreviewError(null);
+  };
+
   const openPreview = async (doc: ScannedDoc) => {
+    if (previewUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
     setPreviewDoc(doc);
     setPreviewUrl(null);
     setPreviewError(null);
@@ -92,15 +115,15 @@ const ScannedDocumentSearch = () => {
 
     const { data, error } = await supabase.storage
       .from("scanned-documents")
-      .createSignedUrl(normalizedPath, 60 * 30);
+      .download(normalizedPath);
 
-    if (error || !data?.signedUrl) {
-      setPreviewError(error?.message || "Could not generate preview URL.");
+    if (error || !data) {
+      setPreviewError(error?.message || "Could not load PDF file.");
       setPreviewLoading(false);
       return;
     }
 
-    setPreviewUrl(data.signedUrl);
+    setPreviewUrl(URL.createObjectURL(data));
     setPreviewLoading(false);
   };
 
@@ -158,32 +181,15 @@ const ScannedDocumentSearch = () => {
         ))}
       </div>
 
-      <Dialog
-        open={!!previewDoc}
-        onOpenChange={(open) => {
-          if (!open) {
-            setPreviewDoc(null);
-            setPreviewUrl(null);
-            setPreviewLoading(false);
-            setPreviewError(null);
-          }
-        }}
-      >
-        <DialogContent className="max-w-4xl h-[85vh] flex flex-col">
-          <DialogHeader>
+      <Dialog open={!!previewDoc} onOpenChange={(open) => !open && closePreview()}>
+        <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
+          <DialogHeader className="px-6 py-4 border-b border-border">
             <DialogTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
               Application #{previewDoc?.application_number}
-              {previewUrl && (
-                <a href={previewUrl} target="_blank" rel="noopener noreferrer" className="ml-auto">
-                  <Button variant="outline" size="sm">
-                    <ExternalLink className="h-3.5 w-3.5 mr-1" /> Open
-                  </Button>
-                </a>
-              )}
             </DialogTitle>
           </DialogHeader>
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 bg-muted/20">
             {previewLoading ? (
               <div className="h-full min-h-[320px] flex items-center justify-center text-muted-foreground text-sm">
                 <Loader2 className="h-4 w-4 animate-spin mr-2" /> Loading preview...
@@ -194,9 +200,7 @@ const ScannedDocumentSearch = () => {
                 <span>{previewError}</span>
               </div>
             ) : (
-              previewUrl && (
-                <iframe src={previewUrl} className="w-full h-full rounded-lg border" title="PDF Preview" />
-              )
+              <PDFBlobPreview key={previewDoc?.id || "preview-doc"} pdfUrl={previewUrl} />
             )}
           </div>
         </DialogContent>
