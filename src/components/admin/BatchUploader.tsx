@@ -232,9 +232,9 @@ const BatchUploader = ({ userId }: BatchUploaderProps) => {
 
       {/* Orphans warning */}
       {orphans.length > 0 && (
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-          <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 shrink-0" />
-          <div className="text-xs text-yellow-700">
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+          <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+          <div className="text-xs text-destructive">
             <strong>{orphans.length} unmatched file(s):</strong>{" "}
             {orphans.map((f) => f.name).join(", ")}
           </div>
@@ -257,7 +257,7 @@ const BatchUploader = ({ userId }: BatchUploaderProps) => {
                   {processing ? (
                     <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Processing...</>
                   ) : (
-                    <><Layers className="h-3.5 w-3.5 mr-1" /> Process All</>
+                    "Process All"
                   )}
                 </Button>
               </div>
@@ -299,8 +299,5 @@ const BatchUploader = ({ userId }: BatchUploaderProps) => {
     </div>
   );
 };
-
-// Need Layers icon import
-import { Layers } from "lucide-react";
 
 export default BatchUploader;
