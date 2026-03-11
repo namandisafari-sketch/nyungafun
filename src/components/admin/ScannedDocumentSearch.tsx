@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Search, FileText, Eye, ExternalLink } from "lucide-react";
+import { Search, FileText, Eye, ExternalLink, Loader2, FileWarning } from "lucide-react";
 
 interface ScannedDoc {
   id: string;
@@ -22,10 +22,32 @@ interface ScannedDoc {
   application_id: string | null;
 }
 
+const normalizeStoragePath = (path: string) => {
+  const cleaned = (path || "").trim();
+  if (!cleaned) return "";
+
+  if (/^https?:\/\//i.test(cleaned)) {
+    try {
+      const parsed = new URL(cleaned);
+      const marker = "/scanned-documents/";
+      const idx = parsed.pathname.toLowerCase().indexOf(marker);
+      if (idx >= 0) {
+        return decodeURIComponent(parsed.pathname.slice(idx + marker.length)).replace(/^\/+/, "");
+      }
+    } catch {
+      return cleaned;
+    }
+  }
+
+  return cleaned.replace(/^\/?scanned-documents\//i, "").replace(/^\/+/, "");
+};
+
 const ScannedDocumentSearch = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ScannedDoc[]>([]);
   const [loading, setLoading] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewDoc, setPreviewDoc] = useState<ScannedDoc | null>(null);
 
@@ -55,12 +77,31 @@ const ScannedDocumentSearch = () => {
     search(query);
   };
 
-  const openPreview = (doc: ScannedDoc) => {
-    const { data } = supabase.storage
-      .from("scanned-documents")
-      .getPublicUrl(doc.storage_path);
-    setPreviewUrl(data.publicUrl);
+  const openPreview = async (doc: ScannedDoc) => {
     setPreviewDoc(doc);
+    setPreviewUrl(null);
+    setPreviewError(null);
+    setPreviewLoading(true);
+
+    const normalizedPath = normalizeStoragePath(doc.storage_path);
+    if (!normalizedPath) {
+      setPreviewError("Invalid file path for this PDF.");
+      setPreviewLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase.storage
+      .from("scanned-documents")
+      .createSignedUrl(normalizedPath, 60 * 30);
+
+    if (error || !data?.signedUrl) {
+      setPreviewError(error?.message || "Could not generate preview URL.");
+      setPreviewLoading(false);
+      return;
+    }
+
+    setPreviewUrl(data.signedUrl);
+    setPreviewLoading(false);
   };
 
   return (
@@ -109,7 +150,7 @@ const ScannedDocumentSearch = () => {
                   {doc.original_filename} · {new Date(doc.created_at).toLocaleDateString()}
                 </p>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => openPreview(doc)}>
+              <Button variant="ghost" size="sm" onClick={() => void openPreview(doc)}>
                 <Eye className="h-4 w-4 mr-1" /> Preview
               </Button>
             </CardContent>
@@ -117,8 +158,17 @@ const ScannedDocumentSearch = () => {
         ))}
       </div>
 
-      {/* PDF Preview Dialog */}
-      <Dialog open={!!previewUrl} onOpenChange={() => { setPreviewUrl(null); setPreviewDoc(null); }}>
+      <Dialog
+        open={!!previewDoc}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPreviewDoc(null);
+            setPreviewUrl(null);
+            setPreviewLoading(false);
+            setPreviewError(null);
+          }
+        }}
+      >
         <DialogContent className="max-w-4xl h-[85vh] flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -134,8 +184,19 @@ const ScannedDocumentSearch = () => {
             </DialogTitle>
           </DialogHeader>
           <div className="flex-1 min-h-0">
-            {previewUrl && (
-              <iframe src={previewUrl} className="w-full h-full rounded-lg border" title="PDF Preview" />
+            {previewLoading ? (
+              <div className="h-full min-h-[320px] flex items-center justify-center text-muted-foreground text-sm">
+                <Loader2 className="h-4 w-4 animate-spin mr-2" /> Loading preview...
+              </div>
+            ) : previewError ? (
+              <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-muted-foreground text-sm gap-2">
+                <FileWarning className="h-6 w-6" />
+                <span>{previewError}</span>
+              </div>
+            ) : (
+              previewUrl && (
+                <iframe src={previewUrl} className="w-full h-full rounded-lg border" title="PDF Preview" />
+              )
             )}
           </div>
         </DialogContent>
