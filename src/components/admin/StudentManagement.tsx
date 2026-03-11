@@ -194,16 +194,93 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
   const sponsoredStudents = applications.filter((a) => a.status === "approved");
   const getSchool = (schoolId: string | null) => schools.find((s) => s.id === schoolId);
 
-  const filtered = sponsoredStudents.filter((a) => {
-    const q = search.trim().toLowerCase();
+  const normalizeApplicationNumber = (value: string | null | undefined) =>
+    (value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  const docsByApplicationId = useMemo(() => {
+    const map = new Map<string, ScannedDocument[]>();
+    scannedDocuments.forEach((doc) => {
+      if (!doc.application_id) return;
+      const existing = map.get(doc.application_id) || [];
+      existing.push(doc);
+      map.set(doc.application_id, existing);
+    });
+    return map;
+  }, [scannedDocuments]);
+
+  const docsByNumber = useMemo(() => {
+    const map = new Map<string, ScannedDocument[]>();
+    scannedDocuments.forEach((doc) => {
+      const key = normalizeApplicationNumber(doc.application_number);
+      if (!key) return;
+      const existing = map.get(key) || [];
+      existing.push(doc);
+      map.set(key, existing);
+    });
+    return map;
+  }, [scannedDocuments]);
+
+  const getDocsForApp = useCallback((app: Application) => {
+    const merged = new Map<string, ScannedDocument>();
+    (docsByApplicationId.get(app.id) || []).forEach((doc) => merged.set(doc.id, doc));
+
+    const regKey = normalizeApplicationNumber(app.registration_number);
+    if (regKey) {
+      (docsByNumber.get(regKey) || []).forEach((doc) => merged.set(doc.id, doc));
+    }
+
+    return Array.from(merged.values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }, [docsByApplicationId, docsByNumber]);
+
+  const searchQuery = search.trim().toLowerCase();
+  const visibleApplications = searchQuery ? applications : sponsoredStudents;
+
+  const filtered = visibleApplications.filter((a) => {
+    const appDocs = getDocsForApp(a);
     const matchesSearch =
-      !q ||
-      a.student_name.toLowerCase().includes(q) ||
-      a.parent_name.toLowerCase().includes(q) ||
-      (a.registration_number && a.registration_number.toLowerCase().includes(q));
+      !searchQuery ||
+      a.student_name.toLowerCase().includes(searchQuery) ||
+      a.parent_name.toLowerCase().includes(searchQuery) ||
+      (a.registration_number && a.registration_number.toLowerCase().includes(searchQuery)) ||
+      appDocs.some((doc) => doc.application_number.toLowerCase().includes(searchQuery));
+
     const matchesLevel = levelFilter === "all" || a.education_level === levelFilter;
     return matchesSearch && matchesLevel;
   });
+
+  const unmatchedScannedDocuments = useMemo(() => {
+    if (!searchQuery) return [] as ScannedDocument[];
+
+    return scannedDocuments.filter((doc) => {
+      if (!doc.application_number.toLowerCase().includes(searchQuery)) return false;
+
+      if (doc.application_id && applications.some((app) => app.id === doc.application_id)) {
+        return false;
+      }
+
+      const normalizedDocNumber = normalizeApplicationNumber(doc.application_number);
+      const hasRegisteredApp = applications.some(
+        (app) => normalizeApplicationNumber(app.registration_number) === normalizedDocNumber
+      );
+
+      return !hasRegisteredApp;
+    });
+  }, [applications, scannedDocuments, searchQuery]);
+
+  const openScannedDocument = useCallback(async (storagePath: string) => {
+    const { data, error } = await supabase.storage
+      .from("scanned-documents")
+      .createSignedUrl(storagePath, 3600);
+
+    if (error || !data?.signedUrl) {
+      toast.error("Failed to open scanned PDF");
+      return;
+    }
+
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  }, []);
 
   const updateNotes = async (appId: string) => {
     const { error } = await supabase.from("applications").update({ admin_notes: editNotesValue } as any).eq("id", appId);
