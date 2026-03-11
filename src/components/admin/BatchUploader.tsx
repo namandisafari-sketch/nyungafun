@@ -33,38 +33,12 @@ interface BatchUploaderProps {
 }
 
 const CONCURRENCY = 2; // parallel workers (kept low to avoid AI gateway rate limits)
-const MAX_RETRIES = 4;
-const BASE_DELAY_MS = 2000; // 2s base for exponential backoff
+const MAX_RETRIES = 6;
+const BASE_DELAY_MS = 2500;
+const MAX_DELAY_MS = 30000;
+const OCR_MIN_SPACING_MS = 900;
 
-function pairFiles(files: File[]): { pairs: PairItem[]; orphans: File[] } {
-  const pdfMap = new Map<string, File>();
-  const pngMap = new Map<string, File>();
-
-  for (const f of files) {
-    const ext = f.name.split(".").pop()?.toLowerCase() || "";
-    // Strip folder path for base name matching
-    const nameOnly = f.name.includes("/") ? f.name.split("/").pop()! : f.name;
-    const base = nameOnly.replace(/\.[^.]+$/, "");
-    if (ext === "pdf") pdfMap.set(base, f);
-    else if (["png", "jpg", "jpeg"].includes(ext)) pngMap.set(base, f);
-  }
-
-  const pairs: PairItem[] = [];
-  const orphans: File[] = [];
-
-  for (const [base, pdf] of pdfMap) {
-    const png = pngMap.get(base);
-    if (png) {
-      pairs.push({ pdf, png, baseName: base, status: "pending" });
-      pngMap.delete(base);
-    } else {
-      orphans.push(pdf);
-    }
-  }
-  for (const f of pngMap.values()) orphans.push(f);
-
-  return { pairs, orphans };
-}
+let nextOCRAllowedAt = 0;
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -82,25 +56,72 @@ async function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function getErrorStatusCode(error: any): number | null {
+  const status = error?.context?.status ?? error?.status ?? null;
+  return typeof status === "number" ? status : null;
+}
+
+function isRateLimitedResponse(data: any, error: any): boolean {
+  const statusCode = getErrorStatusCode(error);
+  const errorMessage = typeof error?.message === "string" ? error.message.toLowerCase() : "";
+  const dataError = typeof data?.error === "string" ? data.error.toLowerCase() : "";
+
+  return (
+    statusCode === 429 ||
+    errorMessage.includes("429") ||
+    errorMessage.includes("rate limit") ||
+    dataError.includes("rate limited")
+  );
+}
+
+function getServerRetryMs(data: any): number | null {
+  const retryAfter = data?.retry_after_ms;
+  return typeof retryAfter === "number" && Number.isFinite(retryAfter) && retryAfter > 0
+    ? retryAfter
+    : null;
+}
+
+async function waitForOCRSlot() {
+  const now = Date.now();
+  if (now < nextOCRAllowedAt) {
+    await delay(nextOCRAllowedAt - now);
+  }
+  nextOCRAllowedAt = Date.now() + OCR_MIN_SPACING_MS;
+}
+
 async function invokeOCRWithRetry(imageBase64: string): Promise<{ data: any; error: any }> {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    const { data, error } = await supabase.functions.invoke(
-      "ocr-application-number",
-      { body: { imageBase64 } }
-    );
+    await waitForOCRSlot();
 
-    // Check for rate limit (429) - retry with backoff
-    if (data?.error?.includes("Rate limited") || error?.message?.includes("429")) {
+    const { data, error } = await supabase.functions.invoke("ocr-application-number", {
+      body: { imageBase64 },
+    });
+
+    if (isRateLimitedResponse(data, error)) {
       if (attempt < MAX_RETRIES) {
-        const waitMs = BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * 1000;
-        console.log(`Rate limited, retrying in ${Math.round(waitMs)}ms (attempt ${attempt + 1}/${MAX_RETRIES})`);
+        const serverRetryMs = getServerRetryMs(data) ?? 0;
+        const backoffMs = Math.min(MAX_DELAY_MS, BASE_DELAY_MS * Math.pow(2, attempt)) + Math.random() * 1200;
+        const waitMs = Math.max(serverRetryMs, backoffMs);
+
+        nextOCRAllowedAt = Math.max(nextOCRAllowedAt, Date.now() + waitMs);
+
+        console.log(
+          `Rate limited, retrying in ${Math.round(waitMs)}ms (attempt ${attempt + 1}/${MAX_RETRIES + 1})`
+        );
+
         await delay(waitMs);
         continue;
       }
+
+      return { data: null, error: { message: "Rate limited after maximum retries" } };
     }
 
-    return { data, error };
+    if (error) return { data, error };
+    if (data?.error) return { data: null, error: { message: data.error } };
+
+    return { data, error: null };
   }
+
   return { data: null, error: { message: "Max retries exceeded due to rate limiting" } };
 }
 
