@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { User, Phone, MapPin, BookOpen, School, Heart, Shield, Users, Home } from "lucide-react";
+import LinkedScannedDocuments from "@/components/admin/LinkedScannedDocuments";
 
 interface ParentDetail {
   name?: string;
