@@ -32,7 +32,7 @@ const Auth = () => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem("auth_unlocked") === "1");
   const [authMethod, setAuthMethod] = useState<"passkey" | "email">("passkey");
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [deviceBlocked, setDeviceBlocked] = useState(false);
@@ -158,8 +158,13 @@ const Auth = () => {
     navigate("/dashboard");
   };
 
+  const handleUnlock = () => {
+    sessionStorage.setItem("auth_unlocked", "1");
+    setUnlocked(true);
+  };
+
   if (!unlocked) {
-    return <FakeErrorPage onUnlock={() => setUnlocked(true)} />;
+    return <FakeErrorPage onUnlock={handleUnlock} />;
   }
 
   return (
