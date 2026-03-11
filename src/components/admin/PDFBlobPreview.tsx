@@ -26,6 +26,7 @@ const PDFBlobPreview = ({ pdfUrl }: PDFBlobPreviewProps) => {
   const [rendering, setRendering] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [useNativePreview, setUseNativePreview] = useState(false);
 
   const zoomIn = useCallback(() => setZoom((z) => Math.min(ZOOM_MAX, z + ZOOM_STEP)), []);
   const zoomOut = useCallback(() => setZoom((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP)), []);
