@@ -25,6 +25,7 @@ import {
   HardDrive,
   Printer,
   ScanLine,
+  FileUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,7 +44,7 @@ import {
 const iconMap: Record<string, any> = {
   LayoutDashboard, FileText, GraduationCap, School, Receipt, Settings,
   ShieldCheck, Users, CreditCard, Ticket, Banknote, PieChart, Search,
-  CalendarDays, Link2, Package, Calculator, ClipboardList, HardDrive, Printer, ScanLine,
+  CalendarDays, Link2, Package, Calculator, ClipboardList, HardDrive, Printer, ScanLine, FileUp,
 };
 
 const allAdminItems = [
@@ -64,6 +65,7 @@ const allAdminItems = [
   { title: "Accounting", url: "/admin/accounting", icon: Calculator, moduleKey: "accounting" },
   { title: "Photocopying", url: "/admin/photocopying", icon: Printer, moduleKey: "photocopying" },
   { title: "Batch Processing", url: "/admin/batch-processing", icon: ScanLine, moduleKey: "batch-processing" },
+  { title: "PDF Import", url: "/admin/pdf-import", icon: FileUp, moduleKey: "pdf-import" },
   { title: "Attendance", url: "/admin/attendance", icon: CalendarDays, moduleKey: "attendance" },
   { title: "Audit Logs", url: "/admin/audit-logs", icon: ClipboardList, moduleKey: "audit-logs" },
   { title: "Backup", url: "/admin/backup", icon: HardDrive, moduleKey: "backup" },
