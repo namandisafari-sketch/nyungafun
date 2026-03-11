@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { toast } from "sonner";
 import {
   Users, CheckCircle, XCircle, Search, Eye, AlertTriangle,
-  School, User, Phone, Mail, MapPin, BookOpen, FileText, ShieldAlert, PlusCircle, DollarSign, GraduationCap, ArrowRightLeft, Pencil, Printer, Scale,
+  School, User, Phone, Mail, MapPin, BookOpen, FileText, ShieldAlert, PlusCircle, DollarSign, GraduationCap, ArrowRightLeft, Pencil, Printer, Scale, ExternalLink,
 } from "lucide-react";
 import ApplicationFullDetail, { FullApplication } from "./ApplicationFullDetail";
 import ApplicationEditForm from "./ApplicationEditForm";
