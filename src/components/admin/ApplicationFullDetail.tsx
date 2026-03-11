@@ -451,6 +451,10 @@ const ApplicationFullDetail = ({ app, schoolName }: Props) => {
         </>
       )}
 
+      {/* Linked Scanned Documents */}
+      <Separator />
+      <LinkedScannedDocuments applicationId={app.id} />
+
       <div className="text-xs text-muted-foreground pt-2 border-t">
         Applied: {new Date(app.created_at).toLocaleDateString()} · ID: {app.id.slice(0, 8)}…
       </div>
