@@ -38,9 +38,9 @@ const AdminPDFImport = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const folderRef = useRef<HTMLInputElement>(null);
 
-  if (!user) return null;
-
   const activePdf = pdfQueue[activeIdx] || null;
+
+  if (!user) return null;
 
   const handleFiles = useCallback((files: File[]) => {
     const pdfs = Array.from(files).filter(
