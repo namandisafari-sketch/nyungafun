@@ -32,11 +32,18 @@ interface BatchUploaderProps {
   userId: string;
 }
 
-const CONCURRENCY = 2; // parallel workers (kept low to avoid AI gateway rate limits)
+const MAX_CONCURRENCY = 4;
+const MIN_CONCURRENCY = 1;
 const MAX_RETRIES = 6;
 const BASE_DELAY_MS = 2500;
 const MAX_DELAY_MS = 30000;
 const OCR_MIN_SPACING_MS = 900;
+const RAMP_UP_AFTER_SUCCESSES = 5; // consecutive successes before increasing concurrency
+
+// Adaptive concurrency state (shared across workers)
+let activeConcurrency = 2;
+let consecutiveSuccesses = 0;
+let consecutiveThrottles = 0;
 
 let nextOCRAllowedAt = 0;
 
