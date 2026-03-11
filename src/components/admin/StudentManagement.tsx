@@ -458,6 +458,18 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
                     <Button size="sm" variant="ghost" className="gap-1 text-xs flex-1" onClick={() => { setSelectedApp(app); setDetailOpen(true); }}>
                       <Eye size={12} /> Details
                     </Button>
+
+                    {appDocs[0] && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1 text-xs"
+                        onClick={() => openScannedDocument(appDocs[0].storage_path)}
+                      >
+                        <ExternalLink size={12} /> PDF
+                      </Button>
+                    )}
+
                     <Popover open={reassignAppId === app.id} onOpenChange={(open) => { setReassignAppId(open ? app.id : null); setReassignSchoolId(""); }}>
                       <PopoverTrigger asChild>
                         <Button size="sm" variant="outline" className="gap-1 text-xs">
@@ -477,6 +489,7 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
                         <Button size="sm" className="w-full" disabled={!reassignSchoolId} onClick={reassignSchool}>Confirm</Button>
                       </PopoverContent>
                     </Popover>
+
                     <Button size="sm" variant="destructive" className="gap-1 text-xs" onClick={() => stopSponsorship(app.id)}>
                       <XCircle size={12} /> Stop
                     </Button>
