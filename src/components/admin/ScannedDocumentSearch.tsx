@@ -80,11 +80,8 @@ const ScannedDocumentSearch = () => {
   };
 
   const closePreview = () => {
-    if (previewUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(previewUrl);
-    }
     setPreviewDoc(null);
-    setPreviewUrl(null);
+    setPreviewBlob(null);
     setPreviewLoading(false);
     setPreviewError(null);
   };
