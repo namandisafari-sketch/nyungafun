@@ -166,15 +166,6 @@ const Auth = () => {
     navigate("/admin");
   };
 
-  const handleUnlock = () => {
-    sessionStorage.setItem("auth_unlocked", "1");
-    setUnlocked(true);
-  };
-
-  if (!unlocked) {
-    return <FakeErrorPage onUnlock={handleUnlock} />;
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-muted/30 relative">
       <div
