@@ -426,6 +426,9 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
                       <div className="flex flex-wrap gap-1 mt-1">
                         <Badge variant="outline" className="text-[10px]">{levelLabels[app.education_level] || app.education_level}</Badge>
                         {app.class_grade && <Badge variant="secondary" className="text-[10px]">Class {app.class_grade}</Badge>}
+                        <Badge variant="outline" className="text-[10px] capitalize">{app.status.replace("_", " ")}</Badge>
+                        {displayApplicationNumber && <Badge variant="secondary" className="text-[10px] font-mono">#{displayApplicationNumber}</Badge>}
+                        {appDocs.length > 0 && <Badge variant="secondary" className="text-[10px]">PDF {appDocs.length}</Badge>}
                       </div>
                     </div>
                     {openClaimsCount > 0 && (
