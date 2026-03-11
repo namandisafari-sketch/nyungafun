@@ -163,6 +163,35 @@ async function invokeOCRWithRetry(imageBase64: string): Promise<{ data: any; err
   return { data: null, error: { message: "Max retries exceeded due to rate limiting" } };
 }
 
+function onOCRSuccess() {
+  consecutiveThrottles = 0;
+  consecutiveSuccesses++;
+  if (consecutiveSuccesses >= RAMP_UP_AFTER_SUCCESSES && activeConcurrency < MAX_CONCURRENCY) {
+    activeConcurrency++;
+    consecutiveSuccesses = 0;
+    console.log(`Concurrency ramped up to ${activeConcurrency}`);
+  }
+}
+
+function onOCRThrottle() {
+  consecutiveSuccesses = 0;
+  consecutiveThrottles++;
+  if (consecutiveThrottles >= 2 && activeConcurrency > MIN_CONCURRENCY) {
+    activeConcurrency = MIN_CONCURRENCY;
+    console.log(`Heavy throttling detected, concurrency dropped to ${activeConcurrency}`);
+  }
+}
+
+async function checkDuplicateFile(originalFilename: string): Promise<boolean> {
+  const { data } = await supabase
+    .from("scanned_documents")
+    .select("id")
+    .eq("original_filename", originalFilename)
+    .limit(1)
+    .maybeSingle();
+  return !!data;
+}
+
 async function processOnePair(item: PairItem, userId: string): Promise<PairItem> {
   try {
     const imageBase64 = await fileToBase64(item.png);
