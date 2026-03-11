@@ -32,7 +32,9 @@ interface BatchUploaderProps {
   userId: string;
 }
 
-const CONCURRENCY = 6; // parallel workers
+const CONCURRENCY = 2; // parallel workers (kept low to avoid AI gateway rate limits)
+const MAX_RETRIES = 4;
+const BASE_DELAY_MS = 2000; // 2s base for exponential backoff
 
 function pairFiles(files: File[]): { pairs: PairItem[]; orphans: File[] } {
   const pdfMap = new Map<string, File>();
