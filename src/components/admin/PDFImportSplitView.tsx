@@ -39,7 +39,7 @@ const PDFImportSplitView = ({ userId }: Props) => {
   const [form, setForm] = useState<PDFImportFormData>({ ...emptyFormData });
   const [saving, setSaving] = useState(false);
   const [mobileView, setMobileView] = useState<"pdf" | "form">("form");
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
 
   const fetchDocs = useCallback(async () => {
     setLoading(true);
@@ -66,15 +66,13 @@ const PDFImportSplitView = ({ userId }: Props) => {
 
   const activeDoc = docs[activeIdx] || null;
 
-  // Load PDF as blob URL to avoid embedded browser PDF blocking
   useEffect(() => {
     if (!activeDoc) {
-      setPdfUrl(null);
+      setPdfBlob(null);
       return;
     }
 
     let active = true;
-    let objectUrl: string | null = null;
 
     const loadPdf = async () => {
       const { data, error } = await supabase.storage
@@ -83,23 +81,19 @@ const PDFImportSplitView = ({ userId }: Props) => {
 
       if (error || !data) {
         console.error("Failed to download PDF:", error?.message);
-        if (active) setPdfUrl(null);
+        if (active) setPdfBlob(null);
         return;
       }
 
-      objectUrl = URL.createObjectURL(data);
       if (active) {
-        setPdfUrl(objectUrl);
-      } else {
-        URL.revokeObjectURL(objectUrl);
+        setPdfBlob(data);
       }
     };
 
-    loadPdf();
+    void loadPdf();
 
     return () => {
       active = false;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [activeDoc?.id, activeDoc?.storage_path]);
 
@@ -271,7 +265,7 @@ const PDFImportSplitView = ({ userId }: Props) => {
       <div className="flex-1 flex min-h-0">
         {/* PDF viewer */}
         <div className={`${isMobile ? (mobileView === "pdf" ? "w-full" : "hidden") : "w-1/2 border-r border-border"} bg-muted/20 flex flex-col min-h-0`}>
-          <PDFBlobPreview key={activeDoc?.id || "no-doc"} pdfUrl={pdfUrl} />
+          <PDFBlobPreview key={activeDoc?.id || "no-doc"} pdfBlob={pdfBlob} />
         </div>
 
         {/* Form */}
@@ -281,7 +275,7 @@ const PDFImportSplitView = ({ userId }: Props) => {
             onChange={updateField}
             onSubmit={handleSave}
             saving={saving}
-            hasPdf={!!pdfUrl}
+            hasPdf={!!pdfBlob}
           />
         </div>
       </div>

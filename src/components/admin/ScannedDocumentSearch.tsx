@@ -49,7 +49,7 @@ const ScannedDocumentSearch = () => {
   const [loading, setLoading] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
   const [previewDoc, setPreviewDoc] = useState<ScannedDoc | null>(null);
 
   const search = async (q: string) => {
@@ -73,13 +73,6 @@ const ScannedDocumentSearch = () => {
     search("");
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (previewUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,22 +80,15 @@ const ScannedDocumentSearch = () => {
   };
 
   const closePreview = () => {
-    if (previewUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(previewUrl);
-    }
     setPreviewDoc(null);
-    setPreviewUrl(null);
+    setPreviewBlob(null);
     setPreviewLoading(false);
     setPreviewError(null);
   };
 
   const openPreview = async (doc: ScannedDoc) => {
-    if (previewUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(previewUrl);
-    }
-
     setPreviewDoc(doc);
-    setPreviewUrl(null);
+    setPreviewBlob(null);
     setPreviewError(null);
     setPreviewLoading(true);
 
@@ -123,7 +109,7 @@ const ScannedDocumentSearch = () => {
       return;
     }
 
-    setPreviewUrl(URL.createObjectURL(data));
+    setPreviewBlob(data);
     setPreviewLoading(false);
   };
 
@@ -200,7 +186,7 @@ const ScannedDocumentSearch = () => {
                 <span>{previewError}</span>
               </div>
             ) : (
-              <PDFBlobPreview key={previewDoc?.id || "preview-doc"} pdfUrl={previewUrl} />
+              <PDFBlobPreview key={previewDoc?.id || "preview-doc"} pdfBlob={previewBlob} />
             )}
           </div>
         </DialogContent>
