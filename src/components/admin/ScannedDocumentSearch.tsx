@@ -186,7 +186,7 @@ const ScannedDocumentSearch = () => {
                 <span>{previewError}</span>
               </div>
             ) : (
-              <PDFBlobPreview key={previewDoc?.id || "preview-doc"} pdfUrl={previewUrl} />
+              <PDFBlobPreview key={previewDoc?.id || "preview-doc"} pdfBlob={previewBlob} />
             )}
           </div>
         </DialogContent>
