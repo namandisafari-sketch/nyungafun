@@ -44,7 +44,7 @@ import {
 const iconMap: Record<string, any> = {
   LayoutDashboard, FileText, GraduationCap, School, Receipt, Settings,
   ShieldCheck, Users, CreditCard, Ticket, Banknote, PieChart, Search,
-  CalendarDays, Link2, Package, Calculator, ClipboardList, HardDrive, Printer, ScanLine,
+  CalendarDays, Link2, Package, Calculator, ClipboardList, HardDrive, Printer, ScanLine, FileUp,
 };
 
 const allAdminItems = [
