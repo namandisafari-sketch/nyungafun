@@ -327,6 +327,27 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
     }
   };
 
+  const queuedPdfStudentsCount = useMemo(() => {
+    const registeredNumbers = new Set(
+      applications
+        .map((app) => normalizeApplicationNumber(app.registration_number))
+        .filter(Boolean)
+    );
+
+    const queuedNumbers = new Set<string>();
+    scannedDocuments.forEach((doc) => {
+      if (doc.application_id) return;
+      const normalizedDocNumber = normalizeApplicationNumber(doc.application_number);
+      if (!normalizedDocNumber) return;
+      if (registeredNumbers.has(normalizedDocNumber)) return;
+      queuedNumbers.add(normalizedDocNumber);
+    });
+
+    return queuedNumbers.size;
+  }, [applications, scannedDocuments]);
+
+  const totalStudentsCount = applications.length + queuedPdfStudentsCount;
+
   const totalInvestment = sponsoredStudents.reduce((sum, a) => {
     const studentExpenses = expenses.filter((e) => e.application_id === a.id);
     return sum + studentExpenses.reduce((s, e) => s + e.amount, 0);

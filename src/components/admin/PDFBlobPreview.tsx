@@ -106,7 +106,20 @@ const PDFBlobPreview = ({ pdfUrl }: PDFBlobPreviewProps) => {
   }, [pdfUrl]);
 
   useEffect(() => {
-    if (!pdfDoc || !canvasRef.current) return;
+    if (!pdfUrl || useNativePreview || (!loading && !rendering)) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setUseNativePreview(true);
+      setLoading(false);
+      setRendering(false);
+      setError("Preview timeout, switched to native viewer");
+    }, 8000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [pdfUrl, loading, rendering, useNativePreview]);
+
+  useEffect(() => {
+    if (!pdfDoc || !canvasRef.current || useNativePreview) return;
 
     let cancelled = false;
     const renderPage = async () => {
