@@ -87,12 +87,8 @@ const ScannedDocumentSearch = () => {
   };
 
   const openPreview = async (doc: ScannedDoc) => {
-    if (previewUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(previewUrl);
-    }
-
     setPreviewDoc(doc);
-    setPreviewUrl(null);
+    setPreviewBlob(null);
     setPreviewError(null);
     setPreviewLoading(true);
 
