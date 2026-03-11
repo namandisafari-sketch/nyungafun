@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
-  CheckCircle,
   Loader2,
   RefreshCw,
   Inbox,
@@ -16,6 +15,7 @@ import PDFApplicationImportForm, {
   PDFImportFormData,
   emptyFormData,
 } from "@/components/admin/PDFApplicationImportForm";
+import PDFBlobPreview from "@/components/admin/PDFBlobPreview";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ScannedDoc {
@@ -66,31 +66,42 @@ const PDFImportSplitView = ({ userId }: Props) => {
 
   const activeDoc = docs[activeIdx] || null;
 
-  // Load PDF as blob URL to avoid cross-origin iframe blocking
+  // Load PDF as blob URL to avoid embedded browser PDF blocking
   useEffect(() => {
     if (!activeDoc) {
       setPdfUrl(null);
       return;
     }
-    let revoked = false;
+
+    let active = true;
+    let objectUrl: string | null = null;
+
     const loadPdf = async () => {
       const { data, error } = await supabase.storage
         .from("scanned-documents")
         .download(activeDoc.storage_path);
+
       if (error || !data) {
         console.error("Failed to download PDF:", error?.message);
-        setPdfUrl(null);
+        if (active) setPdfUrl(null);
         return;
       }
-      const blobUrl = URL.createObjectURL(data);
-      if (!revoked) setPdfUrl(blobUrl);
+
+      objectUrl = URL.createObjectURL(data);
+      if (active) {
+        setPdfUrl(objectUrl);
+      } else {
+        URL.revokeObjectURL(objectUrl);
+      }
     };
+
     loadPdf();
+
     return () => {
-      revoked = true;
-      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [activeDoc]);
+  }, [activeDoc?.id, activeDoc?.storage_path]);
 
   const updateField = (field: keyof PDFImportFormData, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -260,11 +271,7 @@ const PDFImportSplitView = ({ userId }: Props) => {
       <div className="flex-1 flex min-h-0">
         {/* PDF viewer */}
         <div className={`${isMobile ? (mobileView === "pdf" ? "w-full" : "hidden") : "w-1/2 border-r border-border"} bg-muted/20 flex flex-col min-h-0`}>
-          {pdfUrl ? (
-            <iframe key={pdfUrl} src={pdfUrl} className="flex-1 w-full" title="PDF Preview" />
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">No PDF available</div>
-          )}
+          <PDFBlobPreview pdfUrl={pdfUrl} />
         </div>
 
         {/* Form */}
