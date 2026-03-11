@@ -1295,6 +1295,50 @@ export type Database = {
           },
         ]
       }
+      scanned_documents: {
+        Row: {
+          application_id: string | null
+          application_number: string
+          created_at: string
+          id: string
+          ocr_confidence: number | null
+          original_filename: string
+          processed_by: string | null
+          storage_path: string
+          updated_at: string
+        }
+        Insert: {
+          application_id?: string | null
+          application_number: string
+          created_at?: string
+          id?: string
+          ocr_confidence?: number | null
+          original_filename?: string
+          processed_by?: string | null
+          storage_path?: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string | null
+          application_number?: string
+          created_at?: string
+          id?: string
+          ocr_confidence?: number | null
+          original_filename?: string
+          processed_by?: string | null
+          storage_path?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scanned_documents_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       school_users: {
         Row: {
           created_at: string

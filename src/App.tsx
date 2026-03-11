@@ -32,7 +32,7 @@ import AdminAccounting from "./pages/AdminAccounting";
 import AdminAuditLogs from "./pages/AdminAuditLogs";
 import AdminBackup from "./pages/AdminBackup";
 import AdminPhotocopying from "./pages/AdminPhotocopying";
-import AdminScannerInbox from "./pages/AdminScannerInbox";
+import AdminBatchProcessing from "./pages/AdminBatchProcessing";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
@@ -81,7 +81,7 @@ const AppContent = () => {
       <Route path="/admin/audit-logs" element={<ProtectedRoute><AdminAuditLogs /></ProtectedRoute>} />
       <Route path="/admin/backup" element={<ProtectedRoute><AdminBackup /></ProtectedRoute>} />
       <Route path="/admin/photocopying" element={<ProtectedRoute><AdminPhotocopying /></ProtectedRoute>} />
-      <Route path="/admin/scanner-inbox" element={<ProtectedRoute><AdminScannerInbox /></ProtectedRoute>} />
+      <Route path="/admin/batch-processing" element={<ProtectedRoute><AdminBatchProcessing /></ProtectedRoute>} />
       <Route path="/bursary-request" element={<BursaryRequest />} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
