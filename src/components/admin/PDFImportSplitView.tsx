@@ -271,11 +271,7 @@ const PDFImportSplitView = ({ userId }: Props) => {
       <div className="flex-1 flex min-h-0">
         {/* PDF viewer */}
         <div className={`${isMobile ? (mobileView === "pdf" ? "w-full" : "hidden") : "w-1/2 border-r border-border"} bg-muted/20 flex flex-col min-h-0`}>
-          {pdfUrl ? (
-            <iframe key={pdfUrl} src={pdfUrl} className="flex-1 w-full" title="PDF Preview" />
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">No PDF available</div>
-          )}
+          <PDFBlobPreview pdfUrl={pdfUrl} />
         </div>
 
         {/* Form */}
