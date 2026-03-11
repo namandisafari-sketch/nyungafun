@@ -40,8 +40,6 @@ const AdminPDFImport = () => {
 
   const activePdf = pdfQueue[activeIdx] || null;
 
-  if (!user) return null;
-
   const handleFiles = useCallback((files: File[]) => {
     const pdfs = Array.from(files).filter(
       (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")
@@ -57,7 +55,6 @@ const AdminPDFImport = () => {
       status: "pending" as const,
     }));
 
-    // Mark first as active
     items[0].status = "active";
 
     setPdfQueue(items);
@@ -73,6 +70,8 @@ const AdminPDFImport = () => {
     },
     [handleFiles]
   );
+
+  if (!user) return null;
 
   const updateField = (field: keyof PDFImportFormData, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
