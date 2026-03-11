@@ -78,13 +78,36 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-async function processOnePair(item: PairItem, userId: string): Promise<PairItem> {
-  try {
-    const imageBase64 = await fileToBase64(item.png);
-    const { data: ocrData, error: ocrError } = await supabase.functions.invoke(
+async function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function invokeOCRWithRetry(imageBase64: string): Promise<{ data: any; error: any }> {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const { data, error } = await supabase.functions.invoke(
       "ocr-application-number",
       { body: { imageBase64 } }
     );
+
+    // Check for rate limit (429) - retry with backoff
+    if (data?.error?.includes("Rate limited") || error?.message?.includes("429")) {
+      if (attempt < MAX_RETRIES) {
+        const waitMs = BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * 1000;
+        console.log(`Rate limited, retrying in ${Math.round(waitMs)}ms (attempt ${attempt + 1}/${MAX_RETRIES})`);
+        await delay(waitMs);
+        continue;
+      }
+    }
+
+    return { data, error };
+  }
+  return { data: null, error: { message: "Max retries exceeded due to rate limiting" } };
+}
+
+async function processOnePair(item: PairItem, userId: string): Promise<PairItem> {
+  try {
+    const imageBase64 = await fileToBase64(item.png);
+    const { data: ocrData, error: ocrError } = await invokeOCRWithRetry(imageBase64);
 
     if (ocrError) throw new Error(ocrError.message || "OCR failed");
     if (ocrData?.error) throw new Error(ocrData.error);
