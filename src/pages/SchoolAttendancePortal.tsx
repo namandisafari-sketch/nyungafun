@@ -60,7 +60,7 @@ const SchoolAttendancePortal = () => {
   const [reporterPhone, setReporterPhone] = useState("");
   const [term, setTerm] = useState("");
   const [year, setYear] = useState(CURRENT_YEAR);
-  const [students, setStudents] = useState<StudentEntry[]>([{ name: "", class_grade: "" }]);
+  const [students, setStudents] = useState<StudentEntry[]>([{ name: "", class_grade: "", fees_currently_paying: "" }]);
   const [submitting, setSubmitting] = useState(false);
   const [results, setResults] = useState<MatchResult[] | null>(null);
   const [loading, setLoading] = useState(true);
