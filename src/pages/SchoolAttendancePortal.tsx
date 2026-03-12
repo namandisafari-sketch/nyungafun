@@ -37,6 +37,7 @@ interface SchoolOption {
 interface StudentEntry {
   name: string;
   class_grade: string;
+  fees_currently_paying: string;
 }
 
 interface MatchResult {
@@ -45,6 +46,8 @@ interface MatchResult {
   match_status: "matched" | "no_details";
   registration_number?: string;
   application_id?: string;
+  fees_currently_paying: number;
+  expected_fees?: number;
 }
 
 const TERMS = ["Term 1", "Term 2", "Term 3"];
@@ -57,7 +60,7 @@ const SchoolAttendancePortal = () => {
   const [reporterPhone, setReporterPhone] = useState("");
   const [term, setTerm] = useState("");
   const [year, setYear] = useState(CURRENT_YEAR);
-  const [students, setStudents] = useState<StudentEntry[]>([{ name: "", class_grade: "" }]);
+  const [students, setStudents] = useState<StudentEntry[]>([{ name: "", class_grade: "", fees_currently_paying: "" }]);
   const [submitting, setSubmitting] = useState(false);
   const [results, setResults] = useState<MatchResult[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,7 +79,7 @@ const SchoolAttendancePortal = () => {
   }, []);
 
   const addStudent = () => {
-    setStudents((prev) => [...prev, { name: "", class_grade: "" }]);
+    setStudents((prev) => [...prev, { name: "", class_grade: "", fees_currently_paying: "" }]);
   };
 
   const removeStudent = (idx: number) => {
@@ -100,11 +103,20 @@ const SchoolAttendancePortal = () => {
     setResults(null);
 
     try {
-      // Fetch all applications to match against
+      // Fetch all applications and school fees to match against
       const { data: applications } = await supabase
         .from("applications")
-        .select("id, student_name, registration_number, class_grade, school_id, status")
+        .select("id, student_name, registration_number, class_grade, school_id, status, fees_per_term")
         .eq("status", "approved");
+
+      // Get the selected school's fee info
+      const { data: schoolData } = await supabase
+        .from("schools")
+        .select("parent_pays, full_fees")
+        .eq("id", selectedSchoolId)
+        .single();
+
+      const expectedFees = schoolData?.parent_pays || schoolData?.full_fees || 0;
 
       const matchResults: MatchResult[] = [];
       const insertRows: any[] = [];
@@ -120,12 +132,16 @@ const SchoolAttendancePortal = () => {
 
         const matchStatus = match ? "matched" : "no_details";
 
+        const feesNum = parseFloat(student.fees_currently_paying) || 0;
+
         matchResults.push({
           student_name: student.name.trim(),
           class_grade: student.class_grade,
           match_status: matchStatus,
           registration_number: match?.registration_number || undefined,
           application_id: match?.id || undefined,
+          fees_currently_paying: feesNum,
+          expected_fees: match ? (match.fees_per_term || expectedFees) : expectedFees,
         });
 
         insertRows.push({
@@ -139,6 +155,7 @@ const SchoolAttendancePortal = () => {
           year,
           reporter_name: reporterName.trim(),
           reporter_phone: reporterPhone.trim(),
+          fees_currently_paying: feesNum,
         });
       }
 
@@ -155,7 +172,7 @@ const SchoolAttendancePortal = () => {
   };
 
   const resetForm = () => {
-    setStudents([{ name: "", class_grade: "" }]);
+    setStudents([{ name: "", class_grade: "", fees_currently_paying: "" }]);
     setResults(null);
   };
 
@@ -246,6 +263,21 @@ const SchoolAttendancePortal = () => {
                     <div>
                       <p className="font-medium text-sm text-foreground">{r.student_name}</p>
                       {r.class_grade && <p className="text-xs text-muted-foreground">{r.class_grade}</p>}
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-muted-foreground">Paying: <strong className="text-foreground">UGX {r.fees_currently_paying.toLocaleString()}</strong></span>
+                        {r.expected_fees != null && r.expected_fees > 0 && (
+                          <>
+                            <span className="text-xs text-muted-foreground">/ Expected: <strong className="text-foreground">UGX {r.expected_fees.toLocaleString()}</strong></span>
+                            {r.fees_currently_paying < r.expected_fees ? (
+                              <Badge variant="outline" className="text-[10px] border-destructive/50 text-destructive">Underpaying</Badge>
+                            ) : r.fees_currently_paying > r.expected_fees ? (
+                              <Badge variant="outline" className="text-[10px] border-amber-500/50 text-amber-600">Overpaying</Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px] border-green-500/50 text-green-600">Correct ✓</Badge>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <Badge
@@ -352,7 +384,7 @@ const SchoolAttendancePortal = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 {students.map((student, idx) => (
-                  <div key={idx} className="flex items-end gap-2">
+                 <div key={idx} className="flex items-end gap-2">
                     <div className="flex-1">
                       {idx === 0 && <Label className="text-xs">Student Name</Label>}
                       <Input
@@ -361,12 +393,21 @@ const SchoolAttendancePortal = () => {
                         onChange={(e) => updateStudent(idx, "name", e.target.value)}
                       />
                     </div>
-                    <div className="w-32">
+                    <div className="w-24">
                       {idx === 0 && <Label className="text-xs">Class</Label>}
                       <Input
                         placeholder="e.g. S.2"
                         value={student.class_grade}
                         onChange={(e) => updateStudent(idx, "class_grade", e.target.value)}
+                      />
+                    </div>
+                    <div className="w-32">
+                      {idx === 0 && <Label className="text-xs">Fees Paying (UGX)</Label>}
+                      <Input
+                        type="number"
+                        placeholder="e.g. 350000"
+                        value={student.fees_currently_paying}
+                        onChange={(e) => updateStudent(idx, "fees_currently_paying", e.target.value)}
                       />
                     </div>
                     {students.length > 1 && (
