@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,6 +11,9 @@ import {
   Loader2,
   RefreshCw,
   Inbox,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import PDFApplicationImportForm, {
   PDFImportFormData,
