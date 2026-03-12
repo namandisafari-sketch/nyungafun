@@ -172,7 +172,7 @@ const SchoolAttendancePortal = () => {
   };
 
   const resetForm = () => {
-    setStudents([{ name: "", class_grade: "" }]);
+    setStudents([{ name: "", class_grade: "", fees_currently_paying: "" }]);
     setResults(null);
   };
 
