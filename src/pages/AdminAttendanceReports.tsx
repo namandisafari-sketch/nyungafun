@@ -40,7 +40,7 @@ const AdminAttendanceReports = () => {
     const fetchData = async () => {
       const [rRes, sRes] = await Promise.all([
         supabase.from("school_attendance_reports").select("*").order("created_at", { ascending: false }),
-        supabase.from("schools").select("id, name"),
+        supabase.from("schools").select("id, name, parent_pays, full_fees"),
       ]);
       setReports((rRes.data as AttendanceRow[]) || []);
       setSchools((sRes.data as SchoolInfo[]) || []);
