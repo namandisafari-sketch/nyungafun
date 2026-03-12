@@ -103,11 +103,20 @@ const SchoolAttendancePortal = () => {
     setResults(null);
 
     try {
-      // Fetch all applications to match against
+      // Fetch all applications and school fees to match against
       const { data: applications } = await supabase
         .from("applications")
-        .select("id, student_name, registration_number, class_grade, school_id, status")
+        .select("id, student_name, registration_number, class_grade, school_id, status, fees_per_term")
         .eq("status", "approved");
+
+      // Get the selected school's fee info
+      const { data: schoolData } = await supabase
+        .from("schools")
+        .select("parent_pays, full_fees")
+        .eq("id", selectedSchoolId)
+        .single();
+
+      const expectedFees = schoolData?.parent_pays || schoolData?.full_fees || 0;
 
       const matchResults: MatchResult[] = [];
       const insertRows: any[] = [];
