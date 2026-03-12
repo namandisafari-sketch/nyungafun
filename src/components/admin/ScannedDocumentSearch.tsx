@@ -82,6 +82,26 @@ const ScannedDocumentSearch = () => {
     search(query);
   };
 
+  const saveEditAppNum = async (docId: string) => {
+    if (!editValue.trim()) return;
+    setSavingEdit(true);
+    const { error } = await supabase
+      .from("scanned_documents")
+      .update({ application_number: editValue.trim() })
+      .eq("id", docId);
+
+    if (error) {
+      toast.error("Failed to update application number");
+    } else {
+      toast.success("Application number updated");
+      setResults((prev) =>
+        prev.map((d) => (d.id === docId ? { ...d, application_number: editValue.trim() } : d))
+      );
+    }
+    setEditingId(null);
+    setSavingEdit(false);
+  };
+
   const closePreview = () => {
     setPreviewDoc(null);
     setPreviewBlob(null);
