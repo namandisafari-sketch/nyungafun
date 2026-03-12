@@ -384,7 +384,7 @@ const SchoolAttendancePortal = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 {students.map((student, idx) => (
-                  <div key={idx} className="flex items-end gap-2">
+                 <div key={idx} className="flex items-end gap-2">
                     <div className="flex-1">
                       {idx === 0 && <Label className="text-xs">Student Name</Label>}
                       <Input
@@ -393,12 +393,21 @@ const SchoolAttendancePortal = () => {
                         onChange={(e) => updateStudent(idx, "name", e.target.value)}
                       />
                     </div>
-                    <div className="w-32">
+                    <div className="w-24">
                       {idx === 0 && <Label className="text-xs">Class</Label>}
                       <Input
                         placeholder="e.g. S.2"
                         value={student.class_grade}
                         onChange={(e) => updateStudent(idx, "class_grade", e.target.value)}
+                      />
+                    </div>
+                    <div className="w-32">
+                      {idx === 0 && <Label className="text-xs">Fees Paying (UGX)</Label>}
+                      <Input
+                        type="number"
+                        placeholder="e.g. 350000"
+                        value={student.fees_currently_paying}
+                        onChange={(e) => updateStudent(idx, "fees_currently_paying", e.target.value)}
                       />
                     </div>
                     {students.length > 1 && (
