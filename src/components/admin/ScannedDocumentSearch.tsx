@@ -51,6 +51,9 @@ const ScannedDocumentSearch = () => {
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
   const [previewDoc, setPreviewDoc] = useState<ScannedDoc | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const search = async (q: string) => {
     setLoading(true);
