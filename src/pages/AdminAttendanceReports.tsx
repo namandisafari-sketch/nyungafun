@@ -18,11 +18,14 @@ interface AttendanceRow {
   reporter_phone: string;
   created_at: string;
   school_id: string;
+  fees_currently_paying: number;
 }
 
 interface SchoolInfo {
   id: string;
   name: string;
+  parent_pays: number;
+  full_fees: number;
 }
 
 const AdminAttendanceReports = () => {
