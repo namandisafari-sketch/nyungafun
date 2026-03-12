@@ -232,14 +232,22 @@ const PDFBlobPreview = ({ pdfBlob }: PDFBlobPreviewProps) => {
 
       <div
         ref={containerRef}
-        className="flex-1 min-h-0 overflow-auto p-3"
+        className="flex-1 min-h-0 overflow-auto p-3 relative"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        {loading || rendering ? (
-          <div className="h-full min-h-[320px] flex items-center justify-center text-muted-foreground text-sm">
-            <Loader2 className="h-4 w-4 animate-spin mr-2" /> Rendering preview...
+        {/* Always keep canvas in DOM so refs work during render */}
+        <canvas
+          ref={canvasRef}
+          className={`mx-auto rounded border border-border bg-background shadow-sm ${loading || error ? "hidden" : ""}`}
+        />
+
+        {(loading || rendering) && !error && (
+          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm bg-background/60">
+            <Loader2 className="h-4 w-4 animate-spin mr-2" /> Rendering preview…
           </div>
-        ) : error ? (
+        )}
+
+        {error && (
           <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-muted-foreground text-sm gap-3">
             <FileWarning className="h-6 w-6" />
             <span>{error}</span>
@@ -247,8 +255,6 @@ const PDFBlobPreview = ({ pdfBlob }: PDFBlobPreviewProps) => {
               <RotateCcw className="h-4 w-4" /> Retry preview
             </Button>
           </div>
-        ) : (
-          <canvas ref={canvasRef} className="mx-auto rounded border border-border bg-background shadow-sm" />
         )}
       </div>
     </div>
