@@ -132,12 +132,16 @@ const SchoolAttendancePortal = () => {
 
         const matchStatus = match ? "matched" : "no_details";
 
+        const feesNum = parseFloat(student.fees_currently_paying) || 0;
+
         matchResults.push({
           student_name: student.name.trim(),
           class_grade: student.class_grade,
           match_status: matchStatus,
           registration_number: match?.registration_number || undefined,
           application_id: match?.id || undefined,
+          fees_currently_paying: feesNum,
+          expected_fees: match ? (match.fees_per_term || expectedFees) : expectedFees,
         });
 
         insertRows.push({
@@ -151,6 +155,7 @@ const SchoolAttendancePortal = () => {
           year,
           reporter_name: reporterName.trim(),
           reporter_phone: reporterPhone.trim(),
+          fees_currently_paying: feesNum,
         });
       }
 
