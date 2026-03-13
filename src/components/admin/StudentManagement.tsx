@@ -21,6 +21,7 @@ import ApplicationEditForm from "./ApplicationEditForm";
 import PrintableApplicationForm from "@/components/register/PrintableApplicationForm";
 import LawyerFormsTab from "./LawyerFormsTab";
 import PDFBlobPreview from "./PDFBlobPreview";
+import PDFApplicationImportForm, { PDFImportFormData, emptyFormData } from "./PDFApplicationImportForm";
 
 import { ApplicationForm } from "@/components/register/types";
 
@@ -119,9 +120,8 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
   const [pdfPreviewBlob, setPdfPreviewBlob] = useState<Blob | null>(null);
   const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
   const [pdfPreviewStudent, setPdfPreviewStudent] = useState<Application | null>(null);
-  const [pdfLinkSearch, setPdfLinkSearch] = useState("");
-  const [selectedLinkAppId, setSelectedLinkAppId] = useState("");
-  const [linkingPdf, setLinkingPdf] = useState(false);
+  const [pdfImportForm, setPdfImportForm] = useState<PDFImportFormData>({ ...emptyFormData });
+  const [pdfImportSaving, setPdfImportSaving] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
   const mapAppToForm = useCallback((app: Application): ApplicationForm => {
@@ -300,8 +300,8 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
     setPdfPreviewStudent(student || null);
     setPdfPreviewBlob(null);
     setPdfPreviewLoading(true);
-    setSelectedLinkAppId("");
-    setPdfLinkSearch("");
+    setPdfImportForm({ ...emptyFormData, registrationNumber: doc.application_number || "" });
+    setPdfImportSaving(false);
 
     const { data, error } = await supabase.storage
       .from("scanned-documents")
@@ -322,71 +322,86 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
     setPdfPreviewBlob(null);
     setPdfPreviewLoading(false);
     setPdfPreviewStudent(null);
-    setSelectedLinkAppId("");
-    setPdfLinkSearch("");
-    setLinkingPdf(false);
+    setPdfImportForm({ ...emptyFormData });
+    setPdfImportSaving(false);
   }, []);
 
-  const linkableApplications = useMemo(() => {
-    const query = pdfLinkSearch.trim().toLowerCase();
-    const normalizedQuery = normalizeApplicationNumber(query);
-    const docNumberKey = normalizeApplicationNumber(pdfPreviewDoc?.application_number);
+  const updateImportField = (field: keyof PDFImportFormData, value: any) => {
+    setPdfImportForm((prev) => ({ ...prev, [field]: value }));
+  };
 
-    const candidates = applications
-      .map((app) => {
-        const registration = app.registration_number || "";
-        const registrationKey = normalizeApplicationNumber(registration);
-        const studentName = app.student_name.toLowerCase();
-        const parentName = app.parent_name.toLowerCase();
+  const handlePdfImportSave = useCallback(async () => {
+    if (!pdfPreviewDoc || !pdfImportForm.studentName) return;
+    setPdfImportSaving(true);
+    try {
+      const { data: appData, error: appErr } = await supabase
+        .from("applications")
+        .insert({
+          user_id: userId,
+          student_name: pdfImportForm.studentName,
+          date_of_birth: pdfImportForm.dateOfBirth || null,
+          gender: pdfImportForm.gender || null,
+          nationality: pdfImportForm.nationality || null,
+          religion: pdfImportForm.religion || null,
+          tribe: pdfImportForm.tribe || null,
+          nin: pdfImportForm.nin || null,
+          registration_number: pdfImportForm.registrationNumber || pdfPreviewDoc.application_number || null,
+          education_level: pdfImportForm.educationLevel || "primary",
+          class_grade: pdfImportForm.classGrade || null,
+          current_school: pdfImportForm.currentSchool || null,
+          school_type: pdfImportForm.schoolType || null,
+          institution_name: pdfImportForm.institutionName || null,
+          year_of_study: pdfImportForm.yearOfStudy || null,
+          course_program: pdfImportForm.courseProgram || null,
+          subject_combination: pdfImportForm.subjectCombination || null,
+          district: pdfImportForm.district || null,
+          sub_county: pdfImportForm.subCounty || null,
+          parish: pdfImportForm.parish || null,
+          village: pdfImportForm.village || null,
+          lci_chairperson: pdfImportForm.lciChairperson || null,
+          lci_contact: pdfImportForm.lciContact || null,
+          orphan_status: pdfImportForm.orphanStatus || null,
+          deceased_parent: pdfImportForm.deceasedParent || null,
+          physical_defect: pdfImportForm.physicalDefect,
+          physical_defect_details: pdfImportForm.physicalDefectDetails || null,
+          chronic_disease: pdfImportForm.chronicDisease,
+          chronic_disease_details: pdfImportForm.chronicDiseaseDetails || null,
+          parent_name: pdfImportForm.parentName || "N/A",
+          parent_phone: pdfImportForm.parentPhone || "N/A",
+          parent_email: pdfImportForm.parentEmail || null,
+          relationship: pdfImportForm.relationship || null,
+          parent_occupation: pdfImportForm.parentOccupation || null,
+          parent_monthly_income: pdfImportForm.parentMonthlyIncome || null,
+          parent_nin: pdfImportForm.parentNin || null,
+          children_in_school: pdfImportForm.childrenInSchool || 0,
+          fees_per_term: pdfImportForm.feesPerTerm || 0,
+          outstanding_balances: pdfImportForm.outstandingBalances || 0,
+          previous_bursary: pdfImportForm.previousBursary,
+          personal_statement: pdfImportForm.personalStatement || null,
+          reason: pdfImportForm.reason || null,
+          status: "pending",
+        })
+        .select("id")
+        .single();
 
-        const matchesQuery =
-          !query ||
-          studentName.includes(query) ||
-          parentName.includes(query) ||
-          registration.toLowerCase().includes(query) ||
-          (!!normalizedQuery && registrationKey.includes(normalizedQuery));
+      if (appErr) throw new Error("Failed to save application: " + appErr.message);
 
-        if (!matchesQuery) return null;
+      const { error: linkErr } = await supabase
+        .from("scanned_documents")
+        .update({ application_id: appData.id })
+        .eq("id", pdfPreviewDoc.id);
 
-        let score = 0;
-        if (docNumberKey && registrationKey && registrationKey === docNumberKey) score += 100;
-        if (query && studentName.startsWith(query)) score += 20;
-        if (query && parentName.startsWith(query)) score += 10;
+      if (linkErr) throw new Error("Failed to link document: " + linkErr.message);
 
-        return { app, score };
-      })
-      .filter((item): item is { app: Application; score: number } => item !== null)
-      .sort((a, b) => b.score - a.score || a.app.student_name.localeCompare(b.app.student_name))
-      .slice(0, 80)
-      .map((item) => item.app);
-
-    return candidates;
-  }, [applications, pdfLinkSearch, pdfPreviewDoc?.application_number]);
-
-  const linkPdfToStudent = useCallback(async () => {
-    if (!pdfPreviewDoc || !selectedLinkAppId) return;
-
-    setLinkingPdf(true);
-    const { error } = await supabase
-      .from("scanned_documents")
-      .update({ application_id: selectedLinkAppId })
-      .eq("id", pdfPreviewDoc.id);
-
-    if (error) {
-      toast.error("Failed to link PDF to student");
-      setLinkingPdf(false);
-      return;
+      toast.success(`Application saved for ${pdfImportForm.studentName}`);
+      closePdfPreview();
+      onRefresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save");
+    } finally {
+      setPdfImportSaving(false);
     }
-
-    const linkedStudent = applications.find((app) => app.id === selectedLinkAppId) || null;
-    setPdfPreviewStudent(linkedStudent);
-    setPdfPreviewDoc((prev) => (prev ? { ...prev, application_id: selectedLinkAppId } : prev));
-    setSelectedLinkAppId("");
-    setPdfLinkSearch("");
-    setLinkingPdf(false);
-    toast.success("PDF linked to student record");
-    onRefresh();
-  }, [applications, onRefresh, pdfPreviewDoc, selectedLinkAppId]);
+  }, [pdfPreviewDoc, pdfImportForm, userId, closePdfPreview, onRefresh]);
 
   const updateNotes = async (appId: string) => {
     const { error } = await supabase.from("applications").update({ admin_notes: editNotesValue } as any).eq("id", appId);
@@ -835,53 +850,20 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
               )}
             </div>
 
-            {/* Student Details / Linking - Right */}
-            <div className="w-2/5 min-h-0 overflow-y-auto">
+            {/* Application Form - Right */}
+            <div className="w-2/5 min-h-0">
               {pdfPreviewStudent ? (
-                <div className="p-4">
+                <div className="p-4 overflow-y-auto h-full">
                   <ApplicationFullDetail app={pdfPreviewStudent} schoolName={getSchool(pdfPreviewStudent.school_id)?.name} />
                 </div>
               ) : (
-                <div className="p-4 space-y-4">
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-foreground">Link this PDF to a student</p>
-                    <p className="text-xs text-muted-foreground">
-                      Select an existing student record to attach this scanned admission form.
-                    </p>
-                  </div>
-
-                  <Input
-                    value={pdfLinkSearch}
-                    onChange={(e) => setPdfLinkSearch(e.target.value)}
-                    placeholder="Search student, parent, or application number..."
-                  />
-
-                  <Select value={selectedLinkAppId} onValueChange={setSelectedLinkAppId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose student record" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {linkableApplications.length > 0 ? (
-                        linkableApplications.map((app) => (
-                          <SelectItem key={app.id} value={app.id}>
-                            {app.student_name} {app.registration_number ? `• #${app.registration_number}` : "• No reg #"}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <p className="px-2 py-1.5 text-xs text-muted-foreground">No matching students found</p>
-                      )}
-                    </SelectContent>
-                  </Select>
-
-                  <Button
-                    className="w-full gap-2"
-                    disabled={!selectedLinkAppId || linkingPdf}
-                    onClick={linkPdfToStudent}
-                  >
-                    {linkingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
-                    Link PDF to Student
-                  </Button>
-                </div>
+                <PDFApplicationImportForm
+                  form={pdfImportForm}
+                  onChange={updateImportField}
+                  onSubmit={handlePdfImportSave}
+                  saving={pdfImportSaving}
+                  hasPdf={!!pdfPreviewBlob}
+                />
               )}
             </div>
           </div>
