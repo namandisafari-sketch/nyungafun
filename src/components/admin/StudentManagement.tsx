@@ -294,26 +294,26 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
   const openPdfPreview = useCallback(async (doc: ScannedDocument, student?: Application | null) => {
     setPdfPreviewDoc(doc);
     setPdfPreviewStudent(student || null);
-    setPdfPreviewBlob(null);
+    setPdfPreviewUrl(null);
     setPdfPreviewLoading(true);
 
     const { data, error } = await supabase.storage
       .from("scanned-documents")
-      .download(doc.storage_path);
+      .createSignedUrl(doc.storage_path, 3600);
 
-    if (error || !data) {
+    if (error || !data?.signedUrl) {
       toast.error("Failed to load scanned PDF");
       setPdfPreviewLoading(false);
       return;
     }
 
-    setPdfPreviewBlob(data);
+    setPdfPreviewUrl(data.signedUrl);
     setPdfPreviewLoading(false);
   }, []);
 
   const closePdfPreview = useCallback(() => {
     setPdfPreviewDoc(null);
-    setPdfPreviewBlob(null);
+    setPdfPreviewUrl(null);
     setPdfPreviewLoading(false);
     setPdfPreviewStudent(null);
   }, []);
