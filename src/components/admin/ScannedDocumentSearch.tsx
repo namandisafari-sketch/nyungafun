@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import PDFBlobPreview from "@/components/admin/PDFBlobPreview";
-import { Search, FileText, Eye, Loader2, FileWarning, Pencil, Check, X } from "lucide-react";
+import { Search, FileText, Eye, Loader2, FileWarning, Pencil, Check, X, School } from "lucide-react";
 
 interface ScannedDoc {
   id: string;
