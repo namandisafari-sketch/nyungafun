@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, SearchX, GraduationCap, Eye, User, Phone, MapPin, Command, ExternalLink } from "lucide-react";
+import { Search, SearchX, GraduationCap, Eye, User, Phone, MapPin, Command, ExternalLink, School } from "lucide-react";
 import ApplicationFullDetail, { FullApplication } from "@/components/admin/ApplicationFullDetail";
 
 type Student = FullApplication;
