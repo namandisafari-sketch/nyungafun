@@ -120,9 +120,8 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
   const [pdfPreviewBlob, setPdfPreviewBlob] = useState<Blob | null>(null);
   const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
   const [pdfPreviewStudent, setPdfPreviewStudent] = useState<Application | null>(null);
-  const [pdfLinkSearch, setPdfLinkSearch] = useState("");
-  const [selectedLinkAppId, setSelectedLinkAppId] = useState("");
-  const [linkingPdf, setLinkingPdf] = useState(false);
+  const [pdfImportForm, setPdfImportForm] = useState<PDFImportFormData>({ ...emptyFormData });
+  const [pdfImportSaving, setPdfImportSaving] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
   const mapAppToForm = useCallback((app: Application): ApplicationForm => {
