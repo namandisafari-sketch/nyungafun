@@ -14,6 +14,7 @@ import {
   Pencil,
   Check,
   X,
+  School,
 } from "lucide-react";
 import PDFApplicationImportForm, {
   PDFImportFormData,

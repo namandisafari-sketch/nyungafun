@@ -227,6 +227,11 @@ const ScannedDocumentSearch = () => {
                 </div>
                 <p className="text-xs text-muted-foreground truncate">
                   {doc.original_filename} · {new Date(doc.created_at).toLocaleDateString()}
+                  {doc.school_id && schoolNames[doc.school_id] && (
+                    <span className="inline-flex items-center gap-1 ml-2 text-primary">
+                      <School className="h-3 w-3" /> {schoolNames[doc.school_id]}
+                    </span>
+                  )}
                 </p>
               </div>
               <Button variant="ghost" size="sm" onClick={() => void openPreview(doc)}>
