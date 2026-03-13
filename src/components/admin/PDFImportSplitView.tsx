@@ -334,6 +334,11 @@ const PDFImportSplitView = ({ userId }: Props) => {
           <span className="text-[10px] text-muted-foreground ml-2 hidden sm:inline">
             {activeDoc.original_filename}
           </span>
+          {activeDoc.school_id && schoolNames[activeDoc.school_id] && (
+            <Badge variant="outline" className="ml-auto text-[10px] gap-1">
+              <School className="h-3 w-3" /> {schoolNames[activeDoc.school_id]}
+            </Badge>
+          )}
         </div>
       )}
 
