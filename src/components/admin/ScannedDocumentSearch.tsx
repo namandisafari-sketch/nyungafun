@@ -60,6 +60,15 @@ const ScannedDocumentSearch = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
+  const [schoolNames, setSchoolNames] = useState<SchoolMap>({});
+
+  useEffect(() => {
+    supabase.from("schools").select("id, name").then(({ data }) => {
+      const map: SchoolMap = {};
+      (data || []).forEach((s: any) => { map[s.id] = s.name; });
+      setSchoolNames(map);
+    });
+  }, []);
 
   const search = async (q: string) => {
     setLoading(true);
