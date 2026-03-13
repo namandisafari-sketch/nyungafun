@@ -740,6 +740,43 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
         </DialogContent>
       </Dialog>
 
+      {/* PDF Preview Dialog - Split View */}
+      <Dialog open={!!pdfPreviewDoc} onOpenChange={(open) => !open && closePdfPreview()}>
+        <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
+          <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
+            <DialogTitle className="flex items-center gap-2 flex-wrap">
+              <FileText className="h-5 w-5 text-primary" />
+              <span>Application #{pdfPreviewDoc?.application_number}</span>
+              {pdfPreviewStudent && (
+                <Badge variant="secondary" className="text-xs">{pdfPreviewStudent.student_name}</Badge>
+              )}
+              {pdfPreviewDoc && (
+                <span className="text-xs text-muted-foreground ml-auto">{pdfPreviewDoc.original_filename}</span>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 flex min-h-0">
+            {/* PDF Viewer */}
+            <div className="flex-1 min-h-0 bg-muted/20">
+              {pdfPreviewLoading ? (
+                <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+                  <svg className="h-4 w-4 animate-spin mr-2" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  Loading PDF…
+                </div>
+              ) : (
+                <PDFBlobPreview key={pdfPreviewDoc?.id || "pdf-preview"} pdfBlob={pdfPreviewBlob} />
+              )}
+            </div>
+            {/* Student Info Sidebar */}
+            {pdfPreviewStudent && (
+              <div className="w-2/5 border-l border-border overflow-y-auto p-4 hidden md:block">
+                <ApplicationFullDetail app={pdfPreviewStudent} schoolName={getSchool(pdfPreviewStudent.school_id)?.name} />
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Hidden printable form */}
       {selectedApp && (
         <div style={{ position: "fixed", left: "-9999px", top: 0 }}>
