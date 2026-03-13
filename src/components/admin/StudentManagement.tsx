@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,7 @@ import ApplicationFullDetail, { FullApplication } from "./ApplicationFullDetail"
 import ApplicationEditForm from "./ApplicationEditForm";
 import PrintableApplicationForm from "@/components/register/PrintableApplicationForm";
 import LawyerFormsTab from "./LawyerFormsTab";
+import PDFBlobPreview from "./PDFBlobPreview";
 import { ApplicationForm } from "@/components/register/types";
 
 type Application = FullApplication;
@@ -113,6 +114,10 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
   const [reassignAppId, setReassignAppId] = useState<string | null>(null);
   const [reassignSchoolId, setReassignSchoolId] = useState("");
   const [editMode, setEditMode] = useState(false);
+  const [pdfPreviewDoc, setPdfPreviewDoc] = useState<ScannedDocument | null>(null);
+  const [pdfPreviewBlob, setPdfPreviewBlob] = useState<Blob | null>(null);
+  const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
+  const [pdfPreviewStudent, setPdfPreviewStudent] = useState<Application | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
   const mapAppToForm = useCallback((app: Application): ApplicationForm => {
@@ -286,17 +291,31 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
     });
   }, [applications, scannedDocuments, searchQuery, normalizedSearchQuery, hasSearchQuery]);
 
-  const openScannedDocument = useCallback(async (storagePath: string) => {
+  const openPdfPreview = useCallback(async (doc: ScannedDocument, student?: Application | null) => {
+    setPdfPreviewDoc(doc);
+    setPdfPreviewStudent(student || null);
+    setPdfPreviewBlob(null);
+    setPdfPreviewLoading(true);
+
     const { data, error } = await supabase.storage
       .from("scanned-documents")
-      .createSignedUrl(storagePath, 3600);
+      .download(doc.storage_path);
 
-    if (error || !data?.signedUrl) {
-      toast.error("Failed to open scanned PDF");
+    if (error || !data) {
+      toast.error("Failed to load scanned PDF");
+      setPdfPreviewLoading(false);
       return;
     }
 
-    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    setPdfPreviewBlob(data);
+    setPdfPreviewLoading(false);
+  }, []);
+
+  const closePdfPreview = useCallback(() => {
+    setPdfPreviewDoc(null);
+    setPdfPreviewBlob(null);
+    setPdfPreviewLoading(false);
+    setPdfPreviewStudent(null);
   }, []);
 
   const updateNotes = async (appId: string) => {
@@ -502,9 +521,9 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
                         size="sm"
                         variant="outline"
                         className="gap-1 text-xs"
-                        onClick={() => openScannedDocument(appDocs[0].storage_path)}
+                        onClick={() => openPdfPreview(appDocs[0], app)}
                       >
-                        <ExternalLink size={12} /> PDF
+                        <Eye size={12} /> PDF
                       </Button>
                     )}
 
@@ -569,8 +588,8 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
                     <p className="text-xs font-mono font-semibold text-foreground truncate">#{doc.application_number}</p>
                     <p className="text-[11px] text-muted-foreground truncate">{doc.original_filename}</p>
                   </div>
-                  <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => openScannedDocument(doc.storage_path)}>
-                    <ExternalLink size={12} /> PDF
+                  <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => openPdfPreview(doc)}>
+                    <Eye size={12} /> PDF
                   </Button>
                 </div>
               ))}
@@ -718,6 +737,43 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
               </>
             );
           })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* PDF Preview Dialog - Split View */}
+      <Dialog open={!!pdfPreviewDoc} onOpenChange={(open) => !open && closePdfPreview()}>
+        <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
+          <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
+            <DialogTitle className="flex items-center gap-2 flex-wrap">
+              <FileText className="h-5 w-5 text-primary" />
+              <span>Application #{pdfPreviewDoc?.application_number}</span>
+              {pdfPreviewStudent && (
+                <Badge variant="secondary" className="text-xs">{pdfPreviewStudent.student_name}</Badge>
+              )}
+              {pdfPreviewDoc && (
+                <span className="text-xs text-muted-foreground ml-auto">{pdfPreviewDoc.original_filename}</span>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 flex min-h-0">
+            {/* PDF Viewer */}
+            <div className="flex-1 min-h-0 bg-muted/20">
+              {pdfPreviewLoading ? (
+                <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+                  <svg className="h-4 w-4 animate-spin mr-2" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  Loading PDF…
+                </div>
+              ) : (
+                <PDFBlobPreview key={pdfPreviewDoc?.id || "pdf-preview"} pdfBlob={pdfPreviewBlob} />
+              )}
+            </div>
+            {/* Student Info Sidebar */}
+            {pdfPreviewStudent && (
+              <div className="w-2/5 border-l border-border overflow-y-auto p-4 hidden md:block">
+                <ApplicationFullDetail app={pdfPreviewStudent} schoolName={getSchool(pdfPreviewStudent.school_id)?.name} />
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
