@@ -30,6 +30,11 @@ interface PairItem {
   error?: string;
 }
 
+interface SchoolOption {
+  id: string;
+  name: string;
+}
+
 interface BatchUploaderProps {
   userId: string;
 }
