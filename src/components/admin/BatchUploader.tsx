@@ -306,6 +306,15 @@ const BatchUploader = ({ userId }: BatchUploaderProps) => {
   const abortRef = useRef(false);
   const listRef = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
+  const [schools, setSchools] = useState<SchoolOption[]>([]);
+  const [selectedSchoolId, setSelectedSchoolId] = useState<string>("");
+
+  // Fetch schools list
+  useState(() => {
+    supabase.from("schools").select("id, name").order("name").then(({ data }) => {
+      setSchools((data as SchoolOption[]) || []);
+    });
+  });
 
   const totalCount = pairs.length;
   const progress = totalCount > 0 ? Math.round(((doneCount + errCount) / totalCount) * 100) : 0;
