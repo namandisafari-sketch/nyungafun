@@ -298,29 +298,95 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
   const openPdfPreview = useCallback(async (doc: ScannedDocument, student?: Application | null) => {
     setPdfPreviewDoc(doc);
     setPdfPreviewStudent(student || null);
-    setPdfPreviewUrl(null);
+    setPdfPreviewBlob(null);
     setPdfPreviewLoading(true);
+    setSelectedLinkAppId("");
+    setPdfLinkSearch("");
 
     const { data, error } = await supabase.storage
       .from("scanned-documents")
-      .createSignedUrl(doc.storage_path, 3600);
+      .download(doc.storage_path);
 
-    if (error || !data?.signedUrl) {
+    if (error || !data) {
       toast.error("Failed to load scanned PDF");
       setPdfPreviewLoading(false);
       return;
     }
 
-    setPdfPreviewUrl(data.signedUrl);
+    setPdfPreviewBlob(data);
     setPdfPreviewLoading(false);
   }, []);
 
   const closePdfPreview = useCallback(() => {
     setPdfPreviewDoc(null);
-    setPdfPreviewUrl(null);
+    setPdfPreviewBlob(null);
     setPdfPreviewLoading(false);
     setPdfPreviewStudent(null);
+    setSelectedLinkAppId("");
+    setPdfLinkSearch("");
+    setLinkingPdf(false);
   }, []);
+
+  const linkableApplications = useMemo(() => {
+    const query = pdfLinkSearch.trim().toLowerCase();
+    const normalizedQuery = normalizeApplicationNumber(query);
+    const docNumberKey = normalizeApplicationNumber(pdfPreviewDoc?.application_number);
+
+    const candidates = applications
+      .map((app) => {
+        const registration = app.registration_number || "";
+        const registrationKey = normalizeApplicationNumber(registration);
+        const studentName = app.student_name.toLowerCase();
+        const parentName = app.parent_name.toLowerCase();
+
+        const matchesQuery =
+          !query ||
+          studentName.includes(query) ||
+          parentName.includes(query) ||
+          registration.toLowerCase().includes(query) ||
+          (!!normalizedQuery && registrationKey.includes(normalizedQuery));
+
+        if (!matchesQuery) return null;
+
+        let score = 0;
+        if (docNumberKey && registrationKey && registrationKey === docNumberKey) score += 100;
+        if (query && studentName.startsWith(query)) score += 20;
+        if (query && parentName.startsWith(query)) score += 10;
+
+        return { app, score };
+      })
+      .filter((item): item is { app: Application; score: number } => item !== null)
+      .sort((a, b) => b.score - a.score || a.app.student_name.localeCompare(b.app.student_name))
+      .slice(0, 80)
+      .map((item) => item.app);
+
+    return candidates;
+  }, [applications, pdfLinkSearch, pdfPreviewDoc?.application_number]);
+
+  const linkPdfToStudent = useCallback(async () => {
+    if (!pdfPreviewDoc || !selectedLinkAppId) return;
+
+    setLinkingPdf(true);
+    const { error } = await supabase
+      .from("scanned_documents")
+      .update({ application_id: selectedLinkAppId })
+      .eq("id", pdfPreviewDoc.id);
+
+    if (error) {
+      toast.error("Failed to link PDF to student");
+      setLinkingPdf(false);
+      return;
+    }
+
+    const linkedStudent = applications.find((app) => app.id === selectedLinkAppId) || null;
+    setPdfPreviewStudent(linkedStudent);
+    setPdfPreviewDoc((prev) => (prev ? { ...prev, application_id: selectedLinkAppId } : prev));
+    setSelectedLinkAppId("");
+    setPdfLinkSearch("");
+    setLinkingPdf(false);
+    toast.success("PDF linked to student record");
+    onRefresh();
+  }, [applications, onRefresh, pdfPreviewDoc, selectedLinkAppId]);
 
   const updateNotes = async (appId: string) => {
     const { error } = await supabase.from("applications").update({ admin_notes: editNotesValue } as any).eq("id", appId);
