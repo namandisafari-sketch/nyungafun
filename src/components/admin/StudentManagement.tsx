@@ -21,6 +21,7 @@ import ApplicationEditForm from "./ApplicationEditForm";
 import PrintableApplicationForm from "@/components/register/PrintableApplicationForm";
 import LawyerFormsTab from "./LawyerFormsTab";
 import PDFBlobPreview from "./PDFBlobPreview";
+import PDFApplicationImportForm, { PDFImportFormData, emptyFormData } from "./PDFApplicationImportForm";
 
 import { ApplicationForm } from "@/components/register/types";
 
