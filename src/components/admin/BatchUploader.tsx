@@ -257,7 +257,8 @@ async function processOnePair(item: PairItem, userId: string, schoolId?: string)
         original_filename: item.pdf.name,
         storage_path: storagePath,
         ocr_confidence: confidence,
-      });
+        school_id: schoolId || null,
+      } as any);
 
     if (insertError) throw new Error("DB insert failed: " + insertError.message);
 
