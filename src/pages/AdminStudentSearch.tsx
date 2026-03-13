@@ -52,6 +52,9 @@ const AdminStudentSearch = () => {
 
       setStudents((studentsData as unknown as Student[]) || []);
       setScannedDocuments((scannedData as ScannedDocument[]) || []);
+      const sMap: Record<string, string> = {};
+      (schoolsData || []).forEach((s: any) => { sMap[s.id] = s.name; });
+      setSchoolNames(sMap);
       setLoading(false);
     };
     fetchStudents();
