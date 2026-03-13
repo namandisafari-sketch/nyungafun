@@ -588,8 +588,8 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
                     <p className="text-xs font-mono font-semibold text-foreground truncate">#{doc.application_number}</p>
                     <p className="text-[11px] text-muted-foreground truncate">{doc.original_filename}</p>
                   </div>
-                  <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => openScannedDocument(doc.storage_path)}>
-                    <ExternalLink size={12} /> PDF
+                  <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => openPdfPreview(doc)}>
+                    <Eye size={12} /> PDF
                   </Button>
                 </div>
               ))}
