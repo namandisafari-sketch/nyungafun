@@ -309,12 +309,11 @@ const BatchUploader = ({ userId }: BatchUploaderProps) => {
   const [schools, setSchools] = useState<SchoolOption[]>([]);
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>("");
 
-  // Fetch schools list
-  useState(() => {
+  useEffect(() => {
     supabase.from("schools").select("id, name").order("name").then(({ data }) => {
       setSchools((data as SchoolOption[]) || []);
     });
-  });
+  }, []);
 
   const totalCount = pairs.length;
   const progress = totalCount > 0 ? Math.round(((doneCount + errCount) / totalCount) * 100) : 0;
