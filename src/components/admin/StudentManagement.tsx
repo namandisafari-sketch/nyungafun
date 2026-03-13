@@ -742,37 +742,50 @@ const StudentManagement = ({ applications, schools, expenses, claims, reportCard
 
       {/* PDF Preview Dialog - Split View */}
       <Dialog open={!!pdfPreviewDoc} onOpenChange={(open) => !open && closePdfPreview()}>
-        <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
-          <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
-            <DialogTitle className="flex items-center gap-2 flex-wrap">
-              <FileText className="h-5 w-5 text-primary" />
-              <span>Application #{pdfPreviewDoc?.application_number}</span>
+        <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+          <DialogHeader className="px-4 py-3 border-b border-border shrink-0">
+            <DialogTitle className="flex items-center gap-2 text-sm">
+              <FileText className="h-4 w-4 text-primary" />
+              Application #{pdfPreviewDoc?.application_number}
               {pdfPreviewStudent && (
                 <Badge variant="secondary" className="text-xs">{pdfPreviewStudent.student_name}</Badge>
               )}
-              {pdfPreviewDoc && (
-                <span className="text-xs text-muted-foreground ml-auto">{pdfPreviewDoc.original_filename}</span>
-              )}
+              <span className="text-xs text-muted-foreground ml-auto">{pdfPreviewDoc?.original_filename}</span>
             </DialogTitle>
           </DialogHeader>
           <div className="flex-1 flex min-h-0">
-            {/* PDF Viewer */}
-            <div className="flex-1 min-h-0 bg-muted/20">
+            {/* PDF Viewer - Left */}
+            <div className="w-3/5 min-h-0 bg-muted/10 border-r border-border">
               {pdfPreviewLoading ? (
-                <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-                  <svg className="h-4 w-4 animate-spin mr-2" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                  Loading PDF…
+                <div className="h-full flex items-center justify-center text-muted-foreground text-sm gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Loading PDF…
                 </div>
+              ) : pdfPreviewUrl ? (
+                <iframe
+                  src={pdfPreviewUrl}
+                  className="w-full h-full border-0"
+                  title="PDF Preview"
+                />
               ) : (
-                <PDFBlobPreview key={pdfPreviewDoc?.id || "pdf-preview"} pdfBlob={pdfPreviewBlob} />
+                <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+                  No PDF available
+                </div>
               )}
             </div>
-            {/* Student Info Sidebar */}
-            {pdfPreviewStudent && (
-              <div className="w-2/5 border-l border-border overflow-y-auto p-4 hidden md:block">
-                <ApplicationFullDetail app={pdfPreviewStudent} schoolName={getSchool(pdfPreviewStudent.school_id)?.name} />
-              </div>
-            )}
+            {/* Student Details - Right */}
+            <div className="w-2/5 min-h-0 overflow-y-auto">
+              {pdfPreviewStudent ? (
+                <div className="p-4">
+                  <ApplicationFullDetail app={pdfPreviewStudent} schoolName={getSchool(pdfPreviewStudent.school_id)?.name} />
+                </div>
+              ) : (
+                <div className="p-6 text-center text-sm text-muted-foreground">
+                  <FileText className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                  <p>No student record linked to this document yet.</p>
+                  <p className="text-xs mt-1">Use the batch processing import to create a student record from this PDF.</p>
+                </div>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
