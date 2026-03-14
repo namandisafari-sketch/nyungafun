@@ -209,56 +209,61 @@ export const generateLugandaDocumentHTML = (r: Record<string, any>, signatureUrl
   <!-- SECTION 4 -->
   <p style="margin-top:8px;text-align:justify;margin-bottom:2px"><strong>4 (a)</strong> Kunkomerero yabuli lusoma, alipoota y&rsquo;omuyizi ey&rsquo;olusoma olwo, erireetebwanga ku Kkakkalabizo lya Nyunga Foundation okuva ku ssomero kisobozese okulondoola ensoma y&rsquo;Omwana.</p>
 
-  <p style="margin-left:28px;text-align:justify;margin-top:3px;margin-bottom:2px">Oluvanyuma omuyizi n&rsquo;omuzadde baliyitibwa mu lukiiko kisobozese okwogerako n&rsquo;Omwana, okumanya ebimusomooza ku ssomero, okumuzzaamu amanyi n&rsquo;essubi aleme okuva ku mulamwa gw&rsquo;okusoma n&rsquo;Omuzadde okwogerako naye n&rsquo;okumujjukiza obuvunanyizibwa bwe eri omwana ne ssomero.</p>
-
-  <p style="margin-left:28px;text-align:justify;margin-top:3px;margin-bottom:2px">Oluvanyuma lw&rsquo;olukiiko omuyizi aliwebwanga alipoota y&rsquo;olusoma olwo oluweddeko n&rsquo;ebbaluwa erimuzangayo ku ssomero olusoma olulibanga luddirira. Olw&rsquo;enteekateeka eno n&rsquo;ebirala, Omuzadde aliretanga 50,000/= zokka.</p>
-
-  <p style="margin-left:28px;text-align:justify;margin-top:3px;margin-bottom:2px"><strong>(b)</strong> Essomero lirina okutwala obuvunanyizibwa okusomesa omwana okulaba ng&rsquo;akuuma omutindo kwayingiridde n&rsquo;okusingawo.</p>
-
-  <!-- SECTION 5 -->
-  <p style="margin-top:8px;text-align:justify;margin-bottom:2px"><strong>5.</strong> Okutandika n&rsquo;olusoma olwokubiri (term II) 2026, omuzadde wakusasulanga ${dots(20)} ez&rsquo;ebyetaago by&rsquo;essomero (functional fees) ne ${dots(20)} ez&rsquo;obujjanjabi bwomwana obusookerwako singa abeera alwadde.</p>
-
   <!-- Page 1 footer -->
   <p style="text-align:left;font-size:9pt;margin-top:16px;color:#555"><em>1 | P a g e</em></p>
 
   <!-- PAGE BREAK -->
   <div style="page-break-before:always"></div>
 
-  <!-- PAGE 2: OKUWA OBWEYAMO -->
-  <p style="margin-top:8px;margin-bottom:4px;text-align:justify"><strong><u>OKUWA OBWEYAMO:</u></strong> Ffe abatadeko emikono wano wammanga, nga tetukakiddwa era tutegeera bulungi, tukkirizza okugoberera n&rsquo;okuteekesa mu nkola byonna ebikaanyizidwako nga bwe biri mu kiwandiiko kino.</p>
+  <!-- PAGE 2 content - no indentation, matching original -->
+  <p style="margin-top:6px;text-align:justify;margin-bottom:2px">Oluvanyuma omuyizi n&rsquo;omuzadde baliyitibwa mu lukiiko kisobozese okwogerako n&rsquo;Omwana, okumanya ebimusomooza ku ssomero, okumuzzaamu amanyi n&rsquo;essubi aleme okuva ku mulamwa gw&rsquo;okusoma n&rsquo;Omuzadde okwogerako naye n&rsquo;okumujjukiza obuvunanyizibwa bwe eri omwana ne ssomero.</p>
 
-  <!-- SIGNATURE BLOCKS - matching original (i) through (v) layout -->
-  <div style="margin-top:14px">
+  <p style="text-align:justify;margin-top:3px;margin-bottom:2px">Oluvanyuma lw&rsquo;olukiiko omuyizi aliwebwanga alipoota y&rsquo;olusoma olwo oluweddeko n&rsquo;ebbaluwa erimuzangayo ku ssomero olusoma olulibanga luddirira. Olw&rsquo;enteekateeka eno n&rsquo;ebirala, Omuzadde aliretanga 50,000/= zokka.</p>
+
+  <p style="text-align:justify;margin-top:3px;margin-bottom:2px"><strong>(b)</strong> Essomero lirina okutwala obuvunanyizibwa okusomesa omwana okulaba ng&rsquo;akuuma omutindo kwayingiridde n&rsquo;okusingawo</p>
+
+  <p style="text-align:justify;margin-top:6px;margin-bottom:2px"><strong>5.</strong> Okutandika n&rsquo;olusoma olwokubiri (term II) 2026, omuzadde wakusasulanga ${dots(30)} ez&rsquo;ebyetaago by&rsquo;essomero (functional fees) ne ${dots(30)} ez&rsquo;obujjanjabi bwomwana obusookerwako singa abeera alwadde.</p>
+
+  <!-- OKUWA OBWEYAMO -->
+  <p style="margin-top:10px;margin-bottom:6px;text-align:justify"><strong><u>OKUWA OBWEYAMO:</u></strong> Ffe abatadeko emikono wano wammanga, nga tetukakiddwa era tutegeera bulungi, tukkirizza okugoberera n&rsquo;okuteekesa mu nkola byonna ebikaanyizidwako nga bwe biri mu kiwandiiko kino.</p>
+
+  <!-- SIGNATURE BLOCKS -->
+  <div style="margin-top:12px">
     <p style="margin-bottom:2px"><strong>(i)</strong> &nbsp;&nbsp;&nbsp;<strong>Omuzadde</strong></p>
-    <p style="margin-left:24px;margin-bottom:1px">Erinnya ${dots(30)} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Omukono${signatureUrl ? `<img src="${signatureUrl}" style="height:30px;vertical-align:middle;margin-left:4px"/>` : dots(20)}</p>
-    <p style="margin-left:24px;margin-bottom:1px">Essimu ${dots(30)} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ennaku z&rsquo;Omwezi${dots(20)}</p>
+    <p style="margin-bottom:1px">Erinnya ${dots(40)} Omukono${signatureUrl ? `<img src="${signatureUrl}" style="height:30px;vertical-align:middle;margin-left:4px"/>` : dots(30)}</p>
+    <p style="margin-bottom:1px">&nbsp;</p>
+    <p style="margin-bottom:1px">Essimu ${dots(40)} Ennaku z&rsquo;Omwezi${dots(25)}</p>
   </div>
 
-  <div style="margin-top:10px">
+  <div style="margin-top:8px">
     <p style="margin-bottom:2px"><strong>(ii)</strong> &nbsp;&nbsp;&nbsp;<strong>Omuyizi</strong></p>
-    <p style="margin-left:24px;margin-bottom:1px">Erinnya ${dots(30)} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Omukono${dots(20)} &nbsp; Ennaku z&rsquo;Omwezi${dots(16)}</p>
+    <p style="margin-bottom:1px">Erinnya ${dots(40)} Omukono${dots(30)}</p>
+    <p style="margin-bottom:1px">Ennaku z&rsquo;Omwezi ${dots(30)}</p>
   </div>
 
-  <div style="margin-top:10px">
+  <div style="margin-top:8px">
     <p style="margin-bottom:2px"><strong>(iii)</strong> &nbsp;&nbsp;&nbsp;<strong>Ssenkulu w&rsquo;essomero (Director).</strong></p>
-    <p style="margin-left:24px;margin-bottom:1px">Erinnya ${dots(30)} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Omukono${dots(20)}</p>
-    <p style="margin-left:24px;margin-bottom:1px">Essimu ${dots(30)} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ennaku z&rsquo;Omwezi${dots(20)}</p>
+    <p style="margin-bottom:1px">Erinnya ${dots(40)} Omukono${dots(30)}</p>
+    <p style="margin-bottom:1px">&nbsp;</p>
+    <p style="margin-bottom:1px">Essimu ${dots(40)} Ennaku z&rsquo;Omwezi${dots(25)}</p>
   </div>
 
-  <div style="margin-top:10px">
+  <div style="margin-top:8px">
     <p style="margin-bottom:2px"><strong>(iv)</strong> &nbsp;&nbsp;&nbsp;<strong>Ssenkulu wa Nyunga Foundation</strong></p>
-    <p style="margin-left:24px;margin-bottom:1px">Essimu ${dots(30)} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Omukono${dots(20)}</p>
-    <p style="margin-left:24px;margin-bottom:1px">Erinnya ${dots(30)} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ennaku z&rsquo;Omwezi${dots(20)}</p>
+    <p style="margin-bottom:1px">Erinnya ${dots(40)} Omukono${dots(30)}</p>
+    <p style="margin-bottom:1px">&nbsp;</p>
+    <p style="margin-bottom:1px">Essimu ${dots(40)} Ennaku z&rsquo;Omwezi${dots(25)}</p>
   </div>
 
-  <div style="margin-top:10px">
+  <div style="margin-top:8px">
     <p style="margin-bottom:2px"><strong>(v)</strong> &nbsp;&nbsp;&nbsp;<strong>Munnamateeka alambise enteekateeka eno era avunanyizibwa okugirondoola okukakasa nti</strong></p>
-    <p style="margin-left:24px;margin-bottom:2px"><strong>enteekebwa mu nkola buli muntu okutuukiriza obuvunanyizibwa bwe.</strong></p>
-    <p style="margin-left:24px;margin-bottom:1px">Essimu ${dots(30)} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Omukono <img src="${lawyerSignatureImg}" alt="Advocate Signature" style="height:30px;vertical-align:middle;"/></p>
-    <p style="margin-left:24px;margin-bottom:1px">Erinnya ${dots(30)} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ennaku z&rsquo;Omwezi: ${dateStr}</p>
+    <p style="margin-bottom:2px"><strong>enteekebwa mu nkola buli muntu okutuukiriza obuvunanyizibwa bwe.</strong></p>
+    <p style="margin-bottom:1px">Erinnya${dots(40)} Omukono <img src="${lawyerSignatureImg}" alt="Advocate Signature" style="height:30px;vertical-align:middle;"/></p>
+    <p style="margin-bottom:1px">&nbsp;</p>
+    <p style="margin-bottom:1px">Essimu ${dots(40)} Ennaku z&rsquo;Omwezi: ${dateStr}</p>
   </div>
 
-  <!-- FOOTER with ETEESEGANYA EKOMYE WANO and STAMP -->
+  <!-- FOOTER -->
   <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:20px;padding-top:6px">
     <div>
       <p style="font-weight:bold;font-size:11pt;margin:0"><strong>ETEESEGANYA EKOMYE WANO</strong></p>
