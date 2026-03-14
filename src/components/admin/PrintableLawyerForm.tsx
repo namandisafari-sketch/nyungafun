@@ -168,10 +168,10 @@ export const generateLugandaDocumentHTML = (r: Record<string, any>, signatureUrl
   const fv = (val: string | undefined, n = 40) => val || dots(n);
 
   return `
-<div style="font-family:'Times New Roman',serif;color:#000;background:#fff;padding:30px 70px 30px 70px;max-width:210mm;margin:0 auto;font-size:12pt;line-height:1.7">
+<div style="font-family:'Times New Roman',serif;color:#000;background:#fff;padding:20px 40px 15px 40px;max-width:210mm;margin:0 auto;font-size:12pt;line-height:1.7">
 
-  <!-- HEADER matching original italic underlined style with dotted leaders -->
-  <p style="text-align:center;margin:0 0 2px 0;font-size:12pt">
+  <!-- HEADER - single line title matching original -->
+  <p style="text-align:center;margin:0 0 2px 0;font-size:11.5pt;white-space:nowrap">
     <em><u><strong>ENTEESEGANYA N&rsquo;OKUKKAANYA EBITUUKIDDWAKO WAKATI W&rsquo;ESSOMERO LYA</strong></u></em> ${dots(20)}
   </p>
   <p style="text-align:center;margin:2px 0;font-size:12pt">
