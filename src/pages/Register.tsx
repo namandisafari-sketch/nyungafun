@@ -234,7 +234,7 @@ const Register = () => {
     if (error) {
       toast.error("Failed to submit: " + error.message);
     } else {
-      if (appData?.id && codeVerified && paymentCode) {
+      if (appData?.id && codeVerified && paymentCode && !skipPaymentCode) {
         const verifiedCode = await supabase
           .from("payment_codes")
           .select("id")
