@@ -399,8 +399,14 @@ export type Database = {
       attendance_records: {
         Row: {
           check_in_at: string
+          check_in_coords: Json | null
+          check_in_distance: number | null
           check_out_at: string | null
+          check_out_coords: Json | null
+          check_out_distance: number | null
           created_at: string
+          date: string | null
+          device_fingerprint: string | null
           hours_worked: number | null
           id: string
           status: string | null
@@ -408,8 +414,14 @@ export type Database = {
         }
         Insert: {
           check_in_at?: string
+          check_in_coords?: Json | null
+          check_in_distance?: number | null
           check_out_at?: string | null
+          check_out_coords?: Json | null
+          check_out_distance?: number | null
           created_at?: string
+          date?: string | null
+          device_fingerprint?: string | null
           hours_worked?: number | null
           id?: string
           status?: string | null
@@ -417,8 +429,14 @@ export type Database = {
         }
         Update: {
           check_in_at?: string
+          check_in_coords?: Json | null
+          check_in_distance?: number | null
           check_out_at?: string | null
+          check_out_coords?: Json | null
+          check_out_distance?: number | null
           created_at?: string
+          date?: string | null
+          device_fingerprint?: string | null
           hours_worked?: number | null
           id?: string
           status?: string | null
