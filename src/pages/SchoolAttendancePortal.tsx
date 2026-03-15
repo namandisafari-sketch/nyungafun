@@ -27,6 +27,7 @@ import {
   Loader2,
 } from "lucide-react";
 import nyungaLogo from "@/assets/nyunga-foundation-logo.png";
+import kabejjaLogo from "@/assets/kabejja-logo.png";
 
 interface SchoolOption {
   id: string;
