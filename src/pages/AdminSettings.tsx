@@ -43,6 +43,85 @@ const defaultReceiptConfig: ReceiptConfig = {
   lawyerFormFee: 200000,
 };
 
+const SkipPaymentCodeToggle = () => {
+  const [skipCode, setSkipCode] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "skip_payment_code")
+        .maybeSingle();
+      if (data?.value) {
+        const val = data.value as { enabled?: boolean };
+        setSkipCode(val?.enabled ?? false);
+      }
+      setLoading(false);
+    };
+    fetch();
+  }, []);
+
+  const toggle = async (newValue: boolean) => {
+    const { data: userData } = await supabase.auth.getUser();
+    const val = { enabled: newValue } as any;
+
+    const { data: existing } = await supabase
+      .from("app_settings")
+      .select("id")
+      .eq("key", "skip_payment_code")
+      .maybeSingle();
+
+    let error;
+    if (existing) {
+      ({ error } = await supabase
+        .from("app_settings")
+        .update({ value: val, updated_by: userData.user?.id })
+        .eq("key", "skip_payment_code"));
+    } else {
+      ({ error } = await supabase
+        .from("app_settings")
+        .insert({ key: "skip_payment_code", value: val, updated_by: userData.user?.id }));
+    }
+
+    if (error) {
+      toast.error("Failed to update setting");
+    } else {
+      setSkipCode(newValue);
+      toast.success(newValue ? "Payment code requirement disabled — workers can create applications freely" : "Payment code requirement re-enabled");
+    }
+  };
+
+  if (loading) return null;
+
+  return (
+    <Card>
+      <CardContent className="py-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            {skipCode ? <ShieldOff size={20} className="text-amber-500" /> : <ShieldCheck size={20} className="text-primary" />}
+            <div>
+              <Label className="text-sm font-semibold">Auto-Consume Payment Codes</Label>
+              <p className="text-xs text-muted-foreground">
+                {skipCode
+                  ? "Workers can create applications without entering a payment code"
+                  : "Users must enter a valid payment code before creating an application"}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Badge variant={skipCode ? "secondary" : "outline"} className="gap-1">
+              {skipCode ? "Skip Code" : "Code Required"}
+            </Badge>
+            <Switch checked={skipCode} onCheckedChange={toggle} />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 const AdminSettings = () => {
   const { user } = useAuth();
   const [receiptConfig, setReceiptConfig] = useState<ReceiptConfig>(defaultReceiptConfig);
