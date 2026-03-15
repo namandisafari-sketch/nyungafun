@@ -106,6 +106,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <KabejjaAdPopup />
+          <AIAssistant />
           <AppContent />
         </AuthProvider>
       </BrowserRouter>
