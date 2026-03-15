@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import dataCentreBg from "@/assets/data-centre-bg.png";
 import GlobalSearch from "@/components/GlobalSearch";
 import ShortcutsHelp from "@/components/ShortcutsHelp";
+import kabejjaLogo from "@/assets/kabejja-logo.png";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface DashboardLayoutProps {
