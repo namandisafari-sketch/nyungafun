@@ -475,6 +475,8 @@ const AdminSettings = () => {
         </TabsContent>
 
         <TabsContent value="payments" className="space-y-4">
+          <AdmissionSettings />
+          <SkipPaymentCodeToggle />
           <PaymentCodesSection />
         </TabsContent>
 
