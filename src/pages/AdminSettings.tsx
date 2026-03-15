@@ -100,7 +100,7 @@ const SkipPaymentCodeToggle = () => {
       <CardContent className="py-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            {skipCode ? <ShieldOff size={20} className="text-amber-500" /> : <ShieldCheck size={20} className="text-primary" />}
+            {skipCode ? <ShieldOff size={20} className="text-destructive" /> : <ShieldCheck size={20} className="text-primary" />}
             <div>
               <Label className="text-sm font-semibold">Auto-Consume Payment Codes</Label>
               <p className="text-xs text-muted-foreground">
