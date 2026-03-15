@@ -205,6 +205,7 @@ const AdminSettings = () => {
           <TabsTrigger value="organization" className="gap-1"><Building2 className="h-4 w-4" /> Organization</TabsTrigger>
           <TabsTrigger value="payments" className="gap-1"><Ticket className="h-4 w-4" /> Payments</TabsTrigger>
           <TabsTrigger value="appointments" className="gap-1"><CalendarDays className="h-4 w-4" /> Appointments</TabsTrigger>
+          <TabsTrigger value="domain" className="gap-1"><Globe className="h-4 w-4" /> Domain</TabsTrigger>
         </TabsList>
 
         <TabsContent value="receipt" className="space-y-4">
