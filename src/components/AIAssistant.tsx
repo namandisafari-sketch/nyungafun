@@ -161,7 +161,7 @@ const AIAssistant = () => {
             {messages.length === 0 && (
               <div className="text-center text-muted-foreground text-sm py-8">
                 <Bot className="h-10 w-10 mx-auto mb-3 opacity-40" />
-                <p className="font-medium">Hi! I'm your system assistant.</p>
+                <p className="font-medium">Hi! I'm Nyunga's Helper.</p>
                 <p className="mt-1 text-xs">Ask me anything about the bursary system, its features, database, or workflows.</p>
               </div>
             )}
