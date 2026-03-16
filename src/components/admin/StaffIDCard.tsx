@@ -28,6 +28,7 @@ interface StaffIDCardProps {
   };
   side?: "both" | "front" | "back";
   scale?: number;
+  logoSize?: number;
 }
 
 const BASE_W = 504;
