@@ -35,6 +35,8 @@ import AdminPhotocopying from "./pages/AdminPhotocopying";
 import AdminBatchProcessing from "./pages/AdminBatchProcessing";
 import AdminAttendanceReports from "./pages/AdminAttendanceReports";
 import SchoolAttendancePortal from "./pages/SchoolAttendancePortal";
+import SchoolPerformancePortal from "./pages/SchoolPerformancePortal";
+import AdminPerformanceReports from "./pages/AdminPerformanceReports";
 import KabejjaAdPopup from "./components/KabejjaAdPopup";
 import AIAssistant from "./components/AIAssistant";
 const queryClient = new QueryClient({
