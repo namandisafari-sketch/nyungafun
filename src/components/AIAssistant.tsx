@@ -191,8 +191,8 @@ const AIAssistant = () => {
             {messages.length === 0 && (
               <div className="text-center text-muted-foreground text-sm py-8">
                 <Bot className="h-10 w-10 mx-auto mb-3 opacity-40" />
-                <p className="font-medium">Hi! I'm Nyunga's Helper.</p>
-                <p className="mt-1 text-xs">I can navigate pages, query data, and answer questions about the system.</p>
+                <p className="font-medium">Hi! I'm Pilser AI.</p>
+                <p className="mt-1 text-xs">I was made by Pilser and Earn to humbly serve Nyunga Foundation. I can navigate pages, query data, and answer questions about the system.</p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {["How many students?", "Open applications", "Show pending apps"].map((q) => (
                     <button
