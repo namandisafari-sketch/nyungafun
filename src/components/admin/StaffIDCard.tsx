@@ -55,7 +55,7 @@ const StaffIDCard = ({ staff, side = "both", scale = 1, logoSize = 32 }: StaffID
     >
       {/* Header */}
       <div className="bg-primary px-3 py-1.5 flex items-center gap-2">
-        <img src={nyungaLogo} alt="Nyunga Foundation Logo" className="w-8 h-8 rounded-full object-contain bg-white p-0.5" />
+        <img src={nyungaLogo} alt="Nyunga Foundation Logo" style={{ width: `${logoSize * scale}px`, height: `${logoSize * scale}px` }} className="rounded-full object-contain bg-white p-0.5" />
         <div className="flex-1 min-w-0">
           <p className="text-primary-foreground text-[11px] font-bold tracking-wide leading-tight" style={{ fontSize: `${11 * scale}px` }}>NYUNGA FOUNDATION</p>
           <p className="text-primary-foreground/70 uppercase tracking-widest" style={{ fontSize: `${8 * scale}px` }}>Staff Identity Card</p>
