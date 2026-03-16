@@ -168,7 +168,7 @@ const AIAssistant = () => {
         <button
           onClick={() => setOpen(true)}
           className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform"
-          aria-label="Open Nyunga's Helper"
+          aria-label="Open Pilser AI"
         >
           <Bot className="h-6 w-6" />
         </button>
@@ -180,7 +180,7 @@ const AIAssistant = () => {
           {/* Header */}
           <div className="flex items-center gap-2 px-4 py-3 border-b bg-primary text-primary-foreground">
             <Bot className="h-5 w-5" />
-            <span className="font-semibold text-sm flex-1">Nyunga's Helper</span>
+            <span className="font-semibold text-sm flex-1">Pilser AI</span>
             <button onClick={() => setOpen(false)} className="hover:opacity-70">
               <X className="h-4 w-4" />
             </button>
@@ -191,8 +191,8 @@ const AIAssistant = () => {
             {messages.length === 0 && (
               <div className="text-center text-muted-foreground text-sm py-8">
                 <Bot className="h-10 w-10 mx-auto mb-3 opacity-40" />
-                <p className="font-medium">Hi! I'm Nyunga's Helper.</p>
-                <p className="mt-1 text-xs">I can navigate pages, query data, and answer questions about the system.</p>
+                <p className="font-medium">Hi! I'm Pilser AI.</p>
+                <p className="mt-1 text-xs">I was made by Pilser and Earn to humbly serve Nyunga Foundation. I can navigate pages, query data, and answer questions about the system.</p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {["How many students?", "Open applications", "Show pending apps"].map((q) => (
                     <button
