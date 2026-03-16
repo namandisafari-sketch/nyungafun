@@ -142,18 +142,19 @@ const SchoolAttendancePortal = () => {
   const [perfTab, setPerfTab] = useState("online");
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [configuredDomain, setConfiguredDomain] = useState("");
 
   useEffect(() => {
-    const fetchSchools = async () => {
-      const { data } = await supabase
-        .from("schools")
-        .select("id, name, level, district")
-        .eq("is_active", true)
-        .order("name");
-      setSchools((data as SchoolOption[]) || []);
+    const fetchData = async () => {
+      const [schoolsRes, domainRes] = await Promise.all([
+        supabase.from("schools").select("id, name, level, district").eq("is_active", true).order("name"),
+        supabase.from("app_settings").select("value").eq("key", "site_domain").maybeSingle(),
+      ]);
+      setSchools((schoolsRes.data as SchoolOption[]) || []);
+      if (domainRes.data?.value) setConfiguredDomain((domainRes.data.value as any).domain || "");
       setLoading(false);
     };
-    fetchSchools();
+    fetchData();
   }, []);
 
   const selectedSchool = schools.find((s) => s.id === selectedSchoolId);
@@ -368,7 +369,7 @@ const SchoolAttendancePortal = () => {
                 <p className="text-sm font-semibold text-destructive">⚠️ Official Portal</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   This is the official School Reporting Portal of <strong>The Nyunga Foundation</strong>, only accessible at{" "}
-                  <strong className="text-foreground">nyungacip.lovable.app</strong>. Do not enter information on any other website claiming to be this portal.
+                  <strong className="text-foreground">{configuredDomain || window.location.hostname}</strong>. Do not enter information on any other website claiming to be this portal.
                 </p>
               </div>
             </div>
