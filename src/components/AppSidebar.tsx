@@ -26,6 +26,7 @@ import {
   Printer,
   ScanLine,
   FileUp,
+  BarChart3,
 } from "lucide-react";
 import {
   Sidebar,
