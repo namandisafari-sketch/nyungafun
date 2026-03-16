@@ -180,7 +180,7 @@ const AIAssistant = () => {
           {/* Header */}
           <div className="flex items-center gap-2 px-4 py-3 border-b bg-primary text-primary-foreground">
             <Bot className="h-5 w-5" />
-            <span className="font-semibold text-sm flex-1">Nyunga's Helper</span>
+            <span className="font-semibold text-sm flex-1">Pilser AI</span>
             <button onClick={() => setOpen(false)} className="hover:opacity-70">
               <X className="h-4 w-4" />
             </button>
