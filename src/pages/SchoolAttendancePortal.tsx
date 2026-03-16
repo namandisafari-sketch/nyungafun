@@ -89,8 +89,14 @@ interface StudentScoreEntry {
 const TERMS = ["Term 1", "Term 2", "Term 3"];
 const CURRENT_YEAR = new Date().getFullYear().toString();
 
-const DEFAULT_SUBJECTS_PRIMARY = ["Mathematics", "English", "Science", "Social Studies", "Reading"];
-const DEFAULT_SUBJECTS_SECONDARY = ["Mathematics", "English", "Physics", "Chemistry", "Biology", "History", "Geography", "Commerce"];
+const SUBJECTS_BY_LEVEL: Record<string, string[]> = {
+  nursery: ["Reading", "Writing", "Numeracy", "Oral Work", "Creative Arts", "Physical Education"],
+  primary: ["Mathematics", "English", "Science", "Social Studies", "Reading", "Writing", "Luganda", "Religious Education"],
+  secondary_o: ["Mathematics", "English", "Physics", "Chemistry", "Biology", "History", "Geography", "Commerce", "Computer Studies", "Agriculture"],
+  secondary_a: ["General Paper", "Mathematics", "Physics", "Chemistry", "Biology", "History", "Geography", "Economics", "Entrepreneurship", "Computer Science"],
+  vocational: ["Technical Drawing", "Workshop Practice", "Mathematics", "English", "Entrepreneurship", "ICT", "Theory Subject 1", "Theory Subject 2"],
+  university: ["Course Unit 1", "Course Unit 2", "Course Unit 3", "Course Unit 4", "Course Unit 5", "Course Unit 6"],
+};
 
 const createEmptyStudent = (subjects: string[]): StudentScoreEntry => ({
   name: "",
@@ -118,9 +124,9 @@ const SchoolAttendancePortal = () => {
   const [lookups, setLookups] = useState<Record<number, StudentLookup>>({});
 
   // ---- Performance state ----
-  const [subjectList, setSubjectList] = useState<string[]>(DEFAULT_SUBJECTS_PRIMARY);
+  const [subjectList, setSubjectList] = useState<string[]>(SUBJECTS_BY_LEVEL.primary);
   const [customSubject, setCustomSubject] = useState("");
-  const [perfStudents, setPerfStudents] = useState<StudentScoreEntry[]>([createEmptyStudent(DEFAULT_SUBJECTS_PRIMARY)]);
+  const [perfStudents, setPerfStudents] = useState<StudentScoreEntry[]>([createEmptyStudent(SUBJECTS_BY_LEVEL.primary)]);
   const [perfSubmitting, setPerfSubmitting] = useState(false);
   const [perfSubmitted, setPerfSubmitted] = useState(false);
   const [perfTab, setPerfTab] = useState("online");
@@ -145,8 +151,7 @@ const SchoolAttendancePortal = () => {
   // Update subjects when school changes
   useEffect(() => {
     if (selectedSchool) {
-      const isSecondary = ["secondary_o", "secondary_a"].includes(selectedSchool.level);
-      const newSubjects = isSecondary ? DEFAULT_SUBJECTS_SECONDARY : DEFAULT_SUBJECTS_PRIMARY;
+      const newSubjects = SUBJECTS_BY_LEVEL[selectedSchool.level] || SUBJECTS_BY_LEVEL.primary;
       setSubjectList(newSubjects);
       setPerfStudents([createEmptyStudent(newSubjects)]);
     }
