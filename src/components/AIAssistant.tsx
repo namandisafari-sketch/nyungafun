@@ -97,7 +97,7 @@ const AIAssistant = () => {
       });
     };
 
-    await streamChat({
+    await sendChat({
       messages: allMessages,
       onDelta: upsert,
       onDone: () => setLoading(false),
