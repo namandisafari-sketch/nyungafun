@@ -51,10 +51,10 @@ export const ROLE_MODULE_PRESETS: Record<string, string[]> = {
     "appointments", "bursary-requests", "receipts", "id-cards",
   ],
   data_entrant: [
-    "dashboard", "applications", "students", "student-search",
+    "dashboard", "form-intake", "applications", "students", "student-search",
     "schools", "id-cards",
   ],
-  staff: ["dashboard", "photocopying", "attendance"],
+  staff: ["dashboard", "form-intake", "photocopying", "attendance"],
 };
 
 export function getRoleLabel(role: string): string {
