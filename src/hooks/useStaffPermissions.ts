@@ -47,7 +47,7 @@ export const ROLE_MODULE_PRESETS: Record<string, string[]> = {
     "accounting", "photocopying", "receipts", "materials",
   ],
   secretary: [
-    "dashboard", "applications", "students", "student-search", "schools",
+    "dashboard", "form-intake", "applications", "students", "student-search", "schools",
     "appointments", "bursary-requests", "receipts", "id-cards",
   ],
   data_entrant: [
