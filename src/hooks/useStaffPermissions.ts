@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 // All available modules in the system
 export const ALL_MODULES = [
   { key: "dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+  { key: "form-intake", label: "Form Intake", icon: "ClipboardPen" },
   { key: "applications", label: "Applications", icon: "FileText" },
   { key: "students", label: "Students", icon: "GraduationCap" },
   { key: "student-search", label: "Student Search", icon: "Search" },
