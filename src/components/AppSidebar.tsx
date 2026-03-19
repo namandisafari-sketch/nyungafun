@@ -28,6 +28,7 @@ import {
   FileUp,
   BarChart3,
   ClipboardPen,
+  FileCheck,
 } from "lucide-react";
 import {
   Sidebar,
