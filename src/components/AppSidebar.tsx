@@ -27,6 +27,7 @@ import {
   ScanLine,
   FileUp,
   BarChart3,
+  ClipboardPen,
 } from "lucide-react";
 import {
   Sidebar,
