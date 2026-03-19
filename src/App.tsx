@@ -77,6 +77,7 @@ const AppContent = () => {
       <Route path="/auth" element={user && !sessionStorage.getItem("device_check_pending") ? <Navigate to="/admin" replace /> : <Auth />} />
       <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       <Route path="/admin/form-intake" element={<ProtectedRoute><AdminFormIntake /></ProtectedRoute>} />
+      <Route path="/admin/application-processing" element={<ProtectedRoute><AdminApplicationProcessing /></ProtectedRoute>} />
       <Route path="/admin/applications" element={<ProtectedRoute><AdminApplications /></ProtectedRoute>} />
       <Route path="/admin/students" element={<ProtectedRoute><AdminStudents /></ProtectedRoute>} />
       <Route path="/admin/schools" element={<ProtectedRoute><AdminSchools /></ProtectedRoute>} />
