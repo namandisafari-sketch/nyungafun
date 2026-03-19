@@ -308,7 +308,7 @@ const FormIntakeModule = () => {
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3 text-center">
-            <p className="text-2xl font-bold text-amber-600">{pendingCount}</p>
+            <p className="text-2xl font-bold text-destructive">{pendingCount}</p>
             <p className="text-xs text-muted-foreground">Pending Entry</p>
           </CardContent>
         </Card>
