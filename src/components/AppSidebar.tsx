@@ -28,6 +28,7 @@ import {
   FileUp,
   BarChart3,
   ClipboardPen,
+  FileCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -46,12 +47,13 @@ import {
 const iconMap: Record<string, any> = {
   LayoutDashboard, FileText, GraduationCap, School, Receipt, Settings,
   ShieldCheck, Users, CreditCard, Ticket, Banknote, PieChart, Search,
-  CalendarDays, Link2, Package, Calculator, ClipboardList, HardDrive, Printer, ScanLine, FileUp, BarChart3, ClipboardPen,
+  CalendarDays, Link2, Package, Calculator, ClipboardList, HardDrive, Printer, ScanLine, FileUp, BarChart3, ClipboardPen, FileCheck,
 };
 
 const allAdminItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard, moduleKey: "dashboard" },
   { title: "Form Intake", url: "/admin/form-intake", icon: ClipboardPen, moduleKey: "form-intake" },
+  { title: "Processing", url: "/admin/application-processing", icon: FileCheck, moduleKey: "application-processing" },
   { title: "Applications", url: "/admin/applications", icon: FileText, moduleKey: "applications" },
   { title: "Students", url: "/admin/students", icon: GraduationCap, moduleKey: "students" },
   { title: "Student Search", url: "/admin/student-search", icon: Search, moduleKey: "student-search" },

@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 export const ALL_MODULES = [
   { key: "dashboard", label: "Dashboard", icon: "LayoutDashboard" },
   { key: "form-intake", label: "Form Intake", icon: "ClipboardPen" },
+  { key: "application-processing", label: "Application Processing", icon: "FileCheck" },
   { key: "applications", label: "Applications", icon: "FileText" },
   { key: "students", label: "Students", icon: "GraduationCap" },
   { key: "student-search", label: "Student Search", icon: "Search" },
@@ -47,14 +48,14 @@ export const ROLE_MODULE_PRESETS: Record<string, string[]> = {
     "accounting", "photocopying", "receipts", "materials",
   ],
   secretary: [
-    "dashboard", "form-intake", "applications", "students", "student-search", "schools",
+    "dashboard", "form-intake", "application-processing", "applications", "students", "student-search", "schools",
     "appointments", "bursary-requests", "receipts", "id-cards",
   ],
   data_entrant: [
-    "dashboard", "form-intake", "applications", "students", "student-search",
+    "dashboard", "form-intake", "application-processing", "applications", "students", "student-search",
     "schools", "id-cards",
   ],
-  staff: ["dashboard", "form-intake", "photocopying", "attendance"],
+  staff: ["dashboard", "form-intake", "application-processing", "photocopying", "attendance"],
 };
 
 export function getRoleLabel(role: string): string {

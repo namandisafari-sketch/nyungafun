@@ -38,6 +38,7 @@ import SchoolAttendancePortal from "./pages/SchoolAttendancePortal";
 import SchoolPerformancePortal from "./pages/SchoolPerformancePortal";
 import AdminPerformanceReports from "./pages/AdminPerformanceReports";
 import AdminFormIntake from "./pages/AdminFormIntake";
+import AdminApplicationProcessing from "./pages/AdminApplicationProcessing";
 import KabejjaAdPopup from "./components/KabejjaAdPopup";
 import AIAssistant from "./components/AIAssistant";
 import FakeErrorPage from "./components/FakeErrorPage";
@@ -76,6 +77,7 @@ const AppContent = () => {
       <Route path="/auth" element={user && !sessionStorage.getItem("device_check_pending") ? <Navigate to="/admin" replace /> : <Auth />} />
       <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       <Route path="/admin/form-intake" element={<ProtectedRoute><AdminFormIntake /></ProtectedRoute>} />
+      <Route path="/admin/application-processing" element={<ProtectedRoute><AdminApplicationProcessing /></ProtectedRoute>} />
       <Route path="/admin/applications" element={<ProtectedRoute><AdminApplications /></ProtectedRoute>} />
       <Route path="/admin/students" element={<ProtectedRoute><AdminStudents /></ProtectedRoute>} />
       <Route path="/admin/schools" element={<ProtectedRoute><AdminSchools /></ProtectedRoute>} />
