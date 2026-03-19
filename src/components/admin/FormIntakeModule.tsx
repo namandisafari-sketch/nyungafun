@@ -314,7 +314,7 @@ const FormIntakeModule = () => {
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3 text-center">
-            <p className="text-2xl font-bold text-emerald-600">{enteredCount}</p>
+            <p className="text-2xl font-bold text-primary">{enteredCount}</p>
             <p className="text-xs text-muted-foreground">Data Entered</p>
           </CardContent>
         </Card>
