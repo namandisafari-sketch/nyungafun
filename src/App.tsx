@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import Auth from "./pages/Auth";
@@ -41,9 +41,16 @@ import KabejjaAdPopup from "./components/KabejjaAdPopup";
 import AIAssistant from "./components/AIAssistant";
 import FakeErrorPage from "./components/FakeErrorPage";
 import { useState } from "react";
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
 });
+
+const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request"];
+
+const isObfuscationBypassPath = (pathname: string) => {
+  return OBFUSCATION_BYPASS_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+};
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -104,17 +111,22 @@ const AppContent = () => {
   );
 };
 
-const App = () => {
+const ObfuscationGate = ({ children }: { children: React.ReactNode }) => {
   const [unlocked, setUnlocked] = useState(false);
+  const { pathname } = useLocation();
 
-  // Skip fake error page for public routes
-  const publicPaths = ["/school-attendance", "/school-performance", "/bursary-request"];
-  const isPublicRoute = publicPaths.some((p) => window.location.pathname.startsWith(p));
+  if (isObfuscationBypassPath(pathname)) {
+    return <>{children}</>;
+  }
 
-  if (!unlocked && !isPublicRoute) {
+  if (!unlocked) {
     return <FakeErrorPage onUnlock={() => setUnlocked(true)} />;
   }
 
+  return <>{children}</>;
+};
+
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -122,9 +134,11 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            <KabejjaAdPopup />
-            <AIAssistant />
-            <AppContent />
+            <ObfuscationGate>
+              <KabejjaAdPopup />
+              <AIAssistant />
+              <AppContent />
+            </ObfuscationGate>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
