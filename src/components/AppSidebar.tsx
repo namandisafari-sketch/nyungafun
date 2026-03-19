@@ -52,6 +52,7 @@ const iconMap: Record<string, any> = {
 const allAdminItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard, moduleKey: "dashboard" },
   { title: "Form Intake", url: "/admin/form-intake", icon: ClipboardPen, moduleKey: "form-intake" },
+  { title: "Processing", url: "/admin/application-processing", icon: FileCheck, moduleKey: "application-processing" },
   { title: "Applications", url: "/admin/applications", icon: FileText, moduleKey: "applications" },
   { title: "Students", url: "/admin/students", icon: GraduationCap, moduleKey: "students" },
   { title: "Student Search", url: "/admin/student-search", icon: Search, moduleKey: "student-search" },
