@@ -641,6 +641,62 @@ export type Database = {
           },
         ]
       }
+      form_intake: {
+        Row: {
+          amount_paid: number
+          applicant_name: string
+          created_at: string
+          date_given: string
+          id: string
+          linked_application_id: string | null
+          notes: string | null
+          photo_url: string | null
+          registered_by: string
+          registered_by_name: string | null
+          signature_url: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          applicant_name: string
+          created_at?: string
+          date_given?: string
+          id?: string
+          linked_application_id?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          registered_by: string
+          registered_by_name?: string | null
+          signature_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          applicant_name?: string
+          created_at?: string
+          date_given?: string
+          id?: string
+          linked_application_id?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          registered_by?: string
+          registered_by_name?: string | null
+          signature_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_intake_linked_application_id_fkey"
+            columns: ["linked_application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lawyer_form_submissions: {
         Row: {
           application_id: string
