@@ -29,6 +29,10 @@ import {
   BarChart3,
   ClipboardPen,
   FileCheck,
+  Globe,
+  Newspaper,
+  Layers,
+  Wrench,
 } from "lucide-react";
 import {
   Sidebar,
