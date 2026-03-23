@@ -75,6 +75,9 @@ const allAdminItems = [
   { title: "Performance Reports", url: "/admin/performance-reports", icon: BarChart3, moduleKey: "performance-reports" },
   
   { title: "Attendance", url: "/admin/attendance", icon: CalendarDays, moduleKey: "attendance" },
+  { title: "CMS: Blog", url: "/admin/cms-blog", icon: Newspaper, moduleKey: "cms-blog" },
+  { title: "CMS: Programs", url: "/admin/cms-programs", icon: Layers, moduleKey: "cms-programs" },
+  { title: "CMS: Settings", url: "/admin/cms-settings", icon: Wrench, moduleKey: "cms-settings" },
   { title: "Audit Logs", url: "/admin/audit-logs", icon: ClipboardList, moduleKey: "audit-logs" },
   { title: "Backup", url: "/admin/backup", icon: HardDrive, moduleKey: "backup" },
   { title: "Security", url: "/admin/security", icon: ShieldCheck, moduleKey: "security" },
