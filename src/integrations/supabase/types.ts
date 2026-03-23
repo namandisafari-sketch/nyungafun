@@ -474,6 +474,54 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          image_url: string | null
+          is_published: boolean
+          published_at: string | null
+          read_time: string | null
+          slug: string
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          published_at?: string | null
+          read_time?: string | null
+          slug?: string
+          summary?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          published_at?: string | null
+          read_time?: string | null
+          slug?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       budget_allocations: {
         Row: {
           allocated_amount: number
@@ -597,6 +645,42 @@ export type Database = {
           status?: string
           sub_county?: string | null
           village?: string | null
+        }
+        Relationships: []
+      }
+      cms_programs: {
+        Row: {
+          created_at: string
+          description: string
+          highlights: string[]
+          icon: string
+          id: string
+          is_active: boolean
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          highlights?: string[]
+          icon?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          highlights?: string[]
+          icon?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1388,6 +1472,33 @@ export type Database = {
           total_bursaries?: number
           updated_at?: string
           village?: string | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
         }
         Relationships: []
       }
