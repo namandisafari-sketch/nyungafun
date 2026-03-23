@@ -43,6 +43,8 @@ import KabejjaAdPopup from "./components/KabejjaAdPopup";
 import AIAssistant from "./components/AIAssistant";
 import Index from "./pages/Index";
 import About from "./pages/About";
+import Schools from "./pages/Schools";
+import Programs from "./pages/Programs";
 import FakeErrorPage from "./components/FakeErrorPage";
 import { useState } from "react";
 
