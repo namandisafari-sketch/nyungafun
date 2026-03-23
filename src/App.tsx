@@ -155,6 +155,7 @@ const App = () => {
           <AuthProvider>
             <ObfuscationGate>
               <KabejjaAdPopup />
+              <TikTokFollowPopup />
               <AIAssistant />
               <AppContent />
             </ObfuscationGate>
