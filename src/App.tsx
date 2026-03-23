@@ -164,6 +164,7 @@ const ConditionalAIAssistant = () => {
 
 const App = () => {
   return (
+    <HelmetProvider>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
