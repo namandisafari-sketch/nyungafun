@@ -129,6 +129,7 @@ const AdminRoutes = () => {
       <Route path="/admin/cms-blog" element={<ProtectedRoute><AdminCMSBlog /></ProtectedRoute>} />
       <Route path="/admin/cms-programs" element={<ProtectedRoute><AdminCMSPrograms /></ProtectedRoute>} />
       <Route path="/admin/cms-settings" element={<ProtectedRoute><AdminCMSSettings /></ProtectedRoute>} />
+      <Route path="/admin/courses" element={<ProtectedRoute><AdminCourses /></ProtectedRoute>} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
       <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
