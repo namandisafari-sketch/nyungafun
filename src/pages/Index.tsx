@@ -215,7 +215,7 @@ const Index = () => {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 max-w-5xl text-center">
           <h2 className="font-display text-3xl font-bold text-primary mb-8">Contact Us</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
             <div className="flex flex-col items-center gap-2 p-6 bg-card border border-border rounded-lg">
               <Phone size={24} className="text-secondary" />
               <span className="text-sm text-muted-foreground">Phone</span>
@@ -236,6 +236,43 @@ const Index = () => {
               <span className="text-sm text-muted-foreground">Location</span>
               <span className="text-primary font-medium text-sm text-center leading-relaxed">{contact.location}</span>
             </div>
+          </div>
+
+          {/* Ask a Question Form */}
+          <div className="max-w-xl mx-auto bg-card border border-border rounded-xl p-8 text-left">
+            <div className="flex items-center gap-3 mb-6">
+              <MessageSquare size={24} className="text-secondary" />
+              <h3 className="font-display text-xl font-bold text-primary">Ask Us a Question</h3>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const name = (form.elements.namedItem("name") as HTMLInputElement).value;
+                const phone = (form.elements.namedItem("phone") as HTMLInputElement).value;
+                const message = (form.elements.namedItem("message") as HTMLTextAreaElement).value;
+                const text = `Hello Nyunga Foundation, my name is ${name}. ${message}`;
+                window.open(`https://wa.me/256746960654?text=${encodeURIComponent(text)}`, "_blank");
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">Your Name</label>
+                <input id="name" name="name" required placeholder="Full name" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground" />
+              </div>
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-1">Phone Number</label>
+                <input id="phone" name="phone" required placeholder="07XX XXX XXX" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground" />
+              </div>
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-foreground mb-1">Your Question</label>
+                <textarea id="message" name="message" required rows={3} placeholder="Type your question here..." className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground resize-none" />
+              </div>
+              <button type="submit" className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold text-sm px-6 py-2.5 rounded-md transition-colors flex items-center justify-center gap-2">
+                <Send size={16} /> Send via WhatsApp
+              </button>
+              <p className="text-xs text-muted-foreground text-center">Your message will be sent directly to our WhatsApp line.</p>
+            </form>
           </div>
         </div>
       </section>

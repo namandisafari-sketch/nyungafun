@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import nyungaLogo from "@/assets/nyunga-logo.png";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/programs", label: "Programs" },
   { to: "/schools", label: "Partner Schools" },
+  { to: "/gallery", label: "Gallery" },
   { to: "/about", label: "About Us" },
 ];
 
@@ -39,11 +40,15 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
+          <ThemeToggle />
         </div>
 
-        <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
-          {open ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button className="text-foreground" onClick={() => setOpen(!open)}>
+            {open ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {open && (
