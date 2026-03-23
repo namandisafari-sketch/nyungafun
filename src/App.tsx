@@ -43,6 +43,7 @@ import AdminCMSBlog from "./pages/AdminCMSBlog";
 import AdminCMSPrograms from "./pages/AdminCMSPrograms";
 import AdminCMSSettings from "./pages/AdminCMSSettings";
 import KabejjaAdPopup from "./components/KabejjaAdPopup";
+import TikTokFollowPopup from "./components/TikTokFollowPopup";
 import AIAssistant from "./components/AIAssistant";
 import Index from "./pages/Index";
 import About from "./pages/About";
