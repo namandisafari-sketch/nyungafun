@@ -52,7 +52,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
 });
 
-const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request", "/about"];
+const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request", "/about", "/schools", "/programs"];
 
 const isObfuscationBypassPath = (pathname: string) => {
   if (pathname === "/") return true;
