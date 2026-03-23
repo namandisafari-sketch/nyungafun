@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
 
   const { data: insertedSchools, error: schoolErr } = await supabase
     .from("schools")
-    .upsert(schools, { onConflict: "name" })
+    .insert(schools)
     .select("id, name");
 
   if (schoolErr) return new Response(JSON.stringify({ error: schoolErr.message }), { status: 500, headers: corsHeaders });
