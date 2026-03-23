@@ -33,6 +33,7 @@ import {
   Newspaper,
   Layers,
   Wrench,
+  BookOpen,
 } from "lucide-react";
 import {
   Sidebar,
