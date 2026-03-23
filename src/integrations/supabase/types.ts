@@ -1827,6 +1827,53 @@ export type Database = {
           },
         ]
       }
+      university_courses: {
+        Row: {
+          course_name: string
+          created_at: string
+          duration: string | null
+          faculty: string | null
+          id: string
+          is_active: boolean
+          qualification: string | null
+          school_id: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          course_name: string
+          created_at?: string
+          duration?: string | null
+          faculty?: string | null
+          id?: string
+          is_active?: boolean
+          qualification?: string | null
+          school_id?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          course_name?: string
+          created_at?: string
+          duration?: string | null
+          faculty?: string | null
+          id?: string
+          is_active?: boolean
+          qualification?: string | null
+          school_id?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "university_courses_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
