@@ -19,11 +19,11 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
-      <div className="container mx-auto flex items-center justify-between h-16 px-4">
-        <Link to="/" className="flex items-center gap-3">
-          <img src={nyungaLogo} alt="Nyunga Foundation" className="h-10 w-10 object-contain" />
+      <div className="container mx-auto flex items-center justify-between h-20 px-4">
+        <Link to="/" className="flex items-center gap-3 h-full py-2">
+          <img src={nyungaLogo} alt="Nyunga Foundation" className="h-full w-auto object-contain" />
           <div className="hidden sm:block leading-tight">
-            <span className="font-display text-lg font-bold text-primary block">Nyunga Foundation</span>
+            <span className="font-display text-xl font-bold text-primary block">Nyunga Foundation</span>
             <span className="text-xs text-muted-foreground italic">"Still there's Hope"</span>
           </div>
         </Link>
