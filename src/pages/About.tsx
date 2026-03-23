@@ -1,12 +1,18 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, Target, Eye, ArrowRight } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import nyungaLogo from "@/assets/nyunga-logo.png";
 
 const About = () => (
-  <div className="bg-background">
+  <div className="min-h-screen flex flex-col">
+    <Navbar />
+
     {/* Header */}
     <section className="py-20 bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 text-center max-w-3xl">
+        <img src={nyungaLogo} alt="Nyunga Foundation" className="w-24 mx-auto mb-6" />
         <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">About Nyunga Foundation</h1>
         <p className="text-primary-foreground/80 text-lg">"Still there's Hope" — empowering Uganda's youth through education since day one.</p>
       </div>
@@ -72,17 +78,19 @@ const About = () => (
     </section>
 
     {/* CTA */}
-    <section className="py-20">
+    <section className="py-20 bg-primary">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="font-display text-3xl font-bold text-primary mb-4">Ready to Apply?</h2>
-        <p className="text-muted-foreground mb-8 max-w-md mx-auto">Submit your bursary request online. If approved, you'll visit our office to complete the full application.</p>
-        <Link to="/register">
+        <h2 className="font-display text-3xl font-bold text-primary-foreground mb-4">Ready to Apply?</h2>
+        <p className="text-primary-foreground/80 mb-8 max-w-md mx-auto">Submit your bursary request online. If approved, you'll visit our office to complete the full application.</p>
+        <Link to="/bursary-request">
           <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold gap-2">
             Apply Now <ArrowRight size={18} />
           </Button>
         </Link>
       </div>
     </section>
+
+    <Footer />
   </div>
 );
 

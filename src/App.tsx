@@ -41,6 +41,8 @@ import AdminFormIntake from "./pages/AdminFormIntake";
 import AdminApplicationProcessing from "./pages/AdminApplicationProcessing";
 import KabejjaAdPopup from "./components/KabejjaAdPopup";
 import AIAssistant from "./components/AIAssistant";
+import Index from "./pages/Index";
+import About from "./pages/About";
 import FakeErrorPage from "./components/FakeErrorPage";
 import { useState } from "react";
 
@@ -48,9 +50,10 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
 });
 
-const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request"];
+const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request", "/about"];
 
 const isObfuscationBypassPath = (pathname: string) => {
+  if (pathname === "/") return true;
   return OBFUSCATION_BYPASS_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 };
 
@@ -105,11 +108,12 @@ const AppContent = () => {
       <Route path="/school-attendance" element={<SchoolAttendancePortal />} />
       <Route path="/school-performance" element={<SchoolAttendancePortal />} />
       <Route path="/bursary-request" element={<BursaryRequest />} />
+      <Route path="/about" element={<About />} />
       <Route path="/admin/performance-reports" element={<ProtectedRoute><AdminPerformanceReports /></ProtectedRoute>} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
       <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
-      <Route path="/" element={user ? <Navigate to="/admin" replace /> : <Navigate to="/auth" replace />} />
+      <Route path="/" element={<Index />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
