@@ -213,9 +213,9 @@ const Index = () => {
 
       {/* Contact */}
       <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4 max-w-3xl text-center">
+        <div className="container mx-auto px-4 max-w-5xl text-center">
           <h2 className="font-display text-3xl font-bold text-primary mb-8">Contact Us</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <div className="flex flex-col items-center gap-2 p-6 bg-card border border-border rounded-lg">
               <Phone size={24} className="text-secondary" />
               <span className="text-sm text-muted-foreground">Phone</span>
