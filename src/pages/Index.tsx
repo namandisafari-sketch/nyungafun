@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { GraduationCap, Users, BookOpen, Heart, MapPin, Phone, Mail, AlertTriangle, ShieldAlert, ArrowRight, Calendar, Clock } from "lucide-react";
+import { GraduationCap, Users, BookOpen, Heart, MapPin, Phone, Mail, AlertTriangle, ShieldAlert, ArrowRight, Calendar, Clock, MessageSquare, Send } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import nyungaLogo from "@/assets/nyunga-logo.png";
