@@ -83,6 +83,7 @@ const allAdminItems = [
   { title: "CMS: Blog", url: "/admin/cms-blog", icon: Newspaper, moduleKey: "cms-blog" },
   { title: "CMS: Programs", url: "/admin/cms-programs", icon: Layers, moduleKey: "cms-programs" },
   { title: "CMS: Settings", url: "/admin/cms-settings", icon: Wrench, moduleKey: "cms-settings" },
+  { title: "CMS: Courses", url: "/admin/courses", icon: BookOpen, moduleKey: "cms-courses" },
   { title: "Audit Logs", url: "/admin/audit-logs", icon: ClipboardList, moduleKey: "audit-logs" },
   { title: "Backup", url: "/admin/backup", icon: HardDrive, moduleKey: "backup" },
   { title: "Security", url: "/admin/security", icon: ShieldCheck, moduleKey: "security" },
