@@ -72,6 +72,7 @@ const AdminCMSSettings = () => {
           <TabsTrigger value="about">About</TabsTrigger>
           <TabsTrigger value="stats">Statistics</TabsTrigger>
           <TabsTrigger value="contact">Contact</TabsTrigger>
+          <TabsTrigger value="social">Social Media</TabsTrigger>
         </TabsList>
 
         <TabsContent value="hero">
