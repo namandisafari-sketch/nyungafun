@@ -49,14 +49,18 @@ import Index from "./pages/Index";
 import About from "./pages/About";
 import Schools from "./pages/Schools";
 import Programs from "./pages/Programs";
+import Gallery from "./pages/Gallery";
 import FakeErrorPage from "./components/FakeErrorPage";
+import { ThemeProvider } from "next-themes";
 import { useState } from "react";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
 });
 
-const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request", "/about", "/schools", "/programs"];
+const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request", "/about", "/schools", "/programs", "/gallery"];
+
+const PUBLIC_PATHS = ["/", "/about", "/schools", "/programs", "/gallery", "/bursary-request", "/school-attendance", "/school-performance"];
 
 const isObfuscationBypassPath = (pathname: string) => {
   if (pathname === "/") return true;
@@ -117,6 +121,7 @@ const AppContent = () => {
       <Route path="/about" element={<About />} />
       <Route path="/schools" element={<Schools />} />
       <Route path="/programs" element={<Programs />} />
+      <Route path="/gallery" element={<Gallery />} />
       <Route path="/admin/performance-reports" element={<ProtectedRoute><AdminPerformanceReports /></ProtectedRoute>} />
       <Route path="/admin/cms-blog" element={<ProtectedRoute><AdminCMSBlog /></ProtectedRoute>} />
       <Route path="/admin/cms-programs" element={<ProtectedRoute><AdminCMSPrograms /></ProtectedRoute>} />
@@ -145,24 +150,37 @@ const ObfuscationGate = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const isPublicPath = (pathname: string) => {
+  if (pathname === "/") return true;
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+};
+
+const ConditionalAIAssistant = () => {
+  const { pathname } = useLocation();
+  if (isPublicPath(pathname)) return null;
+  return <AIAssistant />;
+};
+
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <ObfuscationGate>
-              <KabejjaAdPopup />
-              <TikTokFollowPopup />
-              <AIAssistant />
-              <AppContent />
-            </ObfuscationGate>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AuthProvider>
+              <ObfuscationGate>
+                <KabejjaAdPopup />
+                <TikTokFollowPopup />
+                <ConditionalAIAssistant />
+                <AppContent />
+              </ObfuscationGate>
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 
