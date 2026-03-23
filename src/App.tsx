@@ -107,11 +107,12 @@ const AppContent = () => {
       <Route path="/school-attendance" element={<SchoolAttendancePortal />} />
       <Route path="/school-performance" element={<SchoolAttendancePortal />} />
       <Route path="/bursary-request" element={<BursaryRequest />} />
+      <Route path="/about" element={<About />} />
       <Route path="/admin/performance-reports" element={<ProtectedRoute><AdminPerformanceReports /></ProtectedRoute>} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
       <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
-      <Route path="/" element={user ? <Navigate to="/admin" replace /> : <Navigate to="/auth" replace />} />
+      <Route path="/" element={<Index />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
