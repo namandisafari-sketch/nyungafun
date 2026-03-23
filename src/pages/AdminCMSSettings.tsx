@@ -28,6 +28,7 @@ const AdminCMSSettings = () => {
   const [about, setAbout] = useState({ title: "", content: "", content2: "" });
   const [contact, setContact] = useState({ phone: "", email: "", location: "" });
   const [stats, setStats] = useState([{ value: "", label: "" }, { value: "", label: "" }, { value: "", label: "" }]);
+  const [social, setSocial] = useState({ tiktok: "", facebook: "", instagram: "", youtube: "", twitter: "", linkedin: "", whatsapp: "" });
 
   useEffect(() => {
     if (settings) {
@@ -35,6 +36,7 @@ const AdminCMSSettings = () => {
       if (settings.about) setAbout(settings.about.value as any);
       if (settings.contact) setContact(settings.contact.value as any);
       if (settings.stats) setStats(settings.stats.value as any);
+      if (settings.social) setSocial({ tiktok: "", facebook: "", instagram: "", youtube: "", twitter: "", linkedin: "", whatsapp: "", ...(settings.social.value as any) });
     }
   }, [settings]);
 
@@ -70,6 +72,7 @@ const AdminCMSSettings = () => {
           <TabsTrigger value="about">About</TabsTrigger>
           <TabsTrigger value="stats">Statistics</TabsTrigger>
           <TabsTrigger value="contact">Contact</TabsTrigger>
+          <TabsTrigger value="social">Social Media</TabsTrigger>
         </TabsList>
 
         <TabsContent value="hero">
@@ -127,6 +130,34 @@ const AdminCMSSettings = () => {
               <div><Label>Location</Label><Input value={contact.location} onChange={(e) => setContact({ ...contact, location: e.target.value })} /></div>
               <Button onClick={() => saveMutation.mutate({ key: "contact", value: contact })} disabled={saveMutation.isPending}>
                 <Save className="h-4 w-4 mr-2" /> Save Contact
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="social">
+          <Card>
+            <CardHeader><CardTitle>Social Media Links</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              {([
+                ["tiktok", "TikTok URL"],
+                ["facebook", "Facebook URL"],
+                ["instagram", "Instagram URL"],
+                ["youtube", "YouTube URL"],
+                ["twitter", "Twitter / X URL"],
+                ["linkedin", "LinkedIn URL"],
+                ["whatsapp", "WhatsApp Channel URL"],
+              ] as const).map(([key, label]) => (
+                <div key={key}>
+                  <Label>{label}</Label>
+                  <Input
+                    placeholder={`https://...`}
+                    value={(social as any)[key] || ""}
+                    onChange={(e) => setSocial({ ...social, [key]: e.target.value })}
+                  />
+                </div>
+              ))}
+              <Button onClick={() => saveMutation.mutate({ key: "social", value: social })} disabled={saveMutation.isPending}>
+                <Save className="h-4 w-4 mr-2" /> Save Social Links
               </Button>
             </CardContent>
           </Card>
