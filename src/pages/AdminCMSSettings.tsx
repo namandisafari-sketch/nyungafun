@@ -28,6 +28,7 @@ const AdminCMSSettings = () => {
   const [about, setAbout] = useState({ title: "", content: "", content2: "" });
   const [contact, setContact] = useState({ phone: "", email: "", location: "" });
   const [stats, setStats] = useState([{ value: "", label: "" }, { value: "", label: "" }, { value: "", label: "" }]);
+  const [social, setSocial] = useState({ tiktok: "", facebook: "", instagram: "", youtube: "", twitter: "", linkedin: "", whatsapp: "" });
 
   useEffect(() => {
     if (settings) {
