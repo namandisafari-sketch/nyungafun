@@ -49,7 +49,9 @@ import Index from "./pages/Index";
 import About from "./pages/About";
 import Schools from "./pages/Schools";
 import Programs from "./pages/Programs";
+import Gallery from "./pages/Gallery";
 import FakeErrorPage from "./components/FakeErrorPage";
+import { ThemeProvider } from "next-themes";
 import { useState } from "react";
 
 const queryClient = new QueryClient({
