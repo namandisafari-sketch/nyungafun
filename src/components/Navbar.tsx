@@ -6,6 +6,8 @@ import nyungaLogo from "@/assets/nyunga-logo.png";
 
 const navLinks = [
   { to: "/", label: "Home" },
+  { to: "/programs", label: "Programs" },
+  { to: "/schools", label: "Partner Schools" },
   { to: "/about", label: "About Us" },
 ];
 

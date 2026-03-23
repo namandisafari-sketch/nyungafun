@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { GraduationCap, Users, BookOpen, Heart, MapPin, Phone, Mail, AlertTriangle, Newspaper, ShieldAlert } from "lucide-react";
+import { GraduationCap, Users, BookOpen, Heart, MapPin, Phone, Mail, AlertTriangle, ShieldAlert, ArrowRight, Calendar, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import nyungaLogo from "@/assets/nyunga-logo.png";
@@ -10,21 +10,38 @@ const stats = [
   { icon: BookOpen, value: "50+", label: "Partner Schools" },
 ];
 
-const newsItems = [
+const blogPosts = [
   {
-    date: "March 2026",
+    date: "March 15, 2026",
+    readTime: "3 min read",
+    category: "Announcement",
     title: "Nyunga Foundation Launches Official Website",
-    summary: "We are excited to announce the launch of our official website at www.nyungafoundation.com — the only authentic online presence of the Foundation.",
+    summary: "We are excited to announce the launch of our official website at www.nyungafoundation.com — the only authentic online presence of the Foundation. This platform will serve as the central hub for all our communications, updates, and bursary application processes.",
+    slug: "#",
   },
   {
-    date: "February 2026",
+    date: "February 20, 2026",
+    readTime: "4 min read",
+    category: "Impact Report",
     title: "Term 1 Support Distribution Completed",
-    summary: "Over 300 students across 40+ partner schools received scholastic materials and tuition support for Term 1, 2026.",
+    summary: "Over 300 students across 40+ partner schools received scholastic materials and tuition support for Term 1, 2026. This term saw a 25% increase in the number of beneficiaries compared to last year, as the Foundation expanded its reach into new districts.",
+    slug: "#",
   },
   {
-    date: "January 2026",
+    date: "January 10, 2026",
+    readTime: "2 min read",
+    category: "Partnership",
     title: "New Partner Schools Onboarded",
-    summary: "Nyunga Foundation has expanded its network by partnering with 12 additional schools across central and eastern Uganda.",
+    summary: "Nyunga Foundation has expanded its network by partnering with 12 additional schools across central and eastern Uganda. These schools meet our strict quality and accountability standards, ensuring the best learning environment for our beneficiaries.",
+    slug: "#",
+  },
+  {
+    date: "December 5, 2025",
+    readTime: "5 min read",
+    category: "Success Story",
+    title: "From Village to University — Sarah's Journey",
+    summary: "Sarah Namuddu, a Nyunga Foundation beneficiary since primary school, has been admitted to Makerere University to study Medicine. Her story is a testament to what education support can achieve when given to the right hands.",
+    slug: "#",
   },
 ];
 
@@ -46,11 +63,18 @@ const Index = () => {
               <p className="text-primary-foreground/90 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
                 Transforming lives in Uganda through education. The Nyunga Foundation identifies and supports bright but financially disadvantaged students — because every child deserves a chance to learn.
               </p>
-              <Link to="/about">
-                <button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold text-base px-8 py-3 rounded-md transition-colors">
-                  Learn About Us
-                </button>
-              </Link>
+              <div className="flex flex-wrap gap-4">
+                <Link to="/about">
+                  <button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold text-base px-8 py-3 rounded-md transition-colors">
+                    Learn About Us
+                  </button>
+                </Link>
+                <Link to="/programs">
+                  <button className="border-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-semibold text-base px-8 py-3 rounded-md transition-colors">
+                    Our Programs
+                  </button>
+                </Link>
+              </div>
             </div>
             <div className="flex-shrink-0">
               <img src={nyungaLogo} alt="Nyunga Foundation Logo" className="w-48 md:w-72 lg:w-80 drop-shadow-2xl" />
@@ -87,42 +111,97 @@ const Index = () => {
         </div>
       </section>
 
-      {/* What We Do */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-primary text-center mb-10">What We Do</h2>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {[
-              "Tuition fee support",
-              "Scholastic materials",
-              "School uniforms",
-              "Boarding fees",
-              "Examination fees",
-              "Mentorship programs",
-            ].map((item) => (
-              <div key={item} className="flex items-center gap-3 bg-card border border-border rounded-lg p-5">
-                <Heart size={18} className="text-secondary shrink-0" />
-                <span className="text-foreground font-medium">{item}</span>
-              </div>
-            ))}
+      {/* Quick Links */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Link to="/programs" className="group bg-card border border-border rounded-xl p-8 hover:shadow-lg hover:border-secondary/30 transition-all">
+              <Heart size={32} className="text-secondary mb-4" />
+              <h3 className="font-display text-xl font-bold text-primary mb-2 group-hover:text-secondary transition-colors">Our Programs</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-4">Discover how we support students from nursery to university through our various programs.</p>
+              <span className="text-secondary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                Learn more <ArrowRight size={14} />
+              </span>
+            </Link>
+            <Link to="/schools" className="group bg-card border border-border rounded-xl p-8 hover:shadow-lg hover:border-secondary/30 transition-all">
+              <BookOpen size={32} className="text-secondary mb-4" />
+              <h3 className="font-display text-xl font-bold text-primary mb-2 group-hover:text-secondary transition-colors">Partner Schools</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-4">View the 50+ schools we partner with across Uganda to provide quality education.</p>
+              <span className="text-secondary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                View schools <ArrowRight size={14} />
+              </span>
+            </Link>
+            <Link to="/about" className="group bg-card border border-border rounded-xl p-8 hover:shadow-lg hover:border-secondary/30 transition-all sm:col-span-2 lg:col-span-1">
+              <Users size={32} className="text-secondary mb-4" />
+              <h3 className="font-display text-xl font-bold text-primary mb-2 group-hover:text-secondary transition-colors">About Us</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-4">Learn about our mission, vision, values and the impact we've made in Ugandan communities.</p>
+              <span className="text-secondary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                Read more <ArrowRight size={14} />
+              </span>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* News */}
+      {/* Blog Posts */}
       <section className="py-20 bg-background">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="flex items-center justify-center gap-3 mb-10">
-            <Newspaper size={28} className="text-secondary" />
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-primary">Latest News</h2>
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="text-center mb-12">
+            <p className="text-secondary font-semibold text-sm uppercase tracking-wide mb-2">From Our Blog</p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-primary">Latest News & Stories</h2>
           </div>
-          <div className="space-y-6">
-            {newsItems.map((item) => (
-              <div key={item.title} className="bg-card border border-border rounded-lg p-6">
-                <span className="text-xs font-semibold text-secondary uppercase tracking-wide">{item.date}</span>
-                <h3 className="font-display text-lg font-bold text-primary mt-1 mb-2">{item.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{item.summary}</p>
+
+          {/* Featured post */}
+          <article className="bg-card border border-border rounded-xl overflow-hidden mb-8 hover:shadow-lg transition-shadow">
+            <div className="p-8 md:p-10">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <span className="bg-secondary/10 text-secondary text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full">
+                  {blogPosts[0].category}
+                </span>
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Calendar size={12} /> {blogPosts[0].date}
+                </span>
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock size={12} /> {blogPosts[0].readTime}
+                </span>
               </div>
+              <h3 className="font-display text-2xl md:text-3xl font-bold text-primary mb-4 leading-tight">
+                {blogPosts[0].title}
+              </h3>
+              <p className="text-muted-foreground text-base leading-relaxed mb-6 max-w-2xl">
+                {blogPosts[0].summary}
+              </p>
+              <span className="text-secondary font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all cursor-pointer">
+                Read full article <ArrowRight size={14} />
+              </span>
+            </div>
+          </article>
+
+          {/* Post grid */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {blogPosts.slice(1).map((post) => (
+              <article key={post.title} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-shadow group">
+                <div className="h-2 bg-secondary/20 group-hover:bg-secondary transition-colors" />
+                <div className="p-6">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="bg-secondary/10 text-secondary text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full">
+                      {post.category}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                      <Calendar size={10} /> {post.date}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-lg font-bold text-primary mb-3 leading-snug group-hover:text-secondary transition-colors">
+                    {post.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
+                    {post.summary}
+                  </p>
+                  <span className="text-secondary text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all cursor-pointer">
+                    Read more <ArrowRight size={12} />
+                  </span>
+                </div>
+              </article>
             ))}
           </div>
         </div>
