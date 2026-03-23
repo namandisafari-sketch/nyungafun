@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { useAppMode } from "@/hooks/useDomainRouting";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminApplications from "./pages/AdminApplications";
@@ -51,6 +52,7 @@ import About from "./pages/About";
 import Schools from "./pages/Schools";
 import Programs from "./pages/Programs";
 import Gallery from "./pages/Gallery";
+import Courses from "./pages/Courses";
 import FakeErrorPage from "./components/FakeErrorPage";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
@@ -59,14 +61,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
 });
 
-const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request", "/about", "/schools", "/programs", "/gallery"];
-
-const PUBLIC_PATHS = ["/", "/about", "/schools", "/programs", "/gallery", "/bursary-request", "/school-attendance", "/school-performance"];
-
-const isObfuscationBypassPath = (pathname: string) => {
-  if (pathname === "/") return true;
-  return OBFUSCATION_BYPASS_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
-};
+const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request", "/about", "/schools", "/programs", "/gallery", "/courses"];
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -75,15 +70,78 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <DashboardLayout>{children}</DashboardLayout>;
 };
 
-const AppContent = () => {
+/** Public-only routes (www.nyungafoundation.com) */
+const PublicRoutes = () => (
+  <Routes>
+    <Route path="/" element={<Index />} />
+    <Route path="/about" element={<About />} />
+    <Route path="/schools" element={<Schools />} />
+    <Route path="/programs" element={<Programs />} />
+    <Route path="/gallery" element={<Gallery />} />
+    <Route path="/courses" element={<Courses />} />
+    <Route path="/bursary-request" element={<BursaryRequest />} />
+    <Route path="/school-attendance" element={<SchoolAttendancePortal />} />
+    <Route path="/school-performance" element={<SchoolAttendancePortal />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
+
+/** Admin-only routes (data.nyungafoundation.com) */
+const AdminRoutes = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
+  }
+
+  return (
+    <Routes>
+      <Route path="/auth" element={user && !sessionStorage.getItem("device_check_pending") ? <Navigate to="/admin" replace /> : <Auth />} />
+      <Route path="/" element={user ? <Navigate to="/admin" replace /> : <Navigate to="/auth" replace />} />
+      <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/form-intake" element={<ProtectedRoute><AdminFormIntake /></ProtectedRoute>} />
+      <Route path="/admin/application-processing" element={<ProtectedRoute><AdminApplicationProcessing /></ProtectedRoute>} />
+      <Route path="/admin/applications" element={<ProtectedRoute><AdminApplications /></ProtectedRoute>} />
+      <Route path="/admin/students" element={<ProtectedRoute><AdminStudents /></ProtectedRoute>} />
+      <Route path="/admin/schools" element={<ProtectedRoute><AdminSchools /></ProtectedRoute>} />
+      <Route path="/admin/receipts" element={<ProtectedRoute><AdminReceipts /></ProtectedRoute>} />
+      <Route path="/admin/id-cards" element={<ProtectedRoute><AdminIDCards /></ProtectedRoute>} />
+      <Route path="/admin/payments" element={<ProtectedRoute><AdminPayments /></ProtectedRoute>} />
+      <Route path="/admin/payment-history" element={<ProtectedRoute><AdminPaymentHistory /></ProtectedRoute>} />
+      <Route path="/admin/payments-dashboard" element={<ProtectedRoute><AdminPaymentsDashboard /></ProtectedRoute>} />
+      <Route path="/admin/student-search" element={<ProtectedRoute><AdminStudentSearch /></ProtectedRoute>} />
+      <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+      <Route path="/admin/bursary-requests" element={<ProtectedRoute><AdminBursaryRequests /></ProtectedRoute>} />
+      <Route path="/admin/appointments" element={<ProtectedRoute><AdminAppointments /></ProtectedRoute>} />
+      <Route path="/admin/passport-photo" element={<ProtectedRoute><AdminPassportPhoto /></ProtectedRoute>} />
+      <Route path="/admin/security" element={<ProtectedRoute><AdminSecurity /></ProtectedRoute>} />
+      <Route path="/admin/attendance" element={<ProtectedRoute><AdminAttendance /></ProtectedRoute>} />
+      <Route path="/admin/staff" element={<ProtectedRoute><AdminStaff /></ProtectedRoute>} />
+      <Route path="/admin/materials" element={<ProtectedRoute><AdminMaterials /></ProtectedRoute>} />
+      <Route path="/admin/accounting" element={<ProtectedRoute><AdminAccounting /></ProtectedRoute>} />
+      <Route path="/admin/audit-logs" element={<ProtectedRoute><AdminAuditLogs /></ProtectedRoute>} />
+      <Route path="/admin/backup" element={<ProtectedRoute><AdminBackup /></ProtectedRoute>} />
+      <Route path="/admin/photocopying" element={<ProtectedRoute><AdminPhotocopying /></ProtectedRoute>} />
+      <Route path="/admin/batch-processing" element={<ProtectedRoute><AdminBatchProcessing /></ProtectedRoute>} />
+      <Route path="/admin/attendance-reports" element={<ProtectedRoute><AdminAttendanceReports /></ProtectedRoute>} />
+      <Route path="/admin/performance-reports" element={<ProtectedRoute><AdminPerformanceReports /></ProtectedRoute>} />
+      <Route path="/admin/cms-blog" element={<ProtectedRoute><AdminCMSBlog /></ProtectedRoute>} />
+      <Route path="/admin/cms-programs" element={<ProtectedRoute><AdminCMSPrograms /></ProtectedRoute>} />
+      <Route path="/admin/cms-settings" element={<ProtectedRoute><AdminCMSSettings /></ProtectedRoute>} />
+      <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
+      <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
+      <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
+/** Dev mode: all routes combined (original behavior) */
+const DevAppContent = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
   }
 
   return (
@@ -115,7 +173,6 @@ const AppContent = () => {
       <Route path="/admin/photocopying" element={<ProtectedRoute><AdminPhotocopying /></ProtectedRoute>} />
       <Route path="/admin/batch-processing" element={<ProtectedRoute><AdminBatchProcessing /></ProtectedRoute>} />
       <Route path="/admin/attendance-reports" element={<ProtectedRoute><AdminAttendanceReports /></ProtectedRoute>} />
-      
       <Route path="/school-attendance" element={<SchoolAttendancePortal />} />
       <Route path="/school-performance" element={<SchoolAttendancePortal />} />
       <Route path="/bursary-request" element={<BursaryRequest />} />
@@ -123,6 +180,7 @@ const AppContent = () => {
       <Route path="/schools" element={<Schools />} />
       <Route path="/programs" element={<Programs />} />
       <Route path="/gallery" element={<Gallery />} />
+      <Route path="/courses" element={<Courses />} />
       <Route path="/admin/performance-reports" element={<ProtectedRoute><AdminPerformanceReports /></ProtectedRoute>} />
       <Route path="/admin/cms-blog" element={<ProtectedRoute><AdminCMSBlog /></ProtectedRoute>} />
       <Route path="/admin/cms-programs" element={<ProtectedRoute><AdminCMSPrograms /></ProtectedRoute>} />
@@ -136,20 +194,21 @@ const AppContent = () => {
   );
 };
 
+const isObfuscationBypassPath = (pathname: string) => {
+  if (pathname === "/") return true;
+  return OBFUSCATION_BYPASS_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+};
+
 const ObfuscationGate = ({ children }: { children: React.ReactNode }) => {
   const [unlocked, setUnlocked] = useState(false);
   const { pathname } = useLocation();
 
-  if (isObfuscationBypassPath(pathname)) {
-    return <>{children}</>;
-  }
-
-  if (!unlocked) {
-    return <FakeErrorPage onUnlock={() => setUnlocked(true)} />;
-  }
-
+  if (isObfuscationBypassPath(pathname)) return <>{children}</>;
+  if (!unlocked) return <FakeErrorPage onUnlock={() => setUnlocked(true)} />;
   return <>{children}</>;
 };
+
+const PUBLIC_PATHS = ["/", "/about", "/schools", "/programs", "/gallery", "/courses", "/bursary-request", "/school-attendance", "/school-performance"];
 
 const isPublicPath = (pathname: string) => {
   if (pathname === "/") return true;
@@ -162,27 +221,54 @@ const ConditionalAIAssistant = () => {
   return <AIAssistant />;
 };
 
+const AppRouter = () => {
+  const mode = useAppMode();
+
+  if (mode === "public") {
+    return (
+      <>
+        <TikTokFollowPopup />
+        <PublicRoutes />
+      </>
+    );
+  }
+
+  if (mode === "admin") {
+    return (
+      <ObfuscationGate>
+        <ConditionalAIAssistant />
+        <AdminRoutes />
+      </ObfuscationGate>
+    );
+  }
+
+  // Dev mode: everything
+  return (
+    <ObfuscationGate>
+      <KabejjaAdPopup />
+      <TikTokFollowPopup />
+      <ConditionalAIAssistant />
+      <DevAppContent />
+    </ObfuscationGate>
+  );
+};
+
 const App = () => {
   return (
     <HelmetProvider>
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AuthProvider>
-              <ObfuscationGate>
-                <KabejjaAdPopup />
-                <TikTokFollowPopup />
-                <ConditionalAIAssistant />
-                <AppContent />
-              </ObfuscationGate>
-            </AuthProvider>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <AuthProvider>
+                <AppRouter />
+              </AuthProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
     </HelmetProvider>
   );
 };
