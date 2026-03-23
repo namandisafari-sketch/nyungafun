@@ -41,6 +41,8 @@ import AdminFormIntake from "./pages/AdminFormIntake";
 import AdminApplicationProcessing from "./pages/AdminApplicationProcessing";
 import KabejjaAdPopup from "./components/KabejjaAdPopup";
 import AIAssistant from "./components/AIAssistant";
+import Index from "./pages/Index";
+import About from "./pages/About";
 import FakeErrorPage from "./components/FakeErrorPage";
 import { useState } from "react";
 
@@ -48,7 +50,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
 });
 
-const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request"];
+const OBFUSCATION_BYPASS_PATHS = ["/auth", "/school-attendance", "/school-performance", "/bursary-request", "/about"];
 
 const isObfuscationBypassPath = (pathname: string) => {
   return OBFUSCATION_BYPASS_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
