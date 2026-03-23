@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -31,8 +32,37 @@ const Gallery = () => {
   const g = settings?.gallery || defaultGallery;
   const videos = g.videos || defaultGallery.videos;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "VideoGallery",
+    name: g.heroTitle,
+    description: g.heroDescription,
+    publisher: {
+      "@type": "Organization",
+      name: "Nyunga Foundation",
+      url: "https://nyungafun.lovable.app",
+    },
+    video: videos.map((v: any) => ({
+      "@type": "VideoObject",
+      name: v.title,
+      description: v.description,
+      contentUrl: v.video,
+      uploadDate: "2025-01-01",
+    })),
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>{g.heroTitle} — Nyunga Foundation Gallery</title>
+        <meta name="description" content={g.heroDescription} />
+        <meta property="og:title" content={`${g.heroTitle} — Nyunga Foundation`} />
+        <meta property="og:description" content={g.heroDescription} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://nyungafun.lovable.app/gallery" />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
+
       <Navbar />
 
       {/* Hero */}
@@ -45,31 +75,41 @@ const Gallery = () => {
         </div>
       </section>
 
-      {/* Videos Grid */}
+      {/* Videos Grid - Portrait TikTok format */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {videos.map((story: any, i: number) => (
-              <div key={i} className="group">
+              <article key={i} className="group" itemScope itemType="https://schema.org/VideoObject">
+                <meta itemProp="name" content={story.title} />
+                <meta itemProp="description" content={story.description} />
                 <div className="relative rounded-2xl overflow-hidden border-4 border-secondary/30 shadow-xl bg-card">
-                  <div className="absolute top-0 left-0 right-0 z-10 h-10 bg-gradient-to-r from-primary to-primary/80 flex items-center px-4 gap-2">
-                    <div className="w-3 h-3 rounded-full bg-destructive/80" />
-                    <div className="w-3 h-3 rounded-full bg-secondary/80" />
-                    <div className="w-3 h-3 rounded-full bg-accent/80" />
-                    <span className="ml-2 text-primary-foreground/70 text-xs font-medium truncate">{story.title}</span>
+                  {/* Phone-style top bar */}
+                  <div className="absolute top-0 left-0 right-0 z-10 h-8 bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center gap-1.5 rounded-t-xl">
+                    <div className="w-10 h-1 rounded-full bg-primary-foreground/20" />
                   </div>
-                  <div className="pt-10">
-                    <video controls preload="metadata" className="w-full aspect-video object-cover">
+                  <div className="pt-8">
+                    <video
+                      controls
+                      preload="metadata"
+                      className="w-full aspect-[9/16] object-cover bg-muted"
+                      playsInline
+                      title={story.title}
+                    >
                       <source src={story.video} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   </div>
+                  {/* Phone-style bottom bar */}
+                  <div className="h-6 bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
+                    <div className="w-8 h-1 rounded-full bg-primary-foreground/20" />
+                  </div>
                 </div>
-                <div className="mt-4 px-1">
-                  <h3 className="font-display text-xl font-bold text-primary mb-1">{story.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{story.description}</p>
+                <div className="mt-3 px-1">
+                  <h3 className="font-display text-base font-bold text-primary mb-1">{story.title}</h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">{story.description}</p>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
