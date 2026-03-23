@@ -53,6 +53,7 @@ import Schools from "./pages/Schools";
 import Programs from "./pages/Programs";
 import Gallery from "./pages/Gallery";
 import Courses from "./pages/Courses";
+import AdminCourses from "./pages/AdminCourses";
 import FakeErrorPage from "./components/FakeErrorPage";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
