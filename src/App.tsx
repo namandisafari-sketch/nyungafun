@@ -1,3 +1,4 @@
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -163,6 +164,7 @@ const ConditionalAIAssistant = () => {
 
 const App = () => {
   return (
+    <HelmetProvider>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
@@ -181,6 +183,7 @@ const App = () => {
         </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>
+    </HelmetProvider>
   );
 };
 
