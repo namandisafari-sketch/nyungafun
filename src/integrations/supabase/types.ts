@@ -1829,39 +1829,54 @@ export type Database = {
       }
       university_courses: {
         Row: {
+          bursary_type: string | null
           course_name: string
           created_at: string
           duration: string | null
           faculty: string | null
+          functional_fees: string | null
           id: string
           is_active: boolean
+          notes: string | null
           qualification: string | null
           school_id: string | null
+          session: string | null
           sort_order: number
+          tuition: string | null
           updated_at: string
         }
         Insert: {
+          bursary_type?: string | null
           course_name: string
           created_at?: string
           duration?: string | null
           faculty?: string | null
+          functional_fees?: string | null
           id?: string
           is_active?: boolean
+          notes?: string | null
           qualification?: string | null
           school_id?: string | null
+          session?: string | null
           sort_order?: number
+          tuition?: string | null
           updated_at?: string
         }
         Update: {
+          bursary_type?: string | null
           course_name?: string
           created_at?: string
           duration?: string | null
           faculty?: string | null
+          functional_fees?: string | null
           id?: string
           is_active?: boolean
+          notes?: string | null
           qualification?: string | null
           school_id?: string | null
+          session?: string | null
           sort_order?: number
+          tuition?: string | null
           updated_at?: string
         }
         Relationships: [

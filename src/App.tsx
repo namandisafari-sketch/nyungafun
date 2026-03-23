@@ -53,6 +53,7 @@ import Schools from "./pages/Schools";
 import Programs from "./pages/Programs";
 import Gallery from "./pages/Gallery";
 import Courses from "./pages/Courses";
+import AdminCourses from "./pages/AdminCourses";
 import FakeErrorPage from "./components/FakeErrorPage";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
@@ -128,6 +129,7 @@ const AdminRoutes = () => {
       <Route path="/admin/cms-blog" element={<ProtectedRoute><AdminCMSBlog /></ProtectedRoute>} />
       <Route path="/admin/cms-programs" element={<ProtectedRoute><AdminCMSPrograms /></ProtectedRoute>} />
       <Route path="/admin/cms-settings" element={<ProtectedRoute><AdminCMSSettings /></ProtectedRoute>} />
+      <Route path="/admin/courses" element={<ProtectedRoute><AdminCourses /></ProtectedRoute>} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
       <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
@@ -185,6 +187,7 @@ const DevAppContent = () => {
       <Route path="/admin/cms-blog" element={<ProtectedRoute><AdminCMSBlog /></ProtectedRoute>} />
       <Route path="/admin/cms-programs" element={<ProtectedRoute><AdminCMSPrograms /></ProtectedRoute>} />
       <Route path="/admin/cms-settings" element={<ProtectedRoute><AdminCMSSettings /></ProtectedRoute>} />
+      <Route path="/admin/courses" element={<ProtectedRoute><AdminCourses /></ProtectedRoute>} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
       <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
