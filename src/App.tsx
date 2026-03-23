@@ -150,24 +150,37 @@ const ObfuscationGate = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const isPublicPath = (pathname: string) => {
+  if (pathname === "/") return true;
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+};
+
+const ConditionalAIAssistant = () => {
+  const { pathname } = useLocation();
+  if (isPublicPath(pathname)) return null;
+  return <AIAssistant />;
+};
+
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <ObfuscationGate>
-              <KabejjaAdPopup />
-              <TikTokFollowPopup />
-              <AIAssistant />
-              <AppContent />
-            </ObfuscationGate>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AuthProvider>
+              <ObfuscationGate>
+                <KabejjaAdPopup />
+                <TikTokFollowPopup />
+                <ConditionalAIAssistant />
+                <AppContent />
+              </ObfuscationGate>
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 
