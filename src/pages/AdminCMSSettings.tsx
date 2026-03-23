@@ -134,6 +134,34 @@ const AdminCMSSettings = () => {
             </CardContent>
           </Card>
         </TabsContent>
+        <TabsContent value="social">
+          <Card>
+            <CardHeader><CardTitle>Social Media Links</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              {([
+                ["tiktok", "TikTok URL"],
+                ["facebook", "Facebook URL"],
+                ["instagram", "Instagram URL"],
+                ["youtube", "YouTube URL"],
+                ["twitter", "Twitter / X URL"],
+                ["linkedin", "LinkedIn URL"],
+                ["whatsapp", "WhatsApp Channel URL"],
+              ] as const).map(([key, label]) => (
+                <div key={key}>
+                  <Label>{label}</Label>
+                  <Input
+                    placeholder={`https://...`}
+                    value={(social as any)[key] || ""}
+                    onChange={(e) => setSocial({ ...social, [key]: e.target.value })}
+                  />
+                </div>
+              ))}
+              <Button onClick={() => saveMutation.mutate({ key: "social", value: social })} disabled={saveMutation.isPending}>
+                <Save className="h-4 w-4 mr-2" /> Save Social Links
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
