@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Heart, Target, Eye, ArrowRight } from "lucide-react";
+import { Heart, Target, Eye, Users, GraduationCap, ShieldAlert, AlertTriangle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import nyungaLogo from "@/assets/nyunga-logo.png";
@@ -37,10 +36,30 @@ const About = () => (
       </div>
     </section>
 
-    {/* What we cover */}
+    {/* Our Impact */}
     <section className="py-20 bg-muted/30">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <h2 className="font-display text-3xl font-bold text-primary text-center mb-10">Our Impact</h2>
+        <div className="grid sm:grid-cols-3 gap-6 text-center">
+          {[
+            { icon: GraduationCap, value: "500+", label: "Scholarships Given" },
+            { icon: Users, value: "1,200+", label: "Lives Changed" },
+            { icon: Heart, value: "50+", label: "Schools Reached" },
+          ].map((stat) => (
+            <div key={stat.label} className="bg-card border border-border rounded-lg p-6">
+              <stat.icon size={32} className="text-secondary mx-auto mb-3" />
+              <span className="font-display text-3xl font-bold text-primary block">{stat.value}</span>
+              <span className="text-muted-foreground text-sm">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* What we cover */}
+    <section className="py-20">
       <div className="container mx-auto px-4 max-w-3xl">
-        <h2 className="font-display text-3xl font-bold text-primary text-center mb-10">What We Cover</h2>
+        <h2 className="font-display text-3xl font-bold text-primary text-center mb-10">What We Provide</h2>
         <div className="grid sm:grid-cols-2 gap-4">
           {["Tuition fees", "Scholastic materials", "School uniforms", "Boarding fees", "Examination fees", "Mentorship programs"].map((item) => (
             <div key={item} className="flex items-center gap-3 bg-card border border-border rounded-lg p-4">
@@ -52,41 +71,27 @@ const About = () => (
       </div>
     </section>
 
-    {/* Application Process */}
-    <section className="py-20">
-      <div className="container mx-auto px-4 max-w-3xl">
-        <h2 className="font-display text-3xl font-bold text-primary text-center mb-10">Application Process</h2>
-        <div className="space-y-4">
-          {[
-            { step: "1", title: "Submit a Bursary Request Online", desc: "Fill out the online request form from the comfort of your home." },
-            { step: "2", title: "Await Review & Approval", desc: "Our team carefully reviews every request and contacts approved applicants." },
-            { step: "3", title: "Visit Our Office", desc: "Approved applicants visit our office to complete application forms, pay the required fees, and sign lawyer forms and school-specific admission documents." },
-            { step: "4", title: "Student Receives Support", desc: "Once everything is processed, the student begins receiving bursary support." },
-          ].map((item) => (
-            <div key={item.step} className="flex gap-4 items-start bg-card border border-border rounded-lg p-5">
-              <div className="w-10 h-10 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-display text-lg font-bold shrink-0">
-                {item.step}
-              </div>
-              <div>
-                <h3 className="font-display text-lg font-semibold text-primary">{item.title}</h3>
-                <p className="text-muted-foreground text-sm">{item.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+    {/* Scam Warning */}
+    <section className="py-16 bg-destructive/10 border-y border-destructive/20">
+      <div className="container mx-auto px-4 max-w-3xl text-center">
+        <ShieldAlert size={40} className="text-destructive mx-auto mb-4" />
+        <h2 className="font-display text-2xl font-bold text-destructive mb-4">⚠️ Fraud Warning</h2>
+        <p className="text-foreground leading-relaxed mb-3">
+          Beware of individuals or websites falsely claiming to represent the Nyunga Foundation. We do <strong>NOT</strong> collect money online, through mobile money, or via social media.
+        </p>
+        <p className="text-foreground leading-relaxed">
+          Our only official website is <strong className="text-primary">www.nyungafoundation.com</strong>. All our services are conducted <strong className="text-primary">in person at our physical office</strong>.
+        </p>
       </div>
     </section>
 
-    {/* CTA */}
+    {/* Closing */}
     <section className="py-20 bg-primary">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="font-display text-3xl font-bold text-primary-foreground mb-4">Ready to Apply?</h2>
-        <p className="text-primary-foreground/80 mb-8 max-w-md mx-auto">Submit your bursary request online. If approved, you'll visit our office to complete the full application.</p>
-        <Link to="/bursary-request">
-          <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold gap-2">
-            Apply Now <ArrowRight size={18} />
-          </Button>
-        </Link>
+        <h2 className="font-display text-3xl font-bold text-primary-foreground mb-4">Still There's Hope</h2>
+        <p className="text-primary-foreground/80 max-w-md mx-auto">
+          Together, we can ensure that every deserving child in Uganda has access to quality education regardless of their financial background.
+        </p>
       </div>
     </section>
 

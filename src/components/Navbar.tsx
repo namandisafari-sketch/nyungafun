@@ -6,8 +6,7 @@ import nyungaLogo from "@/assets/nyunga-logo.png";
 
 const navLinks = [
   { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
-  { to: "/bursary-request", label: "Apply for Bursary" },
+  { to: "/about", label: "About Us" },
 ];
 
 const Navbar = () => {
