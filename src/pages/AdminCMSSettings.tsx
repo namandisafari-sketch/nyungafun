@@ -36,6 +36,7 @@ const AdminCMSSettings = () => {
       if (settings.about) setAbout(settings.about.value as any);
       if (settings.contact) setContact(settings.contact.value as any);
       if (settings.stats) setStats(settings.stats.value as any);
+      if (settings.social) setSocial({ tiktok: "", facebook: "", instagram: "", youtube: "", twitter: "", linkedin: "", whatsapp: "", ...(settings.social.value as any) });
     }
   }, [settings]);
 
