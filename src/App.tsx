@@ -117,6 +117,9 @@ const AppContent = () => {
       <Route path="/schools" element={<Schools />} />
       <Route path="/programs" element={<Programs />} />
       <Route path="/admin/performance-reports" element={<ProtectedRoute><AdminPerformanceReports /></ProtectedRoute>} />
+      <Route path="/admin/cms-blog" element={<ProtectedRoute><AdminCMSBlog /></ProtectedRoute>} />
+      <Route path="/admin/cms-programs" element={<ProtectedRoute><AdminCMSPrograms /></ProtectedRoute>} />
+      <Route path="/admin/cms-settings" element={<ProtectedRoute><AdminCMSSettings /></ProtectedRoute>} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
       <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
