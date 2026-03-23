@@ -111,6 +111,8 @@ const AppContent = () => {
       <Route path="/school-performance" element={<SchoolAttendancePortal />} />
       <Route path="/bursary-request" element={<BursaryRequest />} />
       <Route path="/about" element={<About />} />
+      <Route path="/schools" element={<Schools />} />
+      <Route path="/programs" element={<Programs />} />
       <Route path="/admin/performance-reports" element={<ProtectedRoute><AdminPerformanceReports /></ProtectedRoute>} />
       <Route path="/school" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
       <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
